@@ -20,6 +20,7 @@ class PasswordEntryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('PasswordEntryCard: Building card for label: ${entry.label}'); // Added log
     return Card(
       child: InkWell(
         onTap: onTap,

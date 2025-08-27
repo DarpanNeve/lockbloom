@@ -14,15 +14,27 @@ class PasswordRepository extends GetxService {
 
   /// Get all password entries
   Future<List<PasswordEntry>> getAllPasswords() async {
+    print('PasswordRepository: getAllPasswords called.');
     try {
       final encryptedData = await _storageService.readSecure(_passwordsKey);
-      if (encryptedData == null) return [];
+      print('PasswordRepository: Encrypted data from storage: ${encryptedData != null ? 'present' : 'null'}');
+
+      if (encryptedData == null) {
+        print('PasswordRepository: No encrypted data found, returning empty list.');
+        return [];
+      }
 
       final decryptedJson = _encryptionService.decrypt(encryptedData);
+      print('PasswordRepository: Decrypted JSON length: ${decryptedJson.length}');
+
       final List<dynamic> passwordList = jsonDecode(decryptedJson);
-      
-      return passwordList.map((json) => PasswordEntry.fromJson(json)).toList();
+      print('PasswordRepository: Decoded password list count: ${passwordList.length}');
+
+      final List<PasswordEntry> entries = passwordList.map((json) => PasswordEntry.fromJson(json)).toList();
+      print('PasswordRepository: Converted to ${entries.length} PasswordEntry objects.');
+      return entries;
     } catch (e) {
+      print('PasswordRepository: Error in getAllPasswords: $e');
       // If decryption fails, return empty list (data might be corrupted)
       return [];
     }

@@ -8,12 +8,18 @@ import 'package:lockbloom/app/services/theme_service.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 
 import 'app/services/storage_service.dart';
+import 'app/services/encryption_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Initialize services
   await Get.putAsync(() async => StorageService());
+  await Get.putAsync<EncryptionService>(() async {
+    final encryptionService = EncryptionService();
+    await encryptionService.init();
+    return encryptionService;
+  });
   await Get.putAsync(() => ThemeService().init());
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([

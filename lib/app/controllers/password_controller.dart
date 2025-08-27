@@ -6,6 +6,7 @@ import 'package:lockbloom/app/repositories/password_repository.dart';
 import 'package:lockbloom/app/services/encryption_service.dart';
 import 'package:lockbloom/app/services/password_service.dart';
 import 'package:uuid/uuid.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class PasswordController extends GetxController {
   final PasswordRepository _repository = Get.find();
@@ -59,15 +60,20 @@ class PasswordController extends GetxController {
 
   /// Load all passwords
   Future<void> loadPasswords() async {
+    print('PasswordController: loadPasswords called.');
     isLoading.value = true;
     try {
       final loadedPasswords = await _repository.getAllPasswords();
+      print('PasswordController: Loaded ${loadedPasswords.length} passwords from repository.');
       passwords.value = loadedPasswords;
       _filterPasswords();
+      print('PasswordController: Passwords loaded and filtered.');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load passwords: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Failed to load passwords: ${e.toString()}');
+      print('PasswordController: Error loading passwords: $e');
     } finally {
       isLoading.value = false;
+      print('PasswordController: isLoading set to false.');
     }
   }
 
@@ -78,7 +84,7 @@ class PasswordController extends GetxController {
       generatedPassword.value = password;
       passwordStrength.value = _passwordService.calculateStrength(password);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to generate password: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Failed to generate password: ${e.toString()}');
     }
   }
 
@@ -99,12 +105,12 @@ class PasswordController extends GetxController {
     List<String>? tags,
   }) async {
     if (label.trim().isEmpty) {
-      Get.snackbar('Error', 'Label is required');
+      Fluttertoast.showToast(msg: 'Label is required');
       return;
     }
 
     if (password.trim().isEmpty) {
-      Get.snackbar('Error', 'Password is required');
+      Fluttertoast.showToast(msg: 'Password is required');
       return;
     }
 
@@ -128,11 +134,11 @@ class PasswordController extends GetxController {
       await _repository.savePassword(entry);
       await loadPasswords();
       
-      Get.snackbar('Success', id == null ? 'Password saved' : 'Password updated');
+      Fluttertoast.showToast(msg: id == null ? 'Password saved' : 'Password updated');
       _clearForm();
       
     } catch (e) {
-      Get.snackbar('Error', 'Failed to save password: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Failed to save password: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
@@ -163,9 +169,9 @@ class PasswordController extends GetxController {
       try {
         await _repository.deletePassword(id);
         await loadPasswords();
-        Get.snackbar('Success', 'Password deleted');
+        Fluttertoast.showToast(msg: 'Password deleted');
       } catch (e) {
-        Get.snackbar('Error', 'Failed to delete password: ${e.toString()}');
+        Fluttertoast.showToast(msg: 'Failed to delete password: ${e.toString()}');
       } finally {
         isLoading.value = false;
       }
@@ -186,14 +192,14 @@ class PasswordController extends GetxController {
     try {
       final password = getDecryptedPassword(entry);
       await Clipboard.setData(ClipboardData(text: password));
-      Get.snackbar('Success', 'Password copied to clipboard');
+      Fluttertoast.showToast(msg: 'Password copied to clipboard');
       
       // Clear clipboard after 30 seconds for security
       Future.delayed(const Duration(seconds: 30), () {
         Clipboard.setData(const ClipboardData(text: ''));
       });
     } catch (e) {
-      Get.snackbar('Error', 'Failed to copy password');
+      Fluttertoast.showToast(msg: 'Failed to copy password');
     }
   }
 
@@ -201,9 +207,9 @@ class PasswordController extends GetxController {
   Future<void> copyUsername(PasswordEntry entry) async {
     try {
       await Clipboard.setData(ClipboardData(text: entry.username));
-      Get.snackbar('Success', 'Username copied to clipboard');
+      Fluttertoast.showToast(msg: 'Username copied to clipboard');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to copy username');
+      Fluttertoast.showToast(msg: 'Failed to copy username');
     }
   }
 
@@ -214,7 +220,7 @@ class PasswordController extends GetxController {
       await _repository.savePassword(updatedEntry);
       await loadPasswords();
     } catch (e) {
-      Get.snackbar('Error', 'Failed to update favorite status');
+      Fluttertoast.showToast(msg: 'Failed to update favorite status');
     }
   }
 
@@ -231,6 +237,11 @@ class PasswordController extends GetxController {
 
   /// Filter passwords based on search query and selected tags
   void _filterPasswords() {
+    print('PasswordController: _filterPasswords called.');
+    print('  searchQuery: ${searchQuery.value}');
+    print('  selectedTags: ${selectedTags.value}');
+    print('  Total passwords: ${passwords.length}');
+
     var filtered = passwords.toList();
     
     // Filter by search query
@@ -251,6 +262,7 @@ class PasswordController extends GetxController {
     }
     
     filteredPasswords.value = filtered;
+    print('  Filtered passwords count: ${filteredPasswords.length}');
   }
 
   /// Get all unique tags
@@ -298,9 +310,9 @@ class PasswordController extends GetxController {
       final exportData = await _repository.exportPasswords('export_password');
       // In a real app, you would save this to a file or share it
       await Clipboard.setData(ClipboardData(text: exportData));
-      Get.snackbar('Success', 'Passwords exported to clipboard');
+      Fluttertoast.showToast(msg: 'Passwords exported to clipboard');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to export passwords: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Failed to export passwords: ${e.toString()}');
     }
   }
 

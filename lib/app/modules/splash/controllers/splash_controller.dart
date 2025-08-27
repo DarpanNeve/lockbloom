@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/auth_controller.dart';
 import 'package:lockbloom/app/routes/app_pages.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SplashController extends GetxController {
   final AuthController _authController = Get.find();
@@ -27,7 +28,7 @@ class SplashController extends GetxController {
         Get.offNamed(Routes.AUTH);
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to initialize app: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Failed to initialize app: ${e.toString()}');
       // Still navigate to auth screen
       Get.offNamed(Routes.AUTH);
     } finally {

@@ -49,7 +49,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
               ),
             ),
           ),
-          
+
           // Tags Filter (if any selected)
           Obx(() {
             if (controller.selectedTags.isNotEmpty) {
@@ -66,7 +66,9 @@ class SavedPasswordsView extends GetView<PasswordController> {
                       child: Chip(
                         label: Text(tag),
                         onDeleted: () {
-                          final tags = List<String>.from(controller.selectedTags);
+                          final tags = List<String>.from(
+                            controller.selectedTags,
+                          );
                           tags.remove(tag);
                           controller.filterByTags(tags);
                         },
@@ -79,34 +81,39 @@ class SavedPasswordsView extends GetView<PasswordController> {
             }
             return const SizedBox.shrink();
           }),
-          
+
           // Passwords List
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-              
+
               if (controller.filteredPasswords.isEmpty) {
                 return _buildEmptyState(context);
               }
-              
+
               return ListView.builder(
                 padding: EdgeInsets.all(16.w),
                 itemCount: controller.filteredPasswords.length,
                 itemBuilder: (context, index) {
                   final password = controller.filteredPasswords[index];
+                  print(
+                    'SavedPasswordsView: Building item for password: ${password.label}',
+                  ); // Added log
                   return Padding(
                     padding: EdgeInsets.only(bottom: 12.h),
                     child: PasswordEntryCard(
                       entry: password,
-                      onTap: () => Get.toNamed(
-                        Routes.PASSWORD_DETAIL,
-                        arguments: password,
-                      ),
+                      onTap:
+                          () => Get.toNamed(
+                            Routes.PASSWORD_DETAIL,
+                            arguments: password,
+                          ),
                       onCopyPassword: () => controller.copyPassword(password),
                       onCopyUsername: () => controller.copyUsername(password),
-                      onToggleFavorite: () => controller.toggleFavorite(password),
+                      onToggleFavorite:
+                          () => controller.toggleFavorite(password),
                     ),
                   );
                 },
@@ -168,19 +175,16 @@ class SavedPasswordsView extends GetView<PasswordController> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Add Password',
-                  style: Get.textTheme.headlineSmall,
-                ),
+                Text('Add Password', style: Get.textTheme.headlineSmall),
                 IconButton(
                   onPressed: () => Get.back(),
                   icon: const Icon(Icons.close_rounded),
                 ),
               ],
             ),
-            
+
             SizedBox(height: 24.h),
-            
+
             // Form
             Expanded(
               child: SingleChildScrollView(
@@ -194,9 +198,9 @@ class SavedPasswordsView extends GetView<PasswordController> {
                         prefixIcon: Icon(Icons.label_outline),
                       ),
                     ),
-                    
+
                     SizedBox(height: 16.h),
-                    
+
                     TextField(
                       controller: controller.usernameController,
                       decoration: const InputDecoration(
@@ -204,39 +208,44 @@ class SavedPasswordsView extends GetView<PasswordController> {
                         prefixIcon: Icon(Icons.person_outline),
                       ),
                     ),
-                    
+
                     SizedBox(height: 16.h),
-                    
-                    TextField(
-                      controller: controller.passwordController,
-                      decoration: InputDecoration(
-                        labelText: 'Password *',
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        suffixIcon: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              onPressed: controller.useGeneratedPassword,
-                              icon: const Icon(Icons.auto_awesome),
-                              tooltip: 'Use Generated Password',
-                            ),
-                            Obx(() => IconButton(
-                              onPressed: () => controller.showPassword.toggle(),
-                              icon: Icon(
-                                controller.showPassword.value
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
+
+                    Obx(
+                      () => TextField(
+                        controller: controller.passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Password *',
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          suffixIcon: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                onPressed: controller.useGeneratedPassword,
+                                icon: const Icon(Icons.auto_awesome),
+                                tooltip: 'Use Generated Password',
                               ),
-                            )),
-                          ],
+                              Obx(
+                                () => IconButton(
+                                  onPressed:
+                                      () => controller.showPassword.toggle(),
+                                  icon: Icon(
+                                    controller.showPassword.value
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                        obscureText: !controller.showPassword.value,
+                        onChanged: controller.calculatePasswordStrength,
                       ),
-                      obscureText: !controller.showPassword.value,
-                      onChanged: controller.calculatePasswordStrength,
                     ),
-                    
+
                     SizedBox(height: 16.h),
-                    
+
                     TextField(
                       controller: controller.websiteController,
                       decoration: const InputDecoration(
@@ -245,9 +254,9 @@ class SavedPasswordsView extends GetView<PasswordController> {
                         prefixIcon: Icon(Icons.web),
                       ),
                     ),
-                    
+
                     SizedBox(height: 16.h),
-                    
+
                     TextField(
                       controller: controller.tagsController,
                       decoration: const InputDecoration(
@@ -256,9 +265,9 @@ class SavedPasswordsView extends GetView<PasswordController> {
                         prefixIcon: Icon(Icons.tag),
                       ),
                     ),
-                    
+
                     SizedBox(height: 16.h),
-                    
+
                     TextField(
                       controller: controller.notesController,
                       decoration: const InputDecoration(
@@ -271,19 +280,20 @@ class SavedPasswordsView extends GetView<PasswordController> {
                 ),
               ),
             ),
-            
+
             // Save Button
             SizedBox(height: 16.h),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  final tags = controller.tagsController.text
-                      .split(',')
-                      .map((e) => e.trim())
-                      .where((e) => e.isNotEmpty)
-                      .toList();
-                  
+                  final tags =
+                      controller.tagsController.text
+                          .split(',')
+                          .map((e) => e.trim())
+                          .where((e) => e.isNotEmpty)
+                          .toList();
+
                   controller.savePassword(
                     label: controller.labelController.text,
                     username: controller.usernameController.text,
@@ -292,7 +302,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
                     notes: controller.notesController.text,
                     tags: tags,
                   );
-                  
+
                   Get.back();
                 },
                 child: const Text('Save Password'),
@@ -307,7 +317,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
 
   void _showFilterSheet() {
     final allTags = controller.getAllTags();
-    
+
     Get.bottomSheet(
       Container(
         height: Get.height * 0.6,
@@ -323,10 +333,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Filter by Tags',
-                  style: Get.textTheme.headlineSmall,
-                ),
+                Text('Filter by Tags', style: Get.textTheme.headlineSmall),
                 TextButton(
                   onPressed: () {
                     controller.filterByTags([]);
@@ -336,41 +343,42 @@ class SavedPasswordsView extends GetView<PasswordController> {
                 ),
               ],
             ),
-            
+
             SizedBox(height: 16.h),
-            
+
             if (allTags.isEmpty)
-              const Expanded(
-                child: Center(
-                  child: Text('No tags available'),
-                ),
-              )
+              const Expanded(child: Center(child: Text('No tags available')))
             else
               Expanded(
                 child: Wrap(
                   spacing: 8.w,
                   runSpacing: 8.h,
-                  children: allTags.map((tag) {
-                    return Obx(() {
-                      final isSelected = controller.selectedTags.contains(tag);
-                      return FilterChip(
-                        label: Text(tag),
-                        selected: isSelected,
-                        onSelected: (selected) {
-                          final tags = List<String>.from(controller.selectedTags);
-                          if (selected) {
-                            tags.add(tag);
-                          } else {
-                            tags.remove(tag);
-                          }
-                          controller.filterByTags(tags);
-                        },
-                      );
-                    });
-                  }).toList(),
+                  children:
+                      allTags.map((tag) {
+                        return Obx(() {
+                          final isSelected = controller.selectedTags.contains(
+                            tag,
+                          );
+                          return FilterChip(
+                            label: Text(tag),
+                            selected: isSelected,
+                            onSelected: (selected) {
+                              final tags = List<String>.from(
+                                controller.selectedTags,
+                              );
+                              if (selected) {
+                                tags.add(tag);
+                              } else {
+                                tags.remove(tag);
+                              }
+                              controller.filterByTags(tags);
+                            },
+                          );
+                        });
+                      }).toList(),
                 ),
               ),
-            
+
             // Apply Button
             SizedBox(height: 16.h),
             SizedBox(

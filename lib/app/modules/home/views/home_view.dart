@@ -7,50 +7,58 @@ import 'package:lockbloom/app/routes/app_pages.dart';
 import 'package:lockbloom/app/widgets/password_generator_card.dart';
 import 'package:lockbloom/app/widgets/password_strength_indicator.dart';
 import 'package:lockbloom/app/widgets/recent_passwords_list.dart';
+import 'package:lockbloom/app/modules/saved_passwords/views/saved_passwords_view.dart';
+import 'package:lockbloom/app/modules/settings/views/settings_view.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('LockBloom'),
-        actions: [
-          IconButton(
-            onPressed: () => Get.toNamed(Routes.SETTINGS),
-            icon: const Icon(Icons.settings_rounded),
+    final List<Widget> _pages = [
+      Scaffold(
+        appBar: AppBar(title: const Text('LockBloom'), centerTitle: true),
+        body: SingleChildScrollView(
+          // The original HomeView content
+          padding: EdgeInsets.all(16.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Welcome Section
+              _buildWelcomeSection(context),
+
+              SizedBox(height: 32.h),
+
+              // Password Generator Card
+              const PasswordGeneratorCard(),
+
+              SizedBox(height: 32.h),
+
+              // Quick Actions
+              _buildQuickActions(context),
+
+              SizedBox(height: 32.h),
+
+              // Recent Passwords
+              _buildRecentPasswordsSection(context),
+
+              SizedBox(height: 32.h),
+
+              // Statistics
+              _buildStatisticsSection(context),
+            ],
           ),
-        ],
+        ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Welcome Section
-            _buildWelcomeSection(context),
-            
-            SizedBox(height: 32.h),
-            
-            // Password Generator Card
-            const PasswordGeneratorCard(),
-            
-            SizedBox(height: 32.h),
-            
-            // Quick Actions
-            _buildQuickActions(context),
-            
-            SizedBox(height: 32.h),
-            
-            // Recent Passwords
-            _buildRecentPasswordsSection(context),
-            
-            SizedBox(height: 32.h),
-            
-            // Statistics
-            _buildStatisticsSection(context),
-          ],
+      const SavedPasswordsView(), // Saved Passwords page
+      const SettingsView(), // Settings page
+    ];
+
+    return Scaffold(
+      body: Obx(
+        () => IndexedStack(
+          index: controller.currentIndex.value,
+          children: _pages,
         ),
       ),
       bottomNavigationBar: _buildBottomNavigationBar(context),
@@ -75,9 +83,9 @@ class HomeView extends GetView<HomeController> {
         children: [
           Text(
             'Welcome back!',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           SizedBox(height: 8.h),
           Text(
@@ -93,10 +101,7 @@ class HomeView extends GetView<HomeController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Quick Actions',
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
+        Text('Quick Actions', style: Theme.of(context).textTheme.headlineSmall),
         SizedBox(height: 16.h),
         Row(
           children: [
@@ -115,7 +120,7 @@ class HomeView extends GetView<HomeController> {
                 context,
                 icon: Icons.list_rounded,
                 title: 'View All',
-                subtitle: 'Browse saved passwords',
+                subtitle: 'Browse passwords',
                 onTap: () => Get.toNamed(Routes.SAVED_PASSWORDS),
               ),
             ),
@@ -156,15 +161,12 @@ class HomeView extends GetView<HomeController> {
               SizedBox(height: 12.h),
               Text(
                 title,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontSize: 14.sp,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineSmall?.copyWith(fontSize: 14.sp),
               ),
               SizedBox(height: 4.h),
-              Text(
-                subtitle,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+              Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
         ),
@@ -197,7 +199,7 @@ class HomeView extends GetView<HomeController> {
 
   Widget _buildStatisticsSection(BuildContext context) {
     final passwordController = Get.find<PasswordController>();
-    
+
     return FutureBuilder<Map<String, dynamic>>(
       future: passwordController.getPasswordStats(),
       builder: (context, snapshot) {
@@ -206,7 +208,7 @@ class HomeView extends GetView<HomeController> {
         }
 
         final stats = snapshot.data!;
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -272,10 +274,7 @@ class HomeView extends GetView<HomeController> {
               ],
             ),
             SizedBox(height: 8.h),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            Text(title, style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
       ),
@@ -283,30 +282,32 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildBottomNavigationBar(BuildContext context) {
-    return Obx(() => BottomNavigationBar(
-      currentIndex: controller.currentIndex.value,
-      onTap: controller.changePage,
-      type: BottomNavigationBarType.fixed,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_rounded),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.list_rounded),
-          label: 'Passwords',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings_rounded),
-          label: 'Settings',
-        ),
-      ],
-    ));
+    return Obx(
+      () => BottomNavigationBar(
+        currentIndex: controller.currentIndex.value,
+        onTap: controller.changePage,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_rounded),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list_rounded),
+            label: 'Passwords',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings_rounded),
+            label: 'Settings',
+          ),
+        ],
+      ),
+    );
   }
 
   void _showAddPasswordDialog(BuildContext context) {
     final passwordController = Get.find<PasswordController>();
-    
+
     Get.dialog(
       AlertDialog(
         title: const Text('Quick Save Password'),
@@ -323,9 +324,7 @@ class HomeView extends GetView<HomeController> {
             SizedBox(height: 16.h),
             TextField(
               controller: passwordController.usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Username/Email',
-              ),
+              decoration: const InputDecoration(labelText: 'Username/Email'),
             ),
             SizedBox(height: 16.h),
             Row(
@@ -333,15 +332,13 @@ class HomeView extends GetView<HomeController> {
                 Expanded(
                   child: TextField(
                     controller: passwordController.passwordController,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                    ),
+                    decoration: const InputDecoration(labelText: 'Password'),
                     obscureText: true,
                   ),
                 ),
                 IconButton(
                   onPressed: () {
-                    passwordController.passwordController.text = 
+                    passwordController.passwordController.text =
                         passwordController.generatedPassword.value;
                   },
                   icon: const Icon(Icons.auto_awesome),
@@ -352,10 +349,7 @@ class HomeView extends GetView<HomeController> {
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () {
               passwordController.savePassword(

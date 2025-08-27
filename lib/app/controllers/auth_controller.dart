@@ -4,6 +4,7 @@ import 'package:lockbloom/app/routes/app_pages.dart';
 import 'package:lockbloom/app/services/biometric_service.dart';
 import 'package:lockbloom/app/services/encryption_service.dart';
 import 'package:lockbloom/app/services/storage_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AuthController extends GetxController {
   static const String _pinKey = 'user_pin';
@@ -55,7 +56,7 @@ class AuthController extends GetxController {
       // Initialize encryption service
       await _encryptionService.init();
     } catch (e) {
-      Get.snackbar('Error', 'Failed to initialize app: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Failed to initialize app: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
@@ -64,7 +65,7 @@ class AuthController extends GetxController {
   /// Setup PIN for first time users
   Future<void> setupPin(String pin) async {
     if (pin.length < 4) {
-      Get.snackbar('Error', 'PIN must be at least 4 digits');
+      Fluttertoast.showToast(msg: 'PIN must be at least 4 digits');
       return;
     }
 
@@ -107,7 +108,7 @@ class AuthController extends GetxController {
       // Navigate to home
       Get.offAllNamed(Routes.HOME);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to setup PIN: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Failed to setup PIN: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
@@ -120,7 +121,7 @@ class AuthController extends GetxController {
     try {
       final encryptedStoredPin = await _storageService.readSecure(_pinKey);
       if (encryptedStoredPin == null) {
-        Get.snackbar('Error', 'No PIN found. Please setup the app again.');
+        Fluttertoast.showToast(msg: 'No PIN found. Please setup the app again.');
         return;
       }
 
@@ -130,11 +131,11 @@ class AuthController extends GetxController {
         isAuthenticated.value = true;
         Get.offAllNamed(Routes.HOME);
       } else {
-        Get.snackbar('Error', 'Incorrect PIN');
+        Fluttertoast.showToast(msg: 'Incorrect PIN');
         pinController.clear();
       }
     } catch (e) {
-      Get.snackbar('Error', 'Authentication failed: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Authentication failed: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
@@ -154,7 +155,7 @@ class AuthController extends GetxController {
         Get.offAllNamed(Routes.HOME);
       }
     } catch (e) {
-      Get.snackbar('Error', 'Biometric authentication failed');
+      Fluttertoast.showToast(msg: 'Biometric authentication failed');
     }
   }
 
@@ -162,7 +163,7 @@ class AuthController extends GetxController {
   Future<void> enableBiometric() async {
     print('enableBiometric called');
     if (!isBiometricAvailable.value) {
-      Get.snackbar('Error', 'Biometric authentication not available');
+      Fluttertoast.showToast(msg: 'Biometric authentication not available');
       return;
     }
 
@@ -174,10 +175,10 @@ class AuthController extends GetxController {
       if (success) {
         await _storageService.write(_biometricEnabledKey, true);
         isBiometricEnabled.value = true;
-        Get.snackbar('Success', 'Biometric authentication enabled');
+        Fluttertoast.showToast(msg: 'Biometric authentication enabled');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to enable biometric authentication');
+      Fluttertoast.showToast(msg: 'Failed to enable biometric authentication');
     }
   }
 
@@ -185,13 +186,13 @@ class AuthController extends GetxController {
   Future<void> disableBiometric() async {
     await _storageService.write(_biometricEnabledKey, false);
     isBiometricEnabled.value = false;
-    Get.snackbar('Success', 'Biometric authentication disabled');
+    Fluttertoast.showToast(msg: 'Biometric authentication disabled');
   }
 
   /// Change PIN
   Future<void> changePin(String currentPin, String newPin) async {
     if (newPin.length < 4) {
-      Get.snackbar('Error', 'PIN must be at least 4 digits');
+      Fluttertoast.showToast(msg: 'PIN must be at least 4 digits');
       return;
     }
 
@@ -201,14 +202,14 @@ class AuthController extends GetxController {
       // Verify current PIN
       final encryptedStoredPin = await _storageService.readSecure(_pinKey);
       if (encryptedStoredPin == null) {
-        Get.snackbar('Error', 'No PIN found');
+        Fluttertoast.showToast(msg: 'No PIN found');
         return;
       }
 
       final storedPin = _encryptionService.decrypt(encryptedStoredPin);
 
       if (currentPin != storedPin) {
-        Get.snackbar('Error', 'Current PIN is incorrect');
+        Fluttertoast.showToast(msg: 'Current PIN is incorrect');
         return;
       }
 
@@ -216,9 +217,9 @@ class AuthController extends GetxController {
       final encryptedNewPin = _encryptionService.encrypt(newPin);
       await _storageService.writeSecure(_pinKey, encryptedNewPin);
 
-      Get.snackbar('Success', 'PIN changed successfully');
+      Fluttertoast.showToast(msg: 'PIN changed successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to change PIN: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Failed to change PIN: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
@@ -265,9 +266,9 @@ class AuthController extends GetxController {
         isBiometricEnabled.value = false;
 
         Get.offAllNamed(Routes.SPLASH);
-        Get.snackbar('Success', 'App has been reset');
+        Fluttertoast.showToast(msg: 'App has been reset');
       } catch (e) {
-        Get.snackbar('Error', 'Failed to reset app: ${e.toString()}');
+        Fluttertoast.showToast(msg: 'Failed to reset app: ${e.toString()}');
       }
     }
   }

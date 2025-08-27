@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/auth_controller.dart';
 import 'package:lockbloom/app/services/storage_service.dart';
 import 'package:lockbloom/app/services/theme_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SettingsController extends GetxController {
   static const String _autoLockTimeoutKey = 'auto_lock_timeout';
@@ -57,21 +58,21 @@ class SettingsController extends GetxController {
   Future<void> updateAutoLockTimeout(int timeout) async {
     autoLockTimeout.value = timeout;
     await _storageService.write(_autoLockTimeoutKey, timeout);
-    Get.snackbar('Success', 'Auto-lock timeout updated');
+    Fluttertoast.showToast(msg: 'Auto-lock timeout updated');
   }
 
   /// Update clipboard clear time
   Future<void> updateClipboardClearTime(int time) async {
     clipboardClearTime.value = time;
     await _storageService.write(_clipboardClearTimeKey, time);
-    Get.snackbar('Success', 'Clipboard clear time updated');
+    Fluttertoast.showToast(msg: 'Clipboard clear time updated');
   }
 
   /// Toggle password history
   Future<void> togglePasswordHistory(bool enabled) async {
     isPasswordHistoryEnabled.value = enabled;
     await _storageService.write(_passwordHistoryKey, enabled);
-    Get.snackbar('Success', 'Password history ${enabled ? 'enabled' : 'disabled'}');
+    Fluttertoast.showToast(msg: 'Password history ${enabled ? 'enabled' : 'disabled'}');
   }
 
   /// Get current theme mode display text
@@ -212,7 +213,7 @@ class SettingsController extends GetxController {
           TextButton(
             onPressed: () {
               if (newPinController.text != confirmPinController.text) {
-                Get.snackbar('Error', 'New PIN and confirmation do not match');
+                Fluttertoast.showToast(msg: 'New PIN and confirmation do not match');
                 return;
               }
               _authController.changePin(
@@ -255,7 +256,7 @@ class SettingsController extends GetxController {
             onPressed: () {
               // Export functionality would go here
               Get.back();
-              Get.snackbar('Success', 'Passwords exported');
+              Fluttertoast.showToast(msg: 'Passwords exported');
             },
             child: const Text('Export'),
           ),
@@ -279,7 +280,7 @@ class SettingsController extends GetxController {
             onPressed: () {
               // Import functionality would go here
               Get.back();
-              Get.snackbar('Success', 'Passwords imported');
+              Fluttertoast.showToast(msg: 'Passwords imported');
             },
             child: const Text('Select File'),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:lockbloom/app/services/storage_service.dart';
 
 class BiometricService extends GetxService {
   final LocalAuthentication _localAuth = LocalAuthentication();
@@ -8,10 +9,12 @@ class BiometricService extends GetxService {
   /// Check if biometric authentication is available
   Future<bool> isAvailable() async {
     try {
-      final bool isAvailable = await _localAuth.canCheckBiometrics;
+      final bool canCheckBiometrics = await _localAuth.canCheckBiometrics;
       final bool isDeviceSupported = await _localAuth.isDeviceSupported();
-      return isAvailable && isDeviceSupported;
+      print('BiometricService: isAvailable - canCheckBiometrics: $canCheckBiometrics, isDeviceSupported: $isDeviceSupported');
+      return canCheckBiometrics && isDeviceSupported;
     } catch (e) {
+      print('BiometricService: isAvailable error: $e');
       return false;
     }
   }
@@ -32,9 +35,12 @@ class BiometricService extends GetxService {
   }) async {
     try {
       final bool isAvailable = await this.isAvailable();
-      if (!isAvailable) return false;
+      if (!isAvailable) {
+        print('BiometricService: authenticate - Biometrics not available on device.');
+        return false;
+      }
 
-      return await _localAuth.authenticate(
+      final bool authenticated = await _localAuth.authenticate(
         localizedReason: localizedReason,
         options: AuthenticationOptions(
           biometricOnly: biometricOnly,
@@ -42,7 +48,10 @@ class BiometricService extends GetxService {
           sensitiveTransaction: true,
         ),
       );
+      print('BiometricService: authenticate - Authenticated: $authenticated');
+      return authenticated;
     } on PlatformException catch (e) {
+      print('BiometricService: authenticate PlatformException: ${e.code} - ${e.message}');
       // Handle specific error cases
       switch (e.code) {
         case 'NotAvailable':
@@ -57,6 +66,7 @@ class BiometricService extends GetxService {
           return false;
       }
     } catch (e) {
+      print('BiometricService: authenticate general error: $e');
       return false;
     }
   }
@@ -88,10 +98,15 @@ class BiometricService extends GetxService {
     }
   }
 
+  final StorageService _storageService = Get.find();
+  static const String _biometricEnabledKey = 'biometric_enabled';
+
   /// Check if biometric authentication is enabled in app settings
   Future<bool> isBiometricEnabledInApp() async {
-    // This would typically check app-specific settings
-    // For now, return true if biometrics are available
-    return await isAvailable();
+    // This checks app-specific settings stored in StorageService
+    final bool isEnabledInSettings = _storageService.read<bool>(_biometricEnabledKey) ?? false;
+    final bool deviceIsAvailable = await isAvailable();
+    print('BiometricService: isBiometricEnabledInApp - isEnabledInSettings: $isEnabledInSettings, deviceIsAvailable: $deviceIsAvailable');
+    return isEnabledInSettings && deviceIsAvailable;
   }
 }

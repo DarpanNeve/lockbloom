@@ -7,8 +7,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 
 class EncryptionService extends GetxService {
-  static const String _keyStorageKey = 'encryption_key';
-  static const String _saltStorageKey = 'encryption_salt';
+  static const String _keyStorageKey = 'com.lockbloom.app.v1.secure_data.master_encryption_key';
+  static const String _saltStorageKey = 'com.lockbloom.app.v1.secure_data.master_salt_for_key_derivation';
   
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
     aOptions: AndroidOptions(

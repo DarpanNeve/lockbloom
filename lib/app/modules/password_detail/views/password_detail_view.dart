@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:lockbloom/app/controllers/password_controller.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/services/biometric_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class PasswordDetailView extends StatefulWidget {
   const PasswordDetailView({super.key});
@@ -527,36 +528,48 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
   }
 
   Future<void> _revealPassword() async {
+    print('PasswordDetailView: _revealPassword called. isPasswordRevealed: $isPasswordRevealed');
+
     if (isPasswordRevealed) {
       setState(() {
         isPasswordRevealed = false;
       });
+      print('PasswordDetailView: Password already revealed, hiding it.');
       return;
     }
 
+    print('PasswordDetailView: Checking biometric availability and enablement.');
     // Check if biometric is available and enabled
-    if (await _biometricService.isAvailable() && 
-        await _biometricService.isBiometricEnabledInApp()) {
-      
+    final bool biometricAvailable = await _biometricService.isAvailable();
+    final bool biometricEnabledInApp = await _biometricService.isBiometricEnabledInApp();
+    print('PasswordDetailView: Biometric available: $biometricAvailable, enabled in app: $biometricEnabledInApp');
+
+    if (biometricAvailable && biometricEnabledInApp) {
+      print('PasswordDetailView: Attempting biometric authentication.');
       final authenticated = await _biometricService.authenticate(
         localizedReason: 'Authenticate to reveal password',
       );
-      
+
       if (authenticated) {
         setState(() {
           isPasswordRevealed = true;
         });
-        
+        print('PasswordDetailView: Biometric authentication successful. Password revealed.');
+
         // Auto-hide password after 30 seconds
         Future.delayed(const Duration(seconds: 30), () {
           if (mounted) {
             setState(() {
               isPasswordRevealed = false;
             });
+            print('PasswordDetailView: Auto-hiding password after 30 seconds.');
           }
         });
+      } else {
+        print('PasswordDetailView: Biometric authentication failed.');
       }
     } else {
+      print('PasswordDetailView: Biometric not available or not enabled in app. Showing confirmation dialog.');
       // Show confirmation dialog if biometric is not available
       final confirm = await Get.dialog<bool>(
         AlertDialog(
@@ -574,20 +587,24 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           ],
         ),
       );
-      
+
       if (confirm == true) {
         setState(() {
           isPasswordRevealed = true;
         });
-        
+        print('PasswordDetailView: Confirmation received. Password revealed.');
+
         // Auto-hide password after 30 seconds
         Future.delayed(const Duration(seconds: 30), () {
           if (mounted) {
             setState(() {
               isPasswordRevealed = false;
             });
+            print('PasswordDetailView: Auto-hiding password after 30 seconds.');
           }
         });
+      } else {
+        print('PasswordDetailView: Confirmation denied. Password not revealed.');
       }
     }
   }
@@ -662,7 +679,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
       notes: entry.notes,
       tags: entry.tags,
     );
-    Get.snackbar('Success', 'Password duplicated');
+    Fluttertoast.showToast(msg: 'Password duplicated');
   }
 
   void _deleteEntry() {

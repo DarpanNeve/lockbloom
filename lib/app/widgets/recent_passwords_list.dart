@@ -14,14 +14,17 @@ class RecentPasswordsList extends GetView<PasswordController> {
       if (controller.isLoading.value) {
         return const Center(child: CircularProgressIndicator());
       }
-      
+
       final recentPasswords = controller.passwords.take(3).toList();
-      
+
       if (recentPasswords.isEmpty) {
         return Container(
           height: 120.h,
+          width: double.infinity,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+            color: Theme.of(
+              context,
+            ).colorScheme.surfaceVariant.withOpacity(0.3),
             borderRadius: BorderRadius.circular(12.r),
             border: Border.all(
               color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
@@ -47,23 +50,25 @@ class RecentPasswordsList extends GetView<PasswordController> {
           ),
         );
       }
-      
+
       return Column(
-        children: recentPasswords.map((password) {
-          return Padding(
-            padding: EdgeInsets.only(bottom: 12.h),
-            child: PasswordEntryCard(
-              entry: password,
-              onTap: () => Get.toNamed(
-                Routes.PASSWORD_DETAIL,
-                arguments: password,
-              ),
-              onCopyPassword: () => controller.copyPassword(password),
-              onCopyUsername: () => controller.copyUsername(password),
-              onToggleFavorite: () => controller.toggleFavorite(password),
-            ),
-          );
-        }).toList(),
+        children:
+            recentPasswords.map((password) {
+              return Padding(
+                padding: EdgeInsets.only(bottom: 12.h),
+                child: PasswordEntryCard(
+                  entry: password,
+                  onTap:
+                      () => Get.toNamed(
+                        Routes.PASSWORD_DETAIL,
+                        arguments: password,
+                      ),
+                  onCopyPassword: () => controller.copyPassword(password),
+                  onCopyUsername: () => controller.copyUsername(password),
+                  onToggleFavorite: () => controller.toggleFavorite(password),
+                ),
+              );
+            }).toList(),
       );
     });
   }

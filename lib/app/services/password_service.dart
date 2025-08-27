@@ -6,54 +6,60 @@ class PasswordService extends GetxService {
   static const String _lowercase = 'abcdefghijklmnopqrstuvwxyz';
   static const String _uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   static const String _numbers = '0123456789';
-  static const String _symbols = '!@#\$%^&*()_+-=[]{}|;:,.<>?';
+  static const String _symbols = '!@#\$%^&*';
   static const String _ambiguous = '0O1lI';
   static const String _similar = 'il1Lo0O';
 
   /// Generate a password based on configuration
   String generatePassword(PasswordGeneratorConfig config) {
     String charset = '';
-    
+
     if (config.includeLowercase) charset += _lowercase;
     if (config.includeUppercase) charset += _uppercase;
     if (config.includeNumbers) charset += _numbers;
     if (config.includeSymbols) charset += _symbols;
-    
+
     if (config.excludeAmbiguous) {
       for (String char in _ambiguous.split('')) {
         charset = charset.replaceAll(char, '');
       }
     }
-    
+
     if (config.excludeSimilar) {
       for (String char in _similar.split('')) {
         charset = charset.replaceAll(char, '');
       }
     }
-    
+
     if (charset.isEmpty) {
-      throw ArgumentError('No valid characters available for password generation');
+      throw ArgumentError(
+        'No valid characters available for password generation',
+      );
     }
-    
+
     if (config.pronounceable) {
       return _generatePronounceablePassword(config.length);
     }
-    
+
     return _generateRandomPassword(charset, config.length, config);
   }
 
   /// Generate a random password
-  String _generateRandomPassword(String charset, int length, PasswordGeneratorConfig config) {
+  String _generateRandomPassword(
+    String charset,
+    int length,
+    PasswordGeneratorConfig config,
+  ) {
     final random = Random.secure();
     final password = StringBuffer();
-    
+
     // Ensure at least one character from each required set
     final requiredSets = <String>[];
     if (config.includeLowercase) requiredSets.add(_lowercase);
     if (config.includeUppercase) requiredSets.add(_uppercase);
     if (config.includeNumbers) requiredSets.add(_numbers);
     if (config.includeSymbols) requiredSets.add(_symbols);
-    
+
     // Add one character from each required set
     for (final set in requiredSets) {
       if (password.length < length) {
@@ -73,12 +79,12 @@ class PasswordService extends GetxService {
         }
       }
     }
-    
+
     // Fill remaining length with random characters
     while (password.length < length) {
       password.write(charset[random.nextInt(charset.length)]);
     }
-    
+
     // Shuffle the password
     final passwordList = password.toString().split('');
     for (int i = passwordList.length - 1; i > 0; i--) {
@@ -87,7 +93,7 @@ class PasswordService extends GetxService {
       passwordList[i] = passwordList[j];
       passwordList[j] = temp;
     }
-    
+
     return passwordList.join('');
   }
 
@@ -97,9 +103,9 @@ class PasswordService extends GetxService {
     const vowels = 'aeiou';
     final random = Random.secure();
     final password = StringBuffer();
-    
+
     bool useConsonant = random.nextBool();
-    
+
     while (password.length < length) {
       if (useConsonant) {
         password.write(consonants[random.nextInt(consonants.length)]);
@@ -108,13 +114,13 @@ class PasswordService extends GetxService {
       }
       useConsonant = !useConsonant;
     }
-    
+
     // Capitalize randomly
     final result = password.toString();
     if (random.nextBool() && result.isNotEmpty) {
       return result[0].toUpperCase() + result.substring(1);
     }
-    
+
     return result;
   }
 
@@ -128,13 +134,13 @@ class PasswordService extends GetxService {
         suggestions: ['Enter a password'],
       );
     }
-    
+
     int charsetSize = 0;
     bool hasLowercase = false;
     bool hasUppercase = false;
     bool hasNumbers = false;
     bool hasSymbols = false;
-    
+
     for (int i = 0; i < password.length; i++) {
       final char = password[i];
       if (_lowercase.contains(char) && !hasLowercase) {
@@ -151,15 +157,15 @@ class PasswordService extends GetxService {
         hasSymbols = true;
       }
     }
-    
+
     // Calculate entropy
     final entropy = password.length * (log(charsetSize) / log(2));
-    
+
     // Determine score and feedback
     int score;
     String feedback;
     List<String> suggestions = [];
-    
+
     if (entropy < 28) {
       score = 1;
       feedback = 'Very weak';
@@ -179,14 +185,14 @@ class PasswordService extends GetxService {
       score = 5;
       feedback = 'Very strong';
     }
-    
+
     // Add specific suggestions
     if (!hasUppercase) suggestions.add('Add uppercase letters');
     if (!hasLowercase) suggestions.add('Add lowercase letters');
     if (!hasNumbers) suggestions.add('Add numbers');
     if (!hasSymbols) suggestions.add('Add symbols');
     if (password.length < 12) suggestions.add('Use at least 12 characters');
-    
+
     return PasswordStrength(
       score: score,
       entropy: entropy,
@@ -194,7 +200,6 @@ class PasswordService extends GetxService {
       suggestions: suggestions,
     );
   }
-
 
   double log10(num x) {
     if (x == 0) return 0;
