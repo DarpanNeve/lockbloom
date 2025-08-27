@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "81169864705",
+    "project_id": "lock-bloom",
+    "storage_bucket": "lock-bloom.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81169864705:android:6348860206371124a1c800",
+        "android_client_info": {
+          "package_name": "com.dn.lockbloom"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPxfalC3Zu8Mae7v2Lmz1RBuSUyUAQy-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

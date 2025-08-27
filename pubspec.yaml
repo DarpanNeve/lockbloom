@@ -50,6 +50,30 @@ dependencies:
   freezed_annotation: ^3.1.0
   shared_preferences: ^2.5.3
   fluttertoast: ^8.2.6
+  upgrader: ^11.5.0
+  shorebird_code_push: ^2.0.4
+  firebase_core: ^4.0.0
+  firebase_analytics: ^12.0.0
+  firebase_crashlytics: ^5.0.0
+  firebase_performance: ^0.11.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.6
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/icon.png" # Your app icon
+  remove_alpha_ios: true
+  background_color: "#F2E7CB" # background color for the icon
+  adaptive_icon_background: "#F2E7CB" # background color for the adaptive icon
+flutter_native_splash:
+  android: true
+  ios: true
+  color: "#ffffff"
+  image: assets/images/icon.png # splash image (centered)
+  android_12:
+    image: assets/images/icon.png # splash image for Android 12 (centered)
+
 
 dev_dependencies:
   flutter_test:
@@ -72,7 +96,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
+  assets:
+    - assets/
+    - shorebird.yaml
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
