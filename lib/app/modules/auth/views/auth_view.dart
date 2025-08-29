@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/auth_controller.dart';
 import 'package:lockbloom/app/widgets/password_strength_indicator.dart';
+import 'package:lockbloom/app/themes/app_theme.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class AuthView extends GetView<AuthController> {
@@ -17,14 +18,14 @@ class AuthView extends GetView<AuthController> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              Theme.of(context).scaffoldBackgroundColor,
+              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+              Theme.of(context).colorScheme.background,
             ],
           ),
         ),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(24.w),
+            padding: EdgeInsets.all(AppTheme.spacingLg.w),
             child: Obx(() {
               if (!controller.isSetupComplete.value) {
                 return _buildSetupView(context);
@@ -42,7 +43,7 @@ class AuthView extends GetView<AuthController> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          SizedBox(height: 40.h),
+          SizedBox(height: AppTheme.spacingXxl.h),
 
           // Welcome Section
           Column(
@@ -52,22 +53,24 @@ class AuthView extends GetView<AuthController> {
                 size: 80.w,
                 color: Theme.of(context).colorScheme.primary,
               ),
-              SizedBox(height: 24.h),
+              SizedBox(height: AppTheme.spacingLg.h),
               Text(
                 'Welcome to LockBloom',
                 style: Theme.of(context).textTheme.displaySmall,
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: AppTheme.spacingSm.h),
               Text(
                 'Create a secure PIN to protect your passwords',
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
                 textAlign: TextAlign.center,
               ),
             ],
           ),
 
-          SizedBox(height: 32.h), // Replaced Spacer with SizedBox
+          SizedBox(height: AppTheme.spacingXl.h),
           // PIN Setup Form
           Column(
             children: [
@@ -86,7 +89,7 @@ class AuthView extends GetView<AuthController> {
                 },
               ),
 
-              SizedBox(height: 16.h),
+              SizedBox(height: AppTheme.spacingMd.h),
 
               TextField(
                 controller: controller.confirmPinController,
@@ -100,7 +103,7 @@ class AuthView extends GetView<AuthController> {
                 maxLength: 8,
               ),
 
-              SizedBox(height: 32.h),
+              SizedBox(height: AppTheme.spacingXl.h),
 
               // Setup Button
               Obx(
@@ -129,6 +132,7 @@ class AuthView extends GetView<AuthController> {
                               width: 20.w,
                               child: const CircularProgressIndicator(
                                 strokeWidth: 2,
+                                color: Colors.white,
                               ),
                             )
                             : const Text('Setup PIN'),
@@ -138,13 +142,13 @@ class AuthView extends GetView<AuthController> {
             ],
           ),
 
-          SizedBox(height: 32.h), // Replaced Spacer with SizedBox
+          SizedBox(height: AppTheme.spacingXl.h),
           // Security Note
           Container(
-            padding: EdgeInsets.all(16.w),
+            padding: EdgeInsets.all(AppTheme.spacingMd.w),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(12.r),
+              borderRadius: BorderRadius.circular(AppTheme.radiusMd),
             ),
             child: Column(
               children: [
@@ -153,7 +157,7 @@ class AuthView extends GetView<AuthController> {
                   color: Theme.of(context).colorScheme.primary,
                   size: 32.w,
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: AppTheme.spacingSm.h),
                 Text(
                   'Your PIN is encrypted and stored securely on your device. We cannot recover it if you forget it.',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -164,7 +168,7 @@ class AuthView extends GetView<AuthController> {
               ],
             ),
           ),
-          SizedBox(height: 40.h), // Added some bottom padding
+          SizedBox(height: AppTheme.spacingXxl.h),
         ],
       ),
     );
@@ -174,6 +178,8 @@ class AuthView extends GetView<AuthController> {
     return SingleChildScrollView(
       child: Column(
         children: [
+          SizedBox(height: AppTheme.spacingXxl.h),
+          
           // App Logo and Name
           Column(
             children: [
@@ -182,7 +188,7 @@ class AuthView extends GetView<AuthController> {
                 height: 100.w,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(20.r),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusXl),
                 ),
                 child: Icon(
                   Icons.lock_rounded,
@@ -190,19 +196,23 @@ class AuthView extends GetView<AuthController> {
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),
-              SizedBox(height: 24.h),
+              SizedBox(height: AppTheme.spacingLg.h),
               Text(
                 'LockBloom',
                 style: Theme.of(context).textTheme.displaySmall,
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: AppTheme.spacingSm.h),
               Text(
                 'Enter your PIN to continue',
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
-          SizedBox(height: 32.h), // Replaced Spacer with SizedBox
+          
+          SizedBox(height: AppTheme.spacingXl.h),
+          
           // PIN Input
           Column(
             children: [
@@ -218,7 +228,7 @@ class AuthView extends GetView<AuthController> {
                 onSubmitted: (value) => controller.authenticateWithPin(value),
               ),
 
-              SizedBox(height: 250.h),
+              SizedBox(height: AppTheme.spacingXxl.h * 2),
 
               // Login Button
               Obx(
@@ -238,6 +248,7 @@ class AuthView extends GetView<AuthController> {
                               width: 20.w,
                               child: const CircularProgressIndicator(
                                 strokeWidth: 2,
+                                color: Colors.white,
                               ),
                             )
                             : const Text('Unlock'),
@@ -251,7 +262,7 @@ class AuthView extends GetView<AuthController> {
                     controller.isBiometricEnabled.value) {
                   return Column(
                     children: [
-                      SizedBox(height: 16.h),
+                      SizedBox(height: AppTheme.spacingMd.h),
                       OutlinedButton.icon(
                         onPressed: controller.authenticateWithBiometric,
                         icon: const Icon(Icons.fingerprint),
@@ -264,7 +275,7 @@ class AuthView extends GetView<AuthController> {
               }),
             ],
           ),
-          SizedBox(height: 32.h), // Replaced Spacer with SizedBox
+          SizedBox(height: AppTheme.spacingXl.h),
         ],
       ),
     );

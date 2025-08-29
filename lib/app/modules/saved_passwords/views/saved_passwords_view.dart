@@ -5,6 +5,7 @@ import 'package:lockbloom/app/controllers/password_controller.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/routes/app_pages.dart';
 import 'package:lockbloom/app/widgets/password_entry_card.dart';
+import 'package:lockbloom/app/themes/app_theme.dart';
 
 class SavedPasswordsView extends GetView<PasswordController> {
   const SavedPasswordsView({super.key});
@@ -25,7 +26,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
         children: [
           // Search Bar
           Padding(
-            padding: EdgeInsets.all(16.w),
+           padding: EdgeInsets.all(AppTheme.spacingMd.w),
             child: TextField(
               onChanged: controller.searchPasswords,
               decoration: InputDecoration(
@@ -55,14 +56,14 @@ class SavedPasswordsView extends GetView<PasswordController> {
             if (controller.selectedTags.isNotEmpty) {
               return Container(
                 height: 40.h,
-                margin: EdgeInsets.symmetric(horizontal: 16.w),
+                margin: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: controller.selectedTags.length,
                   itemBuilder: (context, index) {
                     final tag = controller.selectedTags[index];
                     return Container(
-                      margin: EdgeInsets.only(right: 8.w),
+                      margin: EdgeInsets.only(right: AppTheme.spacingSm.w),
                       child: Chip(
                         label: Text(tag),
                         onDeleted: () {
@@ -94,7 +95,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
               }
 
               return ListView.builder(
-                padding: EdgeInsets.all(16.w),
+                padding: EdgeInsets.all(AppTheme.spacingMd.w),
                 itemCount: controller.filteredPasswords.length,
                 itemBuilder: (context, index) {
                   final password = controller.filteredPasswords[index];
@@ -102,7 +103,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
                     'SavedPasswordsView: Building item for password: ${password.label}',
                   ); // Added log
                   return Padding(
-                    padding: EdgeInsets.only(bottom: 12.h),
+                    padding: EdgeInsets.only(bottom: AppTheme.spacingMd.h),
                     child: PasswordEntryCard(
                       entry: password,
                       onTap:
@@ -133,22 +134,22 @@ class SavedPasswordsView extends GetView<PasswordController> {
           Icon(
             Icons.lock_outline_rounded,
             size: 80.w,
-            color: Theme.of(context).colorScheme.outline,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
-          SizedBox(height: 24.h),
+          SizedBox(height: AppTheme.spacingLg.h),
           Text(
             'No passwords found',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppTheme.spacingSm.h),
           Text(
             'Start by adding your first password',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.outline,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 24.h),
+          SizedBox(height: AppTheme.spacingLg.h),
           ElevatedButton.icon(
             onPressed: _showAddPasswordSheet,
             icon: const Icon(Icons.add_rounded),
@@ -163,10 +164,10 @@ class SavedPasswordsView extends GetView<PasswordController> {
     Get.bottomSheet(
       Container(
         height: Get.height * 0.8,
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(AppTheme.spacingMd.w),
         decoration: BoxDecoration(
-          color: Get.theme.scaffoldBackgroundColor,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+          color: Theme.of(Get.context!).colorScheme.surface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppTheme.spacingMd)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,7 +176,10 @@ class SavedPasswordsView extends GetView<PasswordController> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Add Password', style: Get.textTheme.headlineSmall),
+                Text(
+                  'Add Password', 
+                  style: Theme.of(Get.context!).textTheme.headlineSmall,
+                ),
                 IconButton(
                   onPressed: () => Get.back(),
                   icon: const Icon(Icons.close_rounded),
@@ -183,7 +187,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
               ],
             ),
 
-            SizedBox(height: 24.h),
+            SizedBox(height: AppTheme.spacingLg.h),
 
             // Form
             Expanded(
@@ -199,7 +203,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
                       ),
                     ),
 
-                    SizedBox(height: 16.h),
+                    SizedBox(height: AppTheme.spacingMd.h),
 
                     TextField(
                       controller: controller.usernameController,
@@ -209,7 +213,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
                       ),
                     ),
 
-                    SizedBox(height: 16.h),
+                    SizedBox(height: AppTheme.spacingMd.h),
 
                     Obx(
                       () => TextField(
@@ -244,7 +248,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
                       ),
                     ),
 
-                    SizedBox(height: 16.h),
+                    SizedBox(height: AppTheme.spacingMd.h),
 
                     TextField(
                       controller: controller.websiteController,
@@ -255,7 +259,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
                       ),
                     ),
 
-                    SizedBox(height: 16.h),
+                    SizedBox(height: AppTheme.spacingMd.h),
 
                     TextField(
                       controller: controller.tagsController,
@@ -266,7 +270,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
                       ),
                     ),
 
-                    SizedBox(height: 16.h),
+                    SizedBox(height: AppTheme.spacingMd.h),
 
                     TextField(
                       controller: controller.notesController,
@@ -282,7 +286,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
             ),
 
             // Save Button
-            SizedBox(height: 16.h),
+            SizedBox(height: AppTheme.spacingMd.h),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -321,10 +325,10 @@ class SavedPasswordsView extends GetView<PasswordController> {
     Get.bottomSheet(
       Container(
         height: Get.height * 0.6,
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(AppTheme.spacingMd.w),
         decoration: BoxDecoration(
-          color: Get.theme.scaffoldBackgroundColor,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+          color: Theme.of(Get.context!).colorScheme.surface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppTheme.spacingMd)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,7 +337,10 @@ class SavedPasswordsView extends GetView<PasswordController> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Filter by Tags', style: Get.textTheme.headlineSmall),
+                Text(
+                  'Filter by Tags', 
+                  style: Theme.of(Get.context!).textTheme.headlineSmall,
+                ),
                 TextButton(
                   onPressed: () {
                     controller.filterByTags([]);
@@ -344,15 +351,15 @@ class SavedPasswordsView extends GetView<PasswordController> {
               ],
             ),
 
-            SizedBox(height: 16.h),
+            SizedBox(height: AppTheme.spacingMd.h),
 
             if (allTags.isEmpty)
               const Expanded(child: Center(child: Text('No tags available')))
             else
               Expanded(
                 child: Wrap(
-                  spacing: 8.w,
-                  runSpacing: 8.h,
+                  spacing: AppTheme.spacingSm.w,
+                  runSpacing: AppTheme.spacingSm.h,
                   children:
                       allTags.map((tag) {
                         return Obx(() {
@@ -380,7 +387,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
               ),
 
             // Apply Button
-            SizedBox(height: 16.h),
+            SizedBox(height: AppTheme.spacingMd.h),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

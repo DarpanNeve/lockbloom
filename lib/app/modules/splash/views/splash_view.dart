@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/modules/splash/controllers/splash_controller.dart';
+import 'package:lockbloom/app/themes/app_theme.dart';
 
 class SplashView extends GetView<SplashController> {
   const SplashView({super.key});
@@ -18,7 +19,7 @@ class SplashView extends GetView<SplashController> {
             end: Alignment.bottomRight,
             colors: [
               Theme.of(context).colorScheme.primary,
-              Theme.of(context).colorScheme.primary.withOpacity(0.8),
+              Theme.of(context).colorScheme.primaryContainer,
             ],
           ),
         ),
@@ -34,13 +35,13 @@ class SplashView extends GetView<SplashController> {
                       width: 120.w,
                       height: 120.w,
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(24.r),
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(AppTheme.radiusXxl),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
-                            blurRadius: 20.r,
-                            offset: Offset(0, 8.h),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
                           ),
                         ],
                       ),
@@ -51,24 +52,24 @@ class SplashView extends GetView<SplashController> {
                       ),
                     ),
                     
-                    SizedBox(height: 32.h),
+                    SizedBox(height: AppTheme.spacingXl.h),
                     
                     // App Name
                     Text(
                       'LockBloom',
                       style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onPrimary,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     
-                    SizedBox(height: 8.h),
+                    SizedBox(height: AppTheme.spacingSm.h),
                     
                     // Tagline
                     Text(
                       'Secure Password Manager',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
                       ),
                     ),
                   ],
@@ -83,22 +84,24 @@ class SplashView extends GetView<SplashController> {
                           width: 32.w,
                           height: 32.w,
                           child: const CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).colorScheme.onPrimary,
+                            ),
                             strokeWidth: 3,
                           ),
                         ),
-                        SizedBox(height: 16.h),
+                        SizedBox(height: AppTheme.spacingMd.h),
                         Text(
                           'Initializing...',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.8),
                           ),
                         ),
                       ],
                     )
                   : const SizedBox.shrink()),
               
-              SizedBox(height: 48.h),
+              SizedBox(height: AppTheme.spacingXxl.h),
             ],
           ),
         ),

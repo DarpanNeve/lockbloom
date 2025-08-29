@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/auth_controller.dart';
 import 'package:lockbloom/app/controllers/settings_controller.dart';
+import 'package:lockbloom/app/themes/app_theme.dart';
 
 class SettingsView extends GetView<SettingsController> {
   const SettingsView({super.key});
@@ -12,7 +13,7 @@ class SettingsView extends GetView<SettingsController> {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(AppTheme.spacingMd.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -43,7 +44,10 @@ class SettingsView extends GetView<SettingsController> {
                   );
                 }),
               ),
-              const Divider(height: 1),
+              Divider(
+                height: 1,
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              ),
               Obx(
                 () => _buildSettingsTile(
                   icon: Icons.timer,
@@ -54,7 +58,10 @@ class SettingsView extends GetView<SettingsController> {
                   onTap: controller.showAutoLockDialog,
                 ),
               ),
-              const Divider(height: 1),
+              Divider(
+                height: 1,
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              ),
               _buildSettingsTile(
                 icon: Icons.vpn_key,
                 title: 'Change PIN',
@@ -63,7 +70,7 @@ class SettingsView extends GetView<SettingsController> {
               ),
             ]),
 
-            SizedBox(height: 24.h),
+            SizedBox(height: AppTheme.spacingLg.h),
 
             // Privacy Section
             _buildSectionHeader(context, 'Privacy'),
@@ -78,7 +85,10 @@ class SettingsView extends GetView<SettingsController> {
                   onTap: controller.showClipboardDialog,
                 ),
               ),
-              const Divider(height: 1),
+              Divider(
+                height: 1,
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              ),
               _buildSettingsTile(
                 icon: Icons.history,
                 title: 'Password History',
@@ -92,7 +102,7 @@ class SettingsView extends GetView<SettingsController> {
               ),
             ]),
 
-            SizedBox(height: 24.h),
+            SizedBox(height: AppTheme.spacingLg.h),
 
             // Appearance Section
             _buildSectionHeader(context, 'Appearance'),
@@ -105,7 +115,7 @@ class SettingsView extends GetView<SettingsController> {
               ),
             ]),
 
-            SizedBox(height: 24.h),
+            SizedBox(height: AppTheme.spacingLg.h),
 
             // Data Section
             _buildSectionHeader(context, 'Data'),
@@ -116,7 +126,10 @@ class SettingsView extends GetView<SettingsController> {
                 subtitle: 'Create encrypted backup',
                 onTap: controller.showExportDialog,
               ),
-              const Divider(height: 1),
+              Divider(
+                height: 1,
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              ),
               _buildSettingsTile(
                 icon: Icons.upload,
                 title: 'Import Passwords',
@@ -125,7 +138,7 @@ class SettingsView extends GetView<SettingsController> {
               ),
             ]),
 
-            SizedBox(height: 24.h),
+            SizedBox(height: AppTheme.spacingLg.h),
 
             // About Section
             _buildSectionHeader(context, 'About'),
@@ -135,7 +148,10 @@ class SettingsView extends GetView<SettingsController> {
                 title: 'Version',
                 subtitle: '1.0.0',
               ),
-              const Divider(height: 1),
+              Divider(
+                height: 1,
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              ),
               _buildSettingsTile(
                 icon: Icons.security,
                 title: 'Privacy Policy',
@@ -144,7 +160,10 @@ class SettingsView extends GetView<SettingsController> {
                   // Show privacy policy
                 },
               ),
-              const Divider(height: 1),
+              Divider(
+                height: 1,
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              ),
               _buildSettingsTile(
                 icon: Icons.description,
                 title: 'Terms of Service',
@@ -155,7 +174,7 @@ class SettingsView extends GetView<SettingsController> {
               ),
             ]),
 
-            SizedBox(height: 32.h),
+            SizedBox(height: AppTheme.spacingXl.h),
 
             // Danger Zone
             _buildSectionHeader(context, 'Danger Zone', isError: true),
@@ -169,7 +188,7 @@ class SettingsView extends GetView<SettingsController> {
               ),
             ]),
 
-            SizedBox(height: 32.h),
+            SizedBox(height: AppTheme.spacingXl.h),
 
             // Logout Button
             SizedBox(
@@ -179,12 +198,12 @@ class SettingsView extends GetView<SettingsController> {
                 icon: const Icon(Icons.logout),
                 label: const Text('Logout'),
                 style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                  padding: EdgeInsets.symmetric(vertical: AppTheme.spacingMd.h),
                 ),
               ),
             ),
 
-            SizedBox(height: 32.h),
+            SizedBox(height: AppTheme.spacingXl.h),
           ],
         ),
       ),
@@ -197,7 +216,7 @@ class SettingsView extends GetView<SettingsController> {
     bool isError = false,
   }) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 12.h),
+      padding: EdgeInsets.only(bottom: AppTheme.spacingMd.h),
       child: Text(
         title,
         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -209,7 +228,10 @@ class SettingsView extends GetView<SettingsController> {
   }
 
   Widget _buildSettingsCard(BuildContext context, List<Widget> children) {
-    return Card(child: Column(children: children));
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Column(children: children),
+    );
   }
 
   Widget _buildSettingsTile({
@@ -222,13 +244,13 @@ class SettingsView extends GetView<SettingsController> {
   }) {
     return ListTile(
       leading: Container(
-        padding: EdgeInsets.all(8.w),
+        padding: EdgeInsets.all(AppTheme.spacingSm.w),
         decoration: BoxDecoration(
           color:
               isDestructive
-                  ? Get.theme.colorScheme.errorContainer
+                  ? Get.theme.colorScheme.errorContainer.withOpacity(0.8)
                   : Get.theme.colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(8.r),
+          borderRadius: BorderRadius.circular(AppTheme.radiusSm),
         ),
         child: Icon(
           icon,
@@ -241,12 +263,17 @@ class SettingsView extends GetView<SettingsController> {
       ),
       title: Text(
         title,
-        style: Get.textTheme.bodyLarge?.copyWith(
+        style: Get.textTheme.labelLarge?.copyWith(
           fontWeight: FontWeight.w500,
           color: isDestructive ? Get.theme.colorScheme.error : null,
         ),
       ),
-      subtitle: Text(subtitle, style: Get.textTheme.bodySmall),
+      subtitle: Text(
+        subtitle, 
+        style: Get.textTheme.bodySmall?.copyWith(
+          color: Get.theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
       trailing:
           trailing ?? (onTap != null ? const Icon(Icons.chevron_right) : null),
       onTap: onTap,

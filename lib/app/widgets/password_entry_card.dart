@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
+import 'package:lockbloom/app/themes/app_theme.dart';
 
 class PasswordEntryCard extends StatelessWidget {
   final PasswordEntry entry;
@@ -22,11 +23,12 @@ class PasswordEntryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     print('PasswordEntryCard: Building card for label: ${entry.label}'); // Added log
     return Card(
+      margin: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         child: Padding(
-          padding: EdgeInsets.all(16.w),
+          padding: EdgeInsets.all(AppTheme.spacingMd.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -39,7 +41,7 @@ class PasswordEntryCard extends StatelessWidget {
                     height: 40.w,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(8.r),
+                      borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                     ),
                     child: Icon(
                       _getEntryIcon(),
@@ -48,7 +50,7 @@ class PasswordEntryCard extends StatelessWidget {
                     ),
                   ),
                   
-                  SizedBox(width: 12.w),
+                  SizedBox(width: AppTheme.spacingMd.w),
                   
                   // Title and Website
                   Expanded(
@@ -57,14 +59,12 @@ class PasswordEntryCard extends StatelessWidget {
                       children: [
                         Text(
                           entry.label,
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontSize: 16.sp,
-                          ),
+                          style: Theme.of(context).textTheme.headlineSmall,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         if (entry.website?.isNotEmpty == true) ...[
-                          SizedBox(height: 2.h),
+                          SizedBox(height: AppTheme.spacingXs.h),
                           Text(
                             entry.website!,
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -84,14 +84,14 @@ class PasswordEntryCard extends StatelessWidget {
                       onPressed: onToggleFavorite,
                       icon: Icon(
                         entry.isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: entry.isFavorite ? Colors.red : null,
+                        color: entry.isFavorite ? AppTheme.errorColor : Theme.of(context).colorScheme.outline,
                       ),
                       iconSize: 20.w,
                     ),
                 ],
               ),
               
-              SizedBox(height: 12.h),
+              SizedBox(height: AppTheme.spacingMd.h),
               
               // Username
               Row(
@@ -101,11 +101,13 @@ class PasswordEntryCard extends StatelessWidget {
                     size: 16.w,
                     color: Theme.of(context).colorScheme.outline,
                   ),
-                  SizedBox(width: 8.w),
+                  SizedBox(width: AppTheme.spacingSm.w),
                   Expanded(
                     child: Text(
                       entry.username.isNotEmpty ? entry.username : 'No username',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -113,34 +115,33 @@ class PasswordEntryCard extends StatelessWidget {
                 ],
               ),
               
-              SizedBox(height: 12.h),
+              SizedBox(height: AppTheme.spacingMd.h),
               
               // Tags
               if (entry.tags.isNotEmpty) ...[
                 Wrap(
-                  spacing: 6.w,
-                  runSpacing: 4.h,
+                  spacing: AppTheme.spacingSm.w,
+                  runSpacing: AppTheme.spacingXs.h,
                   children: entry.tags.take(3).map((tag) {
                     return Container(
                       padding: EdgeInsets.symmetric(
-                        horizontal: 8.w,
-                        vertical: 2.h,
+                        horizontal: AppTheme.spacingSm.w,
+                        vertical: AppTheme.spacingXs.h,
                       ),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.secondaryContainer,
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                       ),
                       child: Text(
                         tag,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: Theme.of(context).colorScheme.onSecondaryContainer,
-                          fontSize: 10.sp,
                         ),
                       ),
                     );
                   }).toList(),
                 ),
-                SizedBox(height: 12.h),
+                SizedBox(height: AppTheme.spacingMd.h),
               ],
               
               // Action Buttons
@@ -184,11 +185,11 @@ class PasswordEntryCard extends StatelessWidget {
   }) {
     return InkWell(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(8.r),
+      borderRadius: BorderRadius.circular(AppTheme.radiusSm),
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: 12.w,
-          vertical: 8.h,
+          horizontal: AppTheme.spacingMd.w,
+          vertical: AppTheme.spacingSm.h,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -198,11 +199,10 @@ class PasswordEntryCard extends StatelessWidget {
               size: 18.w,
               color: Theme.of(context).colorScheme.primary,
             ),
-            SizedBox(height: 4.h),
+            SizedBox(height: AppTheme.spacingXs.h),
             Text(
               label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontSize: 10.sp,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),

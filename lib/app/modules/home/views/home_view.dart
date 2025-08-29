@@ -9,6 +9,7 @@ import 'package:lockbloom/app/widgets/password_strength_indicator.dart';
 import 'package:lockbloom/app/widgets/recent_passwords_list.dart';
 import 'package:lockbloom/app/modules/saved_passwords/views/saved_passwords_view.dart';
 import 'package:lockbloom/app/modules/settings/views/settings_view.dart';
+import 'package:lockbloom/app/themes/app_theme.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -20,29 +21,29 @@ class HomeView extends GetView<HomeController> {
         appBar: AppBar(title: const Text('LockBloom'), centerTitle: true),
         body: SingleChildScrollView(
           // The original HomeView content
-          padding: EdgeInsets.all(16.w),
+          padding: EdgeInsets.all(AppTheme.spacingMd.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Welcome Section
               _buildWelcomeSection(context),
 
-              SizedBox(height: 32.h),
+              SizedBox(height: AppTheme.spacingXl.h),
 
               // Password Generator Card
               const PasswordGeneratorCard(),
 
-              SizedBox(height: 32.h),
+              SizedBox(height: AppTheme.spacingXl.h),
 
               // Quick Actions
               _buildQuickActions(context),
 
-              SizedBox(height: 32.h),
+              SizedBox(height: AppTheme.spacingXl.h),
 
               // Recent Passwords
               _buildRecentPasswordsSection(context),
 
-              SizedBox(height: 32.h),
+              SizedBox(height: AppTheme.spacingXl.h),
 
               // Statistics
               _buildStatisticsSection(context),
@@ -68,29 +69,31 @@ class HomeView extends GetView<HomeController> {
   Widget _buildWelcomeSection(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(20.w),
+      padding: EdgeInsets.all(AppTheme.spacingLg.w),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Theme.of(context).colorScheme.primary.withOpacity(0.1),
-            Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+            Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5),
+            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.3),
           ],
         ),
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(AppTheme.spacingMd),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Welcome back!',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w600),
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: AppTheme.spacingSm.h),
           Text(
             'Generate secure passwords and manage your credentials safely.',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8),
+            ),
           ),
         ],
       ),
@@ -102,7 +105,7 @@ class HomeView extends GetView<HomeController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Quick Actions', style: Theme.of(context).textTheme.headlineSmall),
-        SizedBox(height: 16.h),
+        SizedBox(height: AppTheme.spacingMd.h),
         Row(
           children: [
             Expanded(
@@ -114,7 +117,7 @@ class HomeView extends GetView<HomeController> {
                 onTap: () => _showAddPasswordDialog(context),
               ),
             ),
-            SizedBox(width: 12.w),
+            SizedBox(width: AppTheme.spacingMd.w),
             Expanded(
               child: _buildActionCard(
                 context,
@@ -138,19 +141,20 @@ class HomeView extends GetView<HomeController> {
     required VoidCallback onTap,
   }) {
     return Card(
+      margin: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         child: Padding(
-          padding: EdgeInsets.all(16.w),
+          padding: EdgeInsets.all(AppTheme.spacingMd.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+              SizedBox(height: AppTheme.spacingMd.h),
               Container(
-                padding: EdgeInsets.all(8.w),
+                padding: EdgeInsets.all(AppTheme.spacingSm.w),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(8.r),
+              SizedBox(height: AppTheme.spacingMd.h),
                 ),
                 child: Icon(
                   icon,
@@ -158,15 +162,18 @@ class HomeView extends GetView<HomeController> {
                   size: 24.w,
                 ),
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: AppTheme.spacingMd.h),
               Text(
                 title,
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineSmall?.copyWith(fontSize: 14.sp),
+                style: Theme.of(context).textTheme.labelLarge,
               ),
-              SizedBox(height: 4.h),
-              Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
+              SizedBox(height: AppTheme.spacingXs.h),
+              Text(
+                subtitle, 
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
             ],
           ),
         ),
@@ -191,7 +198,7 @@ class HomeView extends GetView<HomeController> {
             ),
           ],
         ),
-        SizedBox(height: 16.h),
+        SizedBox(height: AppTheme.spacingMd.h),
         const RecentPasswordsList(),
       ],
     );
@@ -216,7 +223,7 @@ class HomeView extends GetView<HomeController> {
               'Statistics',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: AppTheme.spacingMd.h),
             Row(
               children: [
                 Expanded(
@@ -227,7 +234,7 @@ class HomeView extends GetView<HomeController> {
                     icon: Icons.lock_rounded,
                   ),
                 ),
-                SizedBox(width: 12.w),
+                SizedBox(width: AppTheme.spacingMd.w),
                 Expanded(
                   child: _buildStatCard(
                     context,
@@ -251,8 +258,9 @@ class HomeView extends GetView<HomeController> {
     required IconData icon,
   }) {
     return Card(
+      margin: EdgeInsets.zero,
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(AppTheme.spacingMd.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -266,15 +274,17 @@ class HomeView extends GetView<HomeController> {
                 ),
                 Text(
                   value,
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(context).textTheme.headlineLarge,
                 ),
               ],
             ),
-            SizedBox(height: 8.h),
-            Text(title, style: Theme.of(context).textTheme.bodySmall),
+            SizedBox(height: AppTheme.spacingSm.h),
+            Text(
+              title, 
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
           ],
         ),
       ),

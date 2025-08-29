@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/password_controller.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/widgets/password_strength_indicator.dart';
+import 'package:lockbloom/app/themes/app_theme.dart';
 
 class PasswordGeneratorCard extends GetView<PasswordController> {
   const PasswordGeneratorCard({super.key});
@@ -11,8 +12,9 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      margin: EdgeInsets.zero,
       child: Padding(
-        padding: EdgeInsets.all(20.w),
+        padding: EdgeInsets.all(AppTheme.spacingLg.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -20,10 +22,10 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
             Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(8.w),
+                  padding: EdgeInsets.all(AppTheme.spacingSm.w),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(8.r),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                   ),
                   child: Icon(
                     Icons.auto_awesome,
@@ -31,7 +33,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                     size: 20.w,
                   ),
                 ),
-                SizedBox(width: 12.w),
+                SizedBox(width: AppTheme.spacingMd.w),
                 Text(
                   'Password Generator',
                   style: Theme.of(context).textTheme.headlineSmall,
@@ -39,17 +41,17 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
               ],
             ),
             
-            SizedBox(height: 20.h),
+            SizedBox(height: AppTheme.spacingLg.h),
             
             // Generated Password Display
             Container(
               width: double.infinity,
-              padding: EdgeInsets.all(16.w),
+              padding: EdgeInsets.all(AppTheme.spacingMd.w),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceVariant,
-                borderRadius: BorderRadius.circular(12.r),
+                borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                  color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
                 ),
               ),
               child: Column(
@@ -60,10 +62,11 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontFamily: 'monospace',
                       fontWeight: FontWeight.w500,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   )),
                   
-                  SizedBox(height: 12.h),
+                  SizedBox(height: AppTheme.spacingMd.h),
                   
                   // Password Strength Indicator
                   Obx(() => PasswordStrengthIndicator(
@@ -73,7 +76,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
               ),
             ),
             
-            SizedBox(height: 16.h),
+            SizedBox(height: AppTheme.spacingMd.h),
             
             // Action Buttons
             Row(
@@ -85,7 +88,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                     label: const Text('Generate'),
                   ),
                 ),
-                SizedBox(width: 12.w),
+                SizedBox(width: AppTheme.spacingMd.w),
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () async {
@@ -107,7 +110,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
               ],
             ),
             
-            SizedBox(height: 20.h),
+            SizedBox(height: AppTheme.spacingLg.h),
             
             // Generator Options
             _buildGeneratorOptions(context),
@@ -122,23 +125,38 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
       title: const Text('Generator Options'),
       leading: const Icon(Icons.tune),
       initiallyExpanded: false,
+      tilePadding: EdgeInsets.zero,
+      childrenPadding: EdgeInsets.symmetric(vertical: AppTheme.spacingSm.h),
       children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-          child: Column(
-            children: [
-              // Length Slider
-              Obx(() => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Length'),
-                      Text('${controller.generatorConfig.value.length}'),
-                    ],
+        Column(
+          children: [
+            // Length Slider
+            Obx(() => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Length',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    Text(
+                      '${controller.generatorConfig.value.length}',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    activeTrackColor: Theme.of(context).colorScheme.primary,
+                    inactiveTrackColor: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                    thumbColor: Theme.of(context).colorScheme.primary,
+                    overlayColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                   ),
-                  Slider(
+                  child: Slider(
                     value: controller.generatorConfig.value.length.toDouble(),
                     min: 8,
                     max: 64,
@@ -151,103 +169,115 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                       );
                     },
                   ),
-                ],
-              )),
-              
-              SizedBox(height: 16.h),
-              
-              // Character Type Options
-              Obx(() => Column(
-                children: [
-                  _buildOptionRow(
-                    'Include Uppercase (A-Z)',
-                    controller.generatorConfig.value.includeUppercase,
-                    (value) => controller.updateGeneratorConfig(
-                      controller.generatorConfig.value.copyWith(
-                        includeUppercase: value,
-                      ),
+                ),
+              ],
+            )),
+            
+            SizedBox(height: AppTheme.spacingMd.h),
+            
+            // Character Type Options
+            Obx(() => Column(
+              children: [
+                _buildOptionRow(
+                  context,
+                  'Include Uppercase (A-Z)',
+                  controller.generatorConfig.value.includeUppercase,
+                  (value) => controller.updateGeneratorConfig(
+                    controller.generatorConfig.value.copyWith(
+                      includeUppercase: value,
                     ),
                   ),
-                  _buildOptionRow(
-                    'Include Lowercase (a-z)',
-                    controller.generatorConfig.value.includeLowercase,
-                    (value) => controller.updateGeneratorConfig(
-                      controller.generatorConfig.value.copyWith(
-                        includeLowercase: value,
-                      ),
+                ),
+                _buildOptionRow(
+                  context,
+                  'Include Lowercase (a-z)',
+                  controller.generatorConfig.value.includeLowercase,
+                  (value) => controller.updateGeneratorConfig(
+                    controller.generatorConfig.value.copyWith(
+                      includeLowercase: value,
                     ),
                   ),
-                  _buildOptionRow(
-                    'Include Numbers (0-9)',
-                    controller.generatorConfig.value.includeNumbers,
-                    (value) => controller.updateGeneratorConfig(
-                      controller.generatorConfig.value.copyWith(
-                        includeNumbers: value,
-                      ),
+                ),
+                _buildOptionRow(
+                  context,
+                  'Include Numbers (0-9)',
+                  controller.generatorConfig.value.includeNumbers,
+                  (value) => controller.updateGeneratorConfig(
+                    controller.generatorConfig.value.copyWith(
+                      includeNumbers: value,
                     ),
                   ),
-                  _buildOptionRow(
-                    'Include Symbols (!@#\$%)',
-                    controller.generatorConfig.value.includeSymbols,
-                    (value) => controller.updateGeneratorConfig(
-                      controller.generatorConfig.value.copyWith(
-                        includeSymbols: value,
-                      ),
+                ),
+                _buildOptionRow(
+                  context,
+                  'Include Symbols (!@#\$%)',
+                  controller.generatorConfig.value.includeSymbols,
+                  (value) => controller.updateGeneratorConfig(
+                    controller.generatorConfig.value.copyWith(
+                      includeSymbols: value,
                     ),
                   ),
-                ],
-              )),
-              
-              SizedBox(height: 16.h),
-              
-              // Advanced Options
-              Obx(() => Column(
-                children: [
-                  _buildOptionRow(
-                    'Exclude Ambiguous (0, O, l, 1)',
-                    controller.generatorConfig.value.excludeAmbiguous,
-                    (value) => controller.updateGeneratorConfig(
-                      controller.generatorConfig.value.copyWith(
-                        excludeAmbiguous: value,
-                      ),
+                ),
+              ],
+            )),
+            
+            SizedBox(height: AppTheme.spacingMd.h),
+            
+            // Advanced Options
+            Obx(() => Column(
+              children: [
+                _buildOptionRow(
+                  context,
+                  'Exclude Ambiguous (0, O, l, 1)',
+                  controller.generatorConfig.value.excludeAmbiguous,
+                  (value) => controller.updateGeneratorConfig(
+                    controller.generatorConfig.value.copyWith(
+                      excludeAmbiguous: value,
                     ),
                   ),
-                  _buildOptionRow(
-                    'Exclude Similar Characters',
-                    controller.generatorConfig.value.excludeSimilar,
-                    (value) => controller.updateGeneratorConfig(
-                      controller.generatorConfig.value.copyWith(
-                        excludeSimilar: value,
-                      ),
+                ),
+                _buildOptionRow(
+                  context,
+                  'Exclude Similar Characters',
+                  controller.generatorConfig.value.excludeSimilar,
+                  (value) => controller.updateGeneratorConfig(
+                    controller.generatorConfig.value.copyWith(
+                      excludeSimilar: value,
                     ),
                   ),
-                  _buildOptionRow(
-                    'Pronounceable Password',
-                    controller.generatorConfig.value.pronounceable,
-                    (value) => controller.updateGeneratorConfig(
-                      controller.generatorConfig.value.copyWith(
-                        pronounceable: value,
-                      ),
+                ),
+                _buildOptionRow(
+                  context,
+                  'Pronounceable Password',
+                  controller.generatorConfig.value.pronounceable,
+                  (value) => controller.updateGeneratorConfig(
+                    controller.generatorConfig.value.copyWith(
+                      pronounceable: value,
                     ),
                   ),
-                ],
-              )),
-            ],
-          ),
+                ),
+              ],
+            )),
+          ],
         ),
       ],
     );
   }
 
-  Widget _buildOptionRow(String title, bool value, ValueChanged<bool> onChanged) {
+  Widget _buildOptionRow(
+    BuildContext context,
+    String title, 
+    bool value, 
+    ValueChanged<bool> onChanged,
+  ) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.h),
+      padding: EdgeInsets.symmetric(vertical: AppTheme.spacingXs.h),
       child: Row(
         children: [
           Expanded(
             child: Text(
               title,
-              style: Get.textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
           Switch(

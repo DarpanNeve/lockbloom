@@ -6,6 +6,7 @@ import 'package:lockbloom/app/controllers/password_controller.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/services/biometric_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:lockbloom/app/themes/app_theme.dart';
 
 class PasswordDetailView extends StatefulWidget {
   const PasswordDetailView({super.key});
@@ -63,7 +64,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(AppTheme.spacingMd.w),
         child: isEditing ? _buildEditForm(context) : _buildDetailView(context),
       ),
     );
@@ -75,8 +76,9 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
       children: [
         // Header Card with Favorite
         Card(
+          margin: EdgeInsets.zero,
           child: Padding(
-            padding: EdgeInsets.all(20.w),
+            padding: EdgeInsets.all(AppTheme.spacingLg.w),
             child: Row(
               children: [
                 // Icon or Avatar
@@ -85,7 +87,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                   height: 60.w,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                   ),
                   child: Icon(
                     _getEntryIcon(),
@@ -94,7 +96,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                   ),
                 ),
                 
-                SizedBox(width: 16.w),
+                SizedBox(width: AppTheme.spacingMd.w),
                 
                 // Title and Website
                 Expanded(
@@ -106,7 +108,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       if (entry.website?.isNotEmpty == true) ...[
-                        SizedBox(height: 4.h),
+                        SizedBox(height: AppTheme.spacingXs.h),
                         Text(
                           entry.website!,
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -128,7 +130,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                   },
                   icon: Icon(
                     entry.isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: entry.isFavorite ? Colors.red : null,
+                    color: entry.isFavorite ? AppTheme.errorColor : Theme.of(context).colorScheme.outline,
                   ),
                 ),
               ],
@@ -136,7 +138,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           ),
         ),
         
-        SizedBox(height: 16.h),
+        SizedBox(height: AppTheme.spacingMd.h),
         
         // Username Field
         _buildDetailField(
@@ -148,12 +150,12 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           onCopy: () => _passwordController.copyUsername(entry),
         ),
         
-        SizedBox(height: 16.h),
+        SizedBox(height: AppTheme.spacingMd.h),
         
         // Password Field
         _buildPasswordField(context),
         
-        SizedBox(height: 16.h),
+        SizedBox(height: AppTheme.spacingMd.h),
         
         // Website Field
         if (entry.website?.isNotEmpty == true) ...[
@@ -164,13 +166,13 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
             icon: Icons.web,
             canCopy: true,
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: AppTheme.spacingMd.h),
         ],
         
         // Tags
         if (entry.tags.isNotEmpty) ...[
           _buildTagsField(context),
-          SizedBox(height: 16.h),
+          SizedBox(height: AppTheme.spacingMd.h),
         ],
         
         // Notes Field
@@ -182,7 +184,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
             icon: Icons.note_outlined,
             maxLines: null,
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: AppTheme.spacingMd.h),
         ],
         
         // Timestamps
@@ -205,7 +207,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           ),
         ),
         
-        SizedBox(height: 16.h),
+        SizedBox(height: AppTheme.spacingMd.h),
         
         TextField(
           controller: _passwordController.usernameController,
@@ -215,7 +217,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           ),
         ),
         
-        SizedBox(height: 16.h),
+        SizedBox(height: AppTheme.spacingMd.h),
         
         TextField(
           controller: _passwordController.passwordController,
@@ -244,7 +246,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           obscureText: !_passwordController.showPassword.value,
         ),
         
-        SizedBox(height: 16.h),
+        SizedBox(height: AppTheme.spacingMd.h),
         
         TextField(
           controller: _passwordController.websiteController,
@@ -254,7 +256,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           ),
         ),
         
-        SizedBox(height: 16.h),
+        SizedBox(height: AppTheme.spacingMd.h),
         
         TextField(
           controller: _passwordController.tagsController,
@@ -264,7 +266,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           ),
         ),
         
-        SizedBox(height: 16.h),
+        SizedBox(height: AppTheme.spacingMd.h),
         
         TextField(
           controller: _passwordController.notesController,
@@ -275,7 +277,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           maxLines: 3,
         ),
         
-        SizedBox(height: 32.h),
+        SizedBox(height: AppTheme.spacingXl.h),
         
         // Action Buttons
         Row(
@@ -286,7 +288,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                 child: const Text('Cancel'),
               ),
             ),
-            SizedBox(width: 16.w),
+            SizedBox(width: AppTheme.spacingMd.w),
             Expanded(
               child: ElevatedButton(
                 onPressed: _saveChanges,
@@ -309,8 +311,9 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
     int? maxLines = 1,
   }) {
     return Card(
+      margin: EdgeInsets.zero,
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(AppTheme.spacingMd.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -321,11 +324,12 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                   size: 20.w,
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                SizedBox(width: 8.w),
+                SizedBox(width: AppTheme.spacingSm.w),
                 Text(
                   label,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 const Spacer(),
@@ -337,10 +341,12 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                   ),
               ],
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: AppTheme.spacingSm.h),
             Text(
               value,
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
               maxLines: maxLines,
               overflow: maxLines != null ? TextOverflow.ellipsis : null,
             ),
@@ -352,8 +358,9 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
 
   Widget _buildPasswordField(BuildContext context) {
     return Card(
+      margin: EdgeInsets.zero,
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(AppTheme.spacingMd.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -364,11 +371,12 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                   size: 20.w,
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                SizedBox(width: 8.w),
+                SizedBox(width: AppTheme.spacingSm.w),
                 Text(
                   'Password',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 const Spacer(),
@@ -386,7 +394,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                 ),
               ],
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: AppTheme.spacingSm.h),
             Text(
               isPasswordRevealed
                   ? _passwordController.getDecryptedPassword(entry)
@@ -394,6 +402,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 fontFamily: 'monospace',
                 letterSpacing: isPasswordRevealed ? 0 : 4,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ],
@@ -404,8 +413,9 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
 
   Widget _buildTagsField(BuildContext context) {
     return Card(
+      margin: EdgeInsets.zero,
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(AppTheme.spacingMd.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -416,19 +426,20 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                   size: 20.w,
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                SizedBox(width: 8.w),
+                SizedBox(width: AppTheme.spacingSm.w),
                 Text(
                   'Tags',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: AppTheme.spacingMd.h),
             Wrap(
-              spacing: 8.w,
-              runSpacing: 8.h,
+              spacing: AppTheme.spacingSm.w,
+              runSpacing: AppTheme.spacingSm.h,
               children: entry.tags.map((tag) {
                 return Chip(
                   label: Text(tag),
@@ -446,8 +457,9 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
     final dateFormat = DateFormat('MMM d, y \'at\' h:mm a');
     
     return Card(
+      margin: EdgeInsets.zero,
       child: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(AppTheme.spacingMd.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -458,16 +470,17 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                   size: 20.w,
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                SizedBox(width: 8.w),
+                SizedBox(width: AppTheme.spacingSm.w),
                 Text(
                   'History',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: AppTheme.spacingMd.h),
             Row(
               children: [
                 Expanded(
@@ -476,12 +489,16 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                     children: [
                       Text(
                         'Created',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                      SizedBox(height: 4.h),
+                      SizedBox(height: AppTheme.spacingXs.h),
                       Text(
                         dateFormat.format(entry.createdAt),
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ],
                   ),
@@ -492,12 +509,16 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                     children: [
                       Text(
                         'Last Modified',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                      SizedBox(height: 4.h),
+                      SizedBox(height: AppTheme.spacingXs.h),
                       Text(
                         dateFormat.format(entry.updatedAt),
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ],
                   ),

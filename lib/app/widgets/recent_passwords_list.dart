@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/password_controller.dart';
 import 'package:lockbloom/app/routes/app_pages.dart';
 import 'package:lockbloom/app/widgets/password_entry_card.dart';
+import 'package:lockbloom/app/themes/app_theme.dart';
 
 class RecentPasswordsList extends GetView<PasswordController> {
   const RecentPasswordsList({super.key});
@@ -22,12 +23,10 @@ class RecentPasswordsList extends GetView<PasswordController> {
           height: 120.h,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Theme.of(
-              context,
-            ).colorScheme.surfaceVariant.withOpacity(0.3),
-            borderRadius: BorderRadius.circular(12.r),
+            color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
             border: Border.all(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
               style: BorderStyle.solid,
             ),
           ),
@@ -39,11 +38,11 @@ class RecentPasswordsList extends GetView<PasswordController> {
                 size: 40.w,
                 color: Theme.of(context).colorScheme.outline,
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: AppTheme.spacingSm.h),
               Text(
                 'No passwords saved yet',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -55,7 +54,7 @@ class RecentPasswordsList extends GetView<PasswordController> {
         children:
             recentPasswords.map((password) {
               return Padding(
-                padding: EdgeInsets.only(bottom: 12.h),
+                padding: EdgeInsets.only(bottom: AppTheme.spacingMd.h),
                 child: PasswordEntryCard(
                   entry: password,
                   onTap:
