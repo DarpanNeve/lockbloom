@@ -18,7 +18,7 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     final List<Widget> _pages = [
       Scaffold(
-        appBar: AppBar(title: const Text('LockBloom'), centerTitle: true),
+        appBar: AppBar(title: const Text('Lock Bloom'), centerTitle: true),
         body: SingleChildScrollView(
           // The original HomeView content
           padding: EdgeInsets.all(AppTheme.spacingMd.w),
@@ -92,7 +92,9 @@ class HomeView extends GetView<HomeController> {
           Text(
             'Generate secure passwords and manage your credentials safely.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8),
+              color: Theme.of(
+                context,
+              ).colorScheme.onPrimaryContainer.withOpacity(0.8),
             ),
           ),
         ],
@@ -149,12 +151,12 @@ class HomeView extends GetView<HomeController> {
           padding: EdgeInsets.all(AppTheme.spacingMd.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               SizedBox(height: AppTheme.spacingMd.h),
               Container(
                 padding: EdgeInsets.all(AppTheme.spacingSm.w),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primaryContainer,
-              SizedBox(height: AppTheme.spacingMd.h),
                 ),
                 child: Icon(
                   icon,
@@ -163,13 +165,10 @@ class HomeView extends GetView<HomeController> {
                 ),
               ),
               SizedBox(height: AppTheme.spacingMd.h),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
+              Text(title, style: Theme.of(context).textTheme.labelLarge),
               SizedBox(height: AppTheme.spacingXs.h),
               Text(
-                subtitle, 
+                subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
@@ -272,15 +271,12 @@ class HomeView extends GetView<HomeController> {
                   color: Theme.of(context).colorScheme.primary,
                   size: 24.w,
                 ),
-                Text(
-                  value,
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
+                Text(value, style: Theme.of(context).textTheme.headlineLarge),
               ],
             ),
             SizedBox(height: AppTheme.spacingSm.h),
             Text(
-              title, 
+              title,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),

@@ -51,56 +51,67 @@ class SplashView extends GetView<SplashController> {
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    
+
                     SizedBox(height: AppTheme.spacingXl.h),
-                    
+
                     // App Name
                     Text(
                       'LockBloom',
-                      style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                      style: Theme.of(
+                        context,
+                      ).textTheme.displayMedium?.copyWith(
                         color: Theme.of(context).colorScheme.onPrimary,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    
+
                     SizedBox(height: AppTheme.spacingSm.h),
-                    
+
                     // Tagline
                     Text(
                       'Secure Password Manager',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onPrimary.withOpacity(0.9),
                       ),
                     ),
                   ],
                 ),
               ),
-              
+
               // Loading indicator
-              Obx(() => controller.isLoading.value
-                  ? Column(
-                      children: [
-                        SizedBox(
-                          width: 32.w,
-                          height: 32.w,
-                          child: const CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Theme.of(context).colorScheme.onPrimary,
+              Obx(
+                () =>
+                    controller.isLoading.value
+                        ? Column(
+                          children: [
+                            SizedBox(
+                              width: 32.w,
+                              height: 32.w,
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).colorScheme.onPrimary,
+                                ),
+                                strokeWidth: 3,
+                              ),
                             ),
-                            strokeWidth: 3,
-                          ),
-                        ),
-                        SizedBox(height: AppTheme.spacingMd.h),
-                        Text(
-                          'Initializing...',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.8),
-                          ),
-                        ),
-                      ],
-                    )
-                  : const SizedBox.shrink()),
-              
+                            SizedBox(height: AppTheme.spacingMd.h),
+                            Text(
+                              'Initializing...',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onPrimary.withOpacity(0.8),
+                              ),
+                            ),
+                          ],
+                        )
+                        : const SizedBox.shrink(),
+              ),
+
               SizedBox(height: AppTheme.spacingXxl.h),
             ],
           ),
