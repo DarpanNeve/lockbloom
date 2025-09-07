@@ -12,18 +12,19 @@ class PasswordController extends GetxController {
   final PasswordRepository _repository = Get.find();
   final PasswordService _passwordService = Get.find();
   final EncryptionService _encryptionService = Get.find();
-  
+
   // Observable variables
   final passwords = <PasswordEntry>[].obs;
   final filteredPasswords = <PasswordEntry>[].obs;
   final generatorConfig = const PasswordGeneratorConfig().obs;
   final generatedPassword = ''.obs;
-  final passwordStrength = const PasswordStrength(
-    score: 0,
-    entropy: 0.0,
-    feedback: '',
-    suggestions: [],
-  ).obs;
+  final passwordStrength =
+      const PasswordStrength(
+        score: 0,
+        entropy: 0.0,
+        feedback: '',
+        suggestions: [],
+      ).obs;
   final searchQuery = ''.obs;
   final selectedTags = <String>[].obs;
   final isLoading = false.obs;
@@ -42,9 +43,13 @@ class PasswordController extends GetxController {
     super.onInit();
     loadPasswords();
     generatePassword();
-    
+
     // Listen to search query changes
-    debounce(searchQuery, (_) => _filterPasswords(), time: const Duration(milliseconds: 300));
+    debounce(
+      searchQuery,
+      (_) => _filterPasswords(),
+      time: const Duration(milliseconds: 300),
+    );
   }
 
   @override
@@ -64,7 +69,9 @@ class PasswordController extends GetxController {
     isLoading.value = true;
     try {
       final loadedPasswords = await _repository.getAllPasswords();
-      print('PasswordController: Loaded ${loadedPasswords.length} passwords from repository.');
+      print(
+        'PasswordController: Loaded ${loadedPasswords.length} passwords from repository.',
+      );
       passwords.value = loadedPasswords;
       _filterPasswords();
       print('PasswordController: Passwords loaded and filtered.');
@@ -84,7 +91,9 @@ class PasswordController extends GetxController {
       generatedPassword.value = password;
       passwordStrength.value = _passwordService.calculateStrength(password);
     } catch (e) {
-      Fluttertoast.showToast(msg: 'Failed to generate password: ${e.toString()}');
+      Fluttertoast.showToast(
+        msg: 'Failed to generate password: ${e.toString()}',
+      );
     }
   }
 
@@ -118,7 +127,7 @@ class PasswordController extends GetxController {
     try {
       // Encrypt the password
       final encryptedPassword = _encryptionService.encrypt(password);
-      
+
       final entry = PasswordEntry(
         id: id ?? const Uuid().v4(),
         label: label.trim(),
@@ -127,16 +136,18 @@ class PasswordController extends GetxController {
         website: website?.trim(),
         notes: notes?.trim() ?? '',
         tags: tags ?? [],
-        createdAt: id == null ? DateTime.now() : DateTime.now(), // Will be updated in repository
+        createdAt: id == null ? DateTime.now() : DateTime.now(),
+        // Will be updated in repository
         updatedAt: DateTime.now(),
       );
 
       await _repository.savePassword(entry);
       await loadPasswords();
-      
-      Fluttertoast.showToast(msg: id == null ? 'Password saved' : 'Password updated');
+
+      Fluttertoast.showToast(
+        msg: id == null ? 'Password saved' : 'Password updated',
+      );
       _clearForm();
-      
     } catch (e) {
       Fluttertoast.showToast(msg: 'Failed to save password: ${e.toString()}');
     } finally {
@@ -149,7 +160,9 @@ class PasswordController extends GetxController {
     final confirm = await Get.dialog<bool>(
       AlertDialog(
         title: const Text('Delete Password'),
-        content: const Text('Are you sure you want to delete this password? This action cannot be undone.'),
+        content: const Text(
+          'Are you sure you want to delete this password? This action cannot be undone.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
@@ -171,7 +184,9 @@ class PasswordController extends GetxController {
         await loadPasswords();
         Fluttertoast.showToast(msg: 'Password deleted');
       } catch (e) {
-        Fluttertoast.showToast(msg: 'Failed to delete password: ${e.toString()}');
+        Fluttertoast.showToast(
+          msg: 'Failed to delete password: ${e.toString()}',
+        );
       } finally {
         isLoading.value = false;
       }
@@ -193,7 +208,7 @@ class PasswordController extends GetxController {
       final password = getDecryptedPassword(entry);
       await Clipboard.setData(ClipboardData(text: password));
       Fluttertoast.showToast(msg: 'Password copied to clipboard');
-      
+
       // Clear clipboard after 30 seconds for security
       Future.delayed(const Duration(seconds: 30), () {
         Clipboard.setData(const ClipboardData(text: ''));
@@ -243,24 +258,33 @@ class PasswordController extends GetxController {
     print('  Total passwords: ${passwords.length}');
 
     var filtered = passwords.toList();
-    
+
     // Filter by search query
     if (searchQuery.value.isNotEmpty) {
       final query = searchQuery.value.toLowerCase();
-      filtered = filtered.where((p) =>
-          p.label.toLowerCase().contains(query) ||
-          p.username.toLowerCase().contains(query) ||
-          p.website?.toLowerCase().contains(query) == true ||
-          p.notes.toLowerCase().contains(query) ||
-          p.tags.any((tag) => tag.toLowerCase().contains(query))).toList();
+      filtered =
+          filtered
+              .where(
+                (p) =>
+                    p.label.toLowerCase().contains(query) ||
+                    p.username.toLowerCase().contains(query) ||
+                    p.website?.toLowerCase().contains(query) == true ||
+                    p.notes.toLowerCase().contains(query) ||
+                    p.tags.any((tag) => tag.toLowerCase().contains(query)),
+              )
+              .toList();
     }
-    
+
     // Filter by selected tags
     if (selectedTags.isNotEmpty) {
-      filtered = filtered.where((p) =>
-          selectedTags.any((tag) => p.tags.contains(tag))).toList();
+      filtered =
+          filtered
+              .where(
+                (p) => selectedTags.value.any((tag) => p.tags.contains(tag)),
+              )
+              .toList();
     }
-    
+
     filteredPasswords.value = filtered;
     print('  Filtered passwords count: ${filteredPasswords.length}');
   }
@@ -312,7 +336,9 @@ class PasswordController extends GetxController {
       await Clipboard.setData(ClipboardData(text: exportData));
       Fluttertoast.showToast(msg: 'Passwords exported to clipboard');
     } catch (e) {
-      Fluttertoast.showToast(msg: 'Failed to export passwords: ${e.toString()}');
+      Fluttertoast.showToast(
+        msg: 'Failed to export passwords: ${e.toString()}',
+      );
     }
   }
 

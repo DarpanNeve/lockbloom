@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/auth_controller.dart';
+import 'package:lockbloom/app/controllers/password_controller.dart';
+import 'package:lockbloom/app/repositories/password_repository.dart';
 import 'package:lockbloom/app/services/storage_service.dart';
 import 'package:lockbloom/app/services/theme_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -13,6 +18,8 @@ class SettingsController extends GetxController {
   final ThemeService _themeService = Get.find();
   final AuthController _authController = Get.find();
   final StorageService _storageService = Get.find();
+  final PasswordController _passwordController = Get.find();
+  final PasswordRepository _passwordRepository = Get.find();
 
   // Observable settings
   final autoLockTimeout = 300.obs; // 5 minutes default
@@ -246,7 +253,8 @@ class SettingsController extends GetxController {
     Get.dialog(
       AlertDialog(
         title: const Text('Export Passwords'),
-        content: const Text('This will export all your passwords as an encrypted file. Keep this file secure.'),
+        content: const Text(
+            'This will export all your passwords as an encrypted file. Keep this file secure.'),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
@@ -254,9 +262,8 @@ class SettingsController extends GetxController {
           ),
           TextButton(
             onPressed: () {
-              // Export functionality would go here
               Get.back();
-              Fluttertoast.showToast(msg: 'Passwords exported');
+              _exportPasswords();
             },
             child: const Text('Export'),
           ),
@@ -270,7 +277,8 @@ class SettingsController extends GetxController {
     Get.dialog(
       AlertDialog(
         title: const Text('Import Passwords'),
-        content: const Text('Select an encrypted backup file to import your passwords.'),
+        content: const Text(
+            'Select an encrypted backup file to import your passwords.'),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
@@ -278,9 +286,8 @@ class SettingsController extends GetxController {
           ),
           TextButton(
             onPressed: () {
-              // Import functionality would go here
               Get.back();
-              Fluttertoast.showToast(msg: 'Passwords imported');
+              _importPasswords();
             },
             child: const Text('Select File'),
           ),
@@ -289,12 +296,62 @@ class SettingsController extends GetxController {
     );
   }
 
+  Future<void> _exportPasswords() async {
+    try {
+      isLoading.value = true;
+      final exportData = await _passwordRepository.exportPasswords('master_password'); // TODO: Use a real master password
+
+      final result = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save Passwords',
+        fileName: 'lockbloom_export_${DateTime.now().toIso8601String()}.json',
+        bytes: utf8.encode(exportData),
+      );
+
+      if (result != null) {
+        Fluttertoast.showToast(msg: 'Passwords exported successfully to $result');
+      } else {
+        Fluttertoast.showToast(msg: 'Export cancelled');
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'Failed to export passwords: ${e.toString()}');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> _importPasswords() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+
+      if (result != null && result.files.single.path != null) {
+        isLoading.value = true;
+        final file = File(result.files.single.path!);
+        final encryptedData = await file.readAsString();
+
+        await _passwordRepository.importPasswords(encryptedData, 'master_password'); // TODO: Use a real master password
+        await _passwordController.loadPasswords();
+
+        Fluttertoast.showToast(msg: 'Passwords imported successfully');
+      } else {
+        Fluttertoast.showToast(msg: 'Import cancelled');
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'Failed to import passwords: ${e.toString()}');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   /// Show reset app confirmation
   void showResetAppDialog() {
     Get.dialog(
       AlertDialog(
         title: const Text('Reset App'),
-        content: const Text('This will delete all your passwords and settings. This action cannot be undone.'),
+        content: const Text(
+            'This will delete all your passwords and settings. This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
