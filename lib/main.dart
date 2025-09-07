@@ -8,6 +8,7 @@ import 'package:lockbloom/app/routes/app_pages.dart';
 import 'package:lockbloom/app/services/theme_service.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart';
 import 'package:upgrader/upgrader.dart';
 import 'package:shorebird_code_push/shorebird_code_push.dart'; // <-- add
@@ -25,6 +26,9 @@ void main() async {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
+
+  // Enable performance monitoring
+  FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
 
   // Initialize services
   await Get.putAsync(() async => StorageService());

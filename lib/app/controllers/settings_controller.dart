@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/auth_controller.dart';
 import 'package:lockbloom/app/controllers/password_controller.dart';
@@ -14,7 +15,7 @@ class SettingsController extends GetxController {
   static const String _autoLockTimeoutKey = 'auto_lock_timeout';
   static const String _clipboardClearTimeKey = 'clipboard_clear_time';
   static const String _passwordHistoryKey = 'password_history_enabled';
-  
+
   final ThemeService _themeService = Get.find();
   final AuthController _authController = Get.find();
   final StorageService _storageService = Get.find();
@@ -56,9 +57,12 @@ class SettingsController extends GetxController {
 
   /// Load settings from storage
   void _loadSettings() {
-    autoLockTimeout.value = _storageService.read<int>(_autoLockTimeoutKey) ?? 300;
-    clipboardClearTime.value = _storageService.read<int>(_clipboardClearTimeKey) ?? 30;
-    isPasswordHistoryEnabled.value = _storageService.read<bool>(_passwordHistoryKey) ?? true;
+    autoLockTimeout.value =
+        _storageService.read<int>(_autoLockTimeoutKey) ?? 300;
+    clipboardClearTime.value =
+        _storageService.read<int>(_clipboardClearTimeKey) ?? 30;
+    isPasswordHistoryEnabled.value =
+        _storageService.read<bool>(_passwordHistoryKey) ?? true;
   }
 
   /// Update auto-lock timeout
@@ -79,7 +83,9 @@ class SettingsController extends GetxController {
   Future<void> togglePasswordHistory(bool enabled) async {
     isPasswordHistoryEnabled.value = enabled;
     await _storageService.write(_passwordHistoryKey, enabled);
-    Fluttertoast.showToast(msg: 'Password history ${enabled ? 'enabled' : 'disabled'}');
+    Fluttertoast.showToast(
+      msg: 'Password history ${enabled ? 'enabled' : 'disabled'}',
+    );
   }
 
   /// Get current theme mode display text
@@ -132,19 +138,20 @@ class SettingsController extends GetxController {
         title: const Text('Auto-Lock Timeout'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: timeoutOptions.map((option) {
-            return RadioListTile<int>(
-              title: Text(option['label'] as String),
-              value: option['value'] as int,
-              groupValue: autoLockTimeout.value,
-              onChanged: (value) {
-                if (value != null) {
-                  updateAutoLockTimeout(value);
-                  Get.back();
-                }
-              },
-            );
-          }).toList(),
+          children:
+              timeoutOptions.map((option) {
+                return RadioListTile<int>(
+                  title: Text(option['label'] as String),
+                  value: option['value'] as int,
+                  groupValue: autoLockTimeout.value,
+                  onChanged: (value) {
+                    if (value != null) {
+                      updateAutoLockTimeout(value);
+                      Get.back();
+                    }
+                  },
+                );
+              }).toList(),
         ),
       ),
     );
@@ -157,19 +164,20 @@ class SettingsController extends GetxController {
         title: const Text('Clipboard Clear Time'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: clipboardOptions.map((option) {
-            return RadioListTile<int>(
-              title: Text(option['label'] as String),
-              value: option['value'] as int,
-              groupValue: clipboardClearTime.value,
-              onChanged: (value) {
-                if (value != null) {
-                  updateClipboardClearTime(value);
-                  Get.back();
-                }
-              },
-            );
-          }).toList(),
+          children:
+              clipboardOptions.map((option) {
+                return RadioListTile<int>(
+                  title: Text(option['label'] as String),
+                  value: option['value'] as int,
+                  groupValue: clipboardClearTime.value,
+                  onChanged: (value) {
+                    if (value != null) {
+                      updateClipboardClearTime(value);
+                      Get.back();
+                    }
+                  },
+                );
+              }).toList(),
         ),
       ),
     );
@@ -183,44 +191,85 @@ class SettingsController extends GetxController {
 
     Get.dialog(
       AlertDialog(
-        title: const Text('Change PIN'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: currentPinController,
-              decoration: const InputDecoration(labelText: 'Current PIN'),
-              keyboardType: TextInputType.number,
-              obscureText: true,
-              maxLength: 6,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: newPinController,
-              decoration: const InputDecoration(labelText: 'New PIN'),
-              keyboardType: TextInputType.number,
-              obscureText: true,
-              maxLength: 6,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: confirmPinController,
-              decoration: const InputDecoration(labelText: 'Confirm New PIN'),
-              keyboardType: TextInputType.number,
-              obscureText: true,
-              maxLength: 6,
-            ),
-          ],
+        title: Text(
+          'Change PIN',
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
         ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+        content: Container(
+          constraints: BoxConstraints(maxHeight: 250.h),
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: currentPinController,
+                decoration: InputDecoration(
+                  labelText: 'Current PIN',
+                  labelStyle: TextStyle(fontSize: 14.sp),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 16.h,
+                  ),
+                ),
+                style: TextStyle(fontSize: 16.sp),
+                keyboardType: TextInputType.number,
+                obscureText: true,
+                maxLength: 8,
+              ),
+              Spacer(),
+              TextField(
+                controller: newPinController,
+                decoration: InputDecoration(
+                  labelText: 'New PIN',
+                  labelStyle: TextStyle(fontSize: 14.sp),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 16.h,
+                  ),
+                ),
+                style: TextStyle(fontSize: 16.sp),
+                keyboardType: TextInputType.number,
+                obscureText: true,
+                maxLength: 8,
+              ),
+              Spacer(),
+              TextField(
+                controller: confirmPinController,
+                decoration: InputDecoration(
+                  labelText: 'Confirm New PIN',
+                  labelStyle: TextStyle(fontSize: 14.sp),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 16.h,
+                  ),
+                ),
+                style: TextStyle(fontSize: 16.sp),
+                keyboardType: TextInputType.number,
+                obscureText: true,
+                maxLength: 8,
+              ),
+            ],
+          ),
+        ),
+        actionsPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              minimumSize: Size(60.w, 36.h),
+            ),
+            child: Text('Cancel', style: TextStyle(fontSize: 14.sp)),
           ),
+          SizedBox(width: 8.w),
           TextButton(
             onPressed: () {
               if (newPinController.text != confirmPinController.text) {
-                Fluttertoast.showToast(msg: 'New PIN and confirmation do not match');
+                Fluttertoast.showToast(
+                  msg: 'New PIN and confirmation do not match',
+                  fontSize: 14.sp,
+                );
                 return;
               }
               _authController.changePin(
@@ -229,7 +278,11 @@ class SettingsController extends GetxController {
               );
               Get.back();
             },
-            child: const Text('Change'),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              minimumSize: Size(60.w, 36.h),
+            ),
+            child: Text('Change', style: TextStyle(fontSize: 14.sp)),
           ),
         ],
       ),
@@ -254,12 +307,10 @@ class SettingsController extends GetxController {
       AlertDialog(
         title: const Text('Export Passwords'),
         content: const Text(
-            'This will export all your passwords as an encrypted file. Keep this file secure.'),
+          'This will export all your passwords as an encrypted file. Keep this file secure.',
+        ),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           TextButton(
             onPressed: () {
               Get.back();
@@ -278,12 +329,10 @@ class SettingsController extends GetxController {
       AlertDialog(
         title: const Text('Import Passwords'),
         content: const Text(
-            'Select an encrypted backup file to import your passwords.'),
+          'Select an encrypted backup file to import your passwords.',
+        ),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           TextButton(
             onPressed: () {
               Get.back();
@@ -299,7 +348,9 @@ class SettingsController extends GetxController {
   Future<void> _exportPasswords() async {
     try {
       isLoading.value = true;
-      final exportData = await _passwordRepository.exportPasswords('master_password'); // TODO: Use a real master password
+      final exportData = await _passwordRepository.exportPasswords(
+        'master_password',
+      ); // TODO: Use a real master password
 
       final result = await FilePicker.platform.saveFile(
         dialogTitle: 'Save Passwords',
@@ -308,12 +359,16 @@ class SettingsController extends GetxController {
       );
 
       if (result != null) {
-        Fluttertoast.showToast(msg: 'Passwords exported successfully to $result');
+        Fluttertoast.showToast(
+          msg: 'Passwords exported successfully to $result',
+        );
       } else {
         Fluttertoast.showToast(msg: 'Export cancelled');
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: 'Failed to export passwords: ${e.toString()}');
+      Fluttertoast.showToast(
+        msg: 'Failed to export passwords: ${e.toString()}',
+      );
     } finally {
       isLoading.value = false;
     }
@@ -331,7 +386,10 @@ class SettingsController extends GetxController {
         final file = File(result.files.single.path!);
         final encryptedData = await file.readAsString();
 
-        await _passwordRepository.importPasswords(encryptedData, 'master_password'); // TODO: Use a real master password
+        await _passwordRepository.importPasswords(
+          encryptedData,
+          'master_password',
+        ); // TODO: Use a real master password
         await _passwordController.loadPasswords();
 
         Fluttertoast.showToast(msg: 'Passwords imported successfully');
@@ -339,7 +397,9 @@ class SettingsController extends GetxController {
         Fluttertoast.showToast(msg: 'Import cancelled');
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: 'Failed to import passwords: ${e.toString()}');
+      Fluttertoast.showToast(
+        msg: 'Failed to import passwords: ${e.toString()}',
+      );
     } finally {
       isLoading.value = false;
     }
@@ -351,12 +411,10 @@ class SettingsController extends GetxController {
       AlertDialog(
         title: const Text('Reset App'),
         content: const Text(
-            'This will delete all your passwords and settings. This action cannot be undone.'),
+          'This will delete all your passwords and settings. This action cannot be undone.',
+        ),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           TextButton(
             onPressed: () {
               Get.back();

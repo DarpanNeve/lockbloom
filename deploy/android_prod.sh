@@ -1,20 +1,26 @@
 #!/bin/bash
 # ==============================================================================
-# android_prod.sh
+# android_prod_shorebird.sh
 #
-# This script builds your Flutter app in release mode and deploys it to the
-# Google Play Store using fastlane supply.
+# This script builds your Flutter app using Shorebird in release mode and
+# deploys it to the Google Play Store using fastlane supply, with support
+# for over-the-air updates via Shorebird.
 #
 # Requirements:
 #   - Flutter installed and configured.
+#   - Shorebird CLI installed (https://docs.shorebird.dev/guides/install)
 #   - Fastlane installed (e.g., gem install fastlane -NV) and supply set up.
 #   - The service_account.json file downloaded from your Google Play Console placed
 #     in the root directory of your project.
 #   - Proper signing configuration in your Flutter project's Android files.
+#   - Shorebird project initialized (shorebird init)
 #
 # Usage:
-#   chmod +x android_prod.sh
-#   ./android_prod.sh
+#   chmod +x android_prod_shorebird.sh
+#   ./android_prod_shorebird.sh [--patch-only]
+#
+# Options:
+#   --patch-only: Only create and release a patch (no app store deployment)
 #
 # You can configure additional fastlane supply options (such as track, changelog, etc.)
 # by modifying the supply command below.
@@ -24,14 +30,45 @@
 set -e
 set -o pipefail
 
+# Parse command line arguments
+PATCH_ONLY=false
+for arg in "$@"; do
+  case $arg in
+    --patch-only)
+      PATCH_ONLY=true
+      shift
+      ;;
+    *)
+      # Unknown option
+      echo "Unknown option: $arg"
+      echo "Usage: $0 [--patch-only]"
+      exit 1
+      ;;
+  esac
+done
+
 # Define the location of the service account JSON file.
 SERVICE_ACCOUNT_JSON="./service_account.json"
 PACKAGE_NAME="com.dn.lockbloom"
-# Check if the service account file exists.
-if [ ! -f "$SERVICE_ACCOUNT_JSON" ]; then
+
+# Check if Shorebird CLI is installed
+if ! command -v shorebird &> /dev/null; then
+  echo "Error: Shorebird CLI is not installed. Please install it from https://docs.shorebird.dev/guides/install"
+  exit 1
+fi
+
+# Check if this is a Shorebird project
+if [ ! -f "shorebird.yaml" ]; then
+  echo "Error: shorebird.yaml not found. Please run 'shorebird init' to initialize your project with Shorebird."
+  exit 1
+fi
+
+# Check if the service account file exists (only needed for full deployment).
+if [ "$PATCH_ONLY" = false ] && [ ! -f "$SERVICE_ACCOUNT_JSON" ]; then
   echo "Error: $SERVICE_ACCOUNT_JSON not found. Please download it from your Google Play Console and place it in the project root."
   exit 1
 fi
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 ENV_FILE="$PROJECT_ROOT/.env"
@@ -55,6 +92,7 @@ fi
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Function to update the version in pubspec.yaml by incrementing the build number by 1.
+# Note: For patches, we might not want to increment the version number.
 # ──────────────────────────────────────────────────────────────────────────────
 update_version() {
   echo "----------------------------------------"
@@ -94,45 +132,80 @@ update_version() {
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
-# 3) Export for subsequent commands
+# Function to create and deploy a Shorebird patch
 # ──────────────────────────────────────────────────────────────────────────────
-export ENVIRONMENT="$NEW_ENV"
-echo "→ Using ENVIRONMENT=$ENVIRONMENT"
+create_patch() {
+  echo "=== Creating Shorebird Patch ==="
 
-# 4) Update version before build
-update_version
+  # Get Flutter packages
+  echo "Getting Flutter packages..."
+  flutter pub get
 
-echo "=== Getting Flutter packages ==="
-flutter pub get
+  # Create and release patch
+  echo "Creating Shorebird patch for Android..."
+  shorebird patch android --release-version="$(grep '^version:' pubspec.yaml | sed 's/version: //')" --flutter-version 3.32.0
 
-echo "=== Building Android App Bundle (AAB) ==="
-flutter build appbundle --release
+  echo "=== Patch created and deployed successfully ==="
+}
 
-# Define the expected path to the built App Bundle.
-APP_BUNDLE_PATH="build/app/outputs/bundle/release/app-release.aab"
+# ──────────────────────────────────────────────────────────────────────────────
+# Function for full app store deployment
+# ──────────────────────────────────────────────────────────────────────────────
+full_deployment() {
+  # Export for subsequent commands
+  export ENVIRONMENT="$NEW_ENV"
+  echo "→ Using ENVIRONMENT=$ENVIRONMENT"
 
-if [ ! -f "$APP_BUNDLE_PATH" ]; then
-  echo "Error: App bundle not found at $APP_BUNDLE_PATH"
-  exit 1
+  # Update version before build (for full releases)
+  update_version
+
+  echo "=== Getting Flutter packages ==="
+  flutter pub get
+
+  echo "=== Building Android App Bundle (AAB) with Shorebird ==="
+  # Use Shorebird release command instead of flutter build appbundle
+  shorebird release android --flutter-version 3.32.0
+
+  # Define the expected path to the built App Bundle.
+  APP_BUNDLE_PATH="build/app/outputs/bundle/release/app-release.aab"
+
+  if [ ! -f "$APP_BUNDLE_PATH" ]; then
+    echo "Error: App bundle not found at $APP_BUNDLE_PATH"
+    exit 1
+  fi
+
+  echo "App bundle successfully built at $APP_BUNDLE_PATH"
+
+  # Check if fastlane is installed.
+  if ! command -v fastlane &> /dev/null; then
+    echo "Error: fastlane is not installed. Install fastlane using 'sudo gem install fastlane -NV'"
+    exit 1
+  fi
+
+  echo "=== Deploying to Google Play Store via fastlane supply ==="
+  # Deploy the app bundle.
+  # Adjust the --track value as needed (e.g., alpha, beta, production)
+  fastlane supply \
+    --package_name "$PACKAGE_NAME" \
+    --aab "$APP_BUNDLE_PATH" \
+    --json_key "$SERVICE_ACCOUNT_JSON" \
+    --track production \
+    --skip_upload_images \
+    --skip_upload_screenshots
+
+  echo "=== Full deployment process completed successfully ==="
+}
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Main execution logic
+# ──────────────────────────────────────────────────────────────────────────────
+
+if [ "$PATCH_ONLY" = true ]; then
+  echo "=== Running in PATCH-ONLY mode ==="
+  create_patch
+else
+  echo "=== Running FULL DEPLOYMENT mode ==="
+  full_deployment
 fi
 
-echo "App bundle successfully built at $APP_BUNDLE_PATH"
-
-# Check if fastlane is installed.
-if ! command -v fastlane &> /dev/null; then
-  echo "Error: fastlane is not installed. Install fastlane using 'sudo gem install fastlane -NV'"
-  exit 1
-fi
-
-echo "=== Deploying to Google Play Store via fastlane supply ==="
-# Deploy the app bundle.
-# Adjust the --track value as needed (e.g., alpha, beta, production)
-fastlane supply \
-  --package_name "$PACKAGE_NAME" \
-  --aab "$APP_BUNDLE_PATH" \
-  --json_key "$SERVICE_ACCOUNT_JSON" \
-  --track production \
-  --skip_upload_images \
-  --skip_upload_screenshots
-
-echo "=== Deployment process completed successfully. ==="
+echo "=== Script execution completed successfully ==="

@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/routes/app_pages.dart';
@@ -80,6 +81,9 @@ class AuthController extends GetxController {
       await _storageService.write(_isSetupCompleteKey, true);
       isSetupComplete.value = true;
 
+      // Log sign_up event
+      FirebaseAnalytics.instance.logSignUp(signUpMethod: 'pin');
+
       // If biometric is available, ask user if they want to enable it
       if (isBiometricAvailable.value) {
         final toEnableBiometric = await Get.dialog<bool>(
@@ -121,7 +125,9 @@ class AuthController extends GetxController {
     try {
       final encryptedStoredPin = await _storageService.readSecure(_pinKey);
       if (encryptedStoredPin == null) {
-        Fluttertoast.showToast(msg: 'No PIN found. Please setup the app again.');
+        Fluttertoast.showToast(
+          msg: 'No PIN found. Please setup the app again.',
+        );
         return;
       }
 
@@ -129,6 +135,7 @@ class AuthController extends GetxController {
 
       if (pin == storedPin) {
         isAuthenticated.value = true;
+        FirebaseAnalytics.instance.logLogin(loginMethod: 'pin');
         Get.offAllNamed(Routes.HOME);
       } else {
         Fluttertoast.showToast(msg: 'Incorrect PIN');
@@ -152,6 +159,7 @@ class AuthController extends GetxController {
 
       if (success) {
         isAuthenticated.value = true;
+        FirebaseAnalytics.instance.logLogin(loginMethod: 'biometric');
         Get.offAllNamed(Routes.HOME);
       }
     } catch (e) {
@@ -217,6 +225,7 @@ class AuthController extends GetxController {
       final encryptedNewPin = _encryptionService.encrypt(newPin);
       await _storageService.writeSecure(_pinKey, encryptedNewPin);
 
+      FirebaseAnalytics.instance.logEvent(name: 'change_pin');
       Fluttertoast.showToast(msg: 'PIN changed successfully');
     } catch (e) {
       Fluttertoast.showToast(msg: 'Failed to change PIN: ${e.toString()}');

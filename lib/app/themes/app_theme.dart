@@ -8,20 +8,20 @@ class AppTheme {
   static const Color primaryDarkColor = Color(0xFF4338CA);
   static const Color primaryContainerColor = Color(0xFFE0E7FF);
   static const Color onPrimaryContainerColor = Color(0xFF1E1B4B);
-  
+
   // Secondary Color Palette
   static const Color secondaryColor = Color(0xFF14B8A6); // Teal
   static const Color secondaryLightColor = Color(0xFF5EEAD4);
   static const Color secondaryDarkColor = Color(0xFF0F766E);
   static const Color secondaryContainerColor = Color(0xFFCCFBF1);
   static const Color onSecondaryContainerColor = Color(0xFF134E4A);
-  
+
   // Accent Colors
   static const Color accentColor = Color(0xFFF59E0B); // Amber
   static const Color successColor = Color(0xFF10B981); // Emerald
   static const Color warningColor = Color(0xFFF59E0B); // Amber
   static const Color errorColor = Color(0xFFEF4444); // Red
-  
+
   // Light Theme Colors
   static const Color lightBackgroundColor = Color(0xFFFAFAFA);
   static const Color lightSurfaceColor = Color(0xFFFFFFFF);
@@ -30,7 +30,7 @@ class AppTheme {
   static const Color lightOutlineVariantColor = Color(0xFFF3F4F6);
   static const Color lightOnSurfaceColor = Color(0xFF1F2937);
   static const Color lightOnSurfaceVariantColor = Color(0xFF6B7280);
-  
+
   // Dark Theme Colors
   static const Color darkBackgroundColor = Color(0xFF0F172A);
   static const Color darkSurfaceColor = Color(0xFF1E293B);
@@ -72,10 +72,10 @@ class AppTheme {
       brightness: Brightness.light,
       colorScheme: colorScheme,
       fontFamily: 'Inter',
-      
+
       // Scaffold Theme
       scaffoldBackgroundColor: lightBackgroundColor,
-      
+
       // AppBar Theme
       appBarTheme: AppBarTheme(
         elevation: 0,
@@ -91,24 +91,19 @@ class AppTheme {
           fontWeight: FontWeight.w600,
           fontFamily: 'Inter',
         ),
-        iconTheme: const IconThemeData(
-          color: lightOnSurfaceColor,
-          size: 24,
-        ),
+        iconTheme: const IconThemeData(color: lightOnSurfaceColor, size: 24),
       ),
-      
+
       // Card Theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
         color: lightCardColor,
         shadowColor: Colors.black.withOpacity(0.08),
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: EdgeInsets.zero,
       ),
-      
+
       // Button Themes
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -119,9 +114,7 @@ class AppTheme {
           elevation: 2,
           shadowColor: primaryColor.withOpacity(0.3),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 16,
@@ -129,15 +122,13 @@ class AppTheme {
           ),
         ),
       ),
-      
+
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: primaryColor,
           disabledForegroundColor: lightOnSurfaceVariantColor,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           side: const BorderSide(color: primaryColor, width: 1.5),
           textStyle: const TextStyle(
             fontWeight: FontWeight.w600,
@@ -146,7 +137,7 @@ class AppTheme {
           ),
         ),
       ),
-      
+
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: primaryColor,
@@ -159,7 +150,7 @@ class AppTheme {
           ),
         ),
       ),
-      
+
       // Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -184,7 +175,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: errorColor, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         hintStyle: TextStyle(
           color: lightOnSurfaceVariantColor,
           fontFamily: 'Inter',
@@ -194,7 +188,7 @@ class AppTheme {
           fontFamily: 'Inter',
         ),
       ),
-      
+
       // Bottom Navigation Bar Theme
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: lightSurfaceColor,
@@ -213,7 +207,7 @@ class AppTheme {
           fontFamily: 'Inter',
         ),
       ),
-      
+
       // Chip Theme
       chipTheme: ChipThemeData(
         backgroundColor: primaryContainerColor,
@@ -223,11 +217,9 @@ class AppTheme {
           fontFamily: 'Inter',
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
-      
+
       // Switch Theme
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
@@ -243,7 +235,7 @@ class AppTheme {
           return lightOutlineVariantColor;
         }),
       ),
-      
+
       // Text Theme
       textTheme: const TextTheme(
         displayLarge: TextStyle(
@@ -363,10 +355,10 @@ class AppTheme {
       brightness: Brightness.dark,
       colorScheme: colorScheme,
       fontFamily: 'Inter',
-      
+
       // Scaffold Theme
       scaffoldBackgroundColor: darkBackgroundColor,
-      
+
       // AppBar Theme
       appBarTheme: AppBarTheme(
         elevation: 0,
@@ -382,24 +374,19 @@ class AppTheme {
           fontWeight: FontWeight.w600,
           fontFamily: 'Inter',
         ),
-        iconTheme: const IconThemeData(
-          color: darkOnSurfaceColor,
-          size: 24,
-        ),
+        iconTheme: const IconThemeData(color: darkOnSurfaceColor, size: 24),
       ),
-      
+
       // Card Theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
         color: darkCardColor,
         shadowColor: Colors.black.withOpacity(0.3),
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: EdgeInsets.zero,
       ),
-      
+
       // Button Themes
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -410,9 +397,7 @@ class AppTheme {
           elevation: 2,
           shadowColor: primaryLightColor.withOpacity(0.3),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 16,
@@ -420,15 +405,13 @@ class AppTheme {
           ),
         ),
       ),
-      
+
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: primaryLightColor,
           disabledForegroundColor: darkOnSurfaceVariantColor,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           side: const BorderSide(color: primaryLightColor, width: 1.5),
           textStyle: const TextStyle(
             fontWeight: FontWeight.w600,
@@ -437,7 +420,7 @@ class AppTheme {
           ),
         ),
       ),
-      
+
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: primaryLightColor,
@@ -450,7 +433,7 @@ class AppTheme {
           ),
         ),
       ),
-      
+
       // Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -475,7 +458,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: errorColor, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         hintStyle: TextStyle(
           color: darkOnSurfaceVariantColor,
           fontFamily: 'Inter',
@@ -485,7 +471,7 @@ class AppTheme {
           fontFamily: 'Inter',
         ),
       ),
-      
+
       // Bottom Navigation Bar Theme
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: darkSurfaceColor,
@@ -504,7 +490,7 @@ class AppTheme {
           fontFamily: 'Inter',
         ),
       ),
-      
+
       // Chip Theme
       chipTheme: ChipThemeData(
         backgroundColor: primaryDarkColor,
@@ -514,11 +500,9 @@ class AppTheme {
           fontFamily: 'Inter',
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
-      
+
       // Switch Theme
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
@@ -534,7 +518,7 @@ class AppTheme {
           return darkOutlineVariantColor;
         }),
       ),
-      
+
       // Text Theme
       textTheme: const TextTheme(
         displayLarge: TextStyle(
