@@ -303,20 +303,105 @@ class SettingsController extends GetxController {
 
   /// Show export dialog
   void showExportDialog() {
+    final passwordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+
     Get.dialog(
       AlertDialog(
-        title: const Text('Export Passwords'),
-        content: const Text(
-          'This will export all your passwords as an encrypted file. Keep this file secure.',
+        title: Text(
+          'Export Passwords',
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
         ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+        content: Container(
+          constraints: BoxConstraints(maxHeight: 200.h),
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Enter a password to encrypt your export file:',
+                style: TextStyle(fontSize: 14.sp),
+              ),
+              SizedBox(height: 16.h),
+              TextField(
+                controller: passwordController,
+                decoration: InputDecoration(
+                  labelText: 'Export Password',
+                  labelStyle: TextStyle(fontSize: 14.sp),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 16.h,
+                  ),
+                ),
+                style: TextStyle(fontSize: 16.sp),
+                obscureText: true,
+              ),
+              SizedBox(height: 12.h),
+              TextField(
+                controller: confirmPasswordController,
+                decoration: InputDecoration(
+                  labelText: 'Confirm Password',
+                  labelStyle: TextStyle(fontSize: 14.sp),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 16.h,
+                  ),
+                ),
+                style: TextStyle(fontSize: 16.sp),
+                obscureText: true,
+              ),
+            ],
+          ),
+        ),
+        actionsPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Get.back(),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              minimumSize: Size(60.w, 36.h),
+            ),
+            child: Text('Cancel', style: TextStyle(fontSize: 14.sp)),
+          ),
+          SizedBox(width: 8.w),
           TextButton(
             onPressed: () {
+              final password = passwordController.text;
+              final confirmPassword = confirmPasswordController.text;
+
+              if (password.isEmpty) {
+                Fluttertoast.showToast(
+                  msg: 'Please enter a password',
+                  fontSize: 14.sp,
+                );
+                return;
+              }
+
+              if (password.length < 6) {
+                Fluttertoast.showToast(
+                  msg: 'Password must be at least 6 characters',
+                  fontSize: 14.sp,
+                );
+                return;
+              }
+
+              if (password != confirmPassword) {
+                Fluttertoast.showToast(
+                  msg: 'Passwords do not match',
+                  fontSize: 14.sp,
+                );
+                return;
+              }
+
               Get.back();
-              _exportPasswords();
+              _exportPasswords(password);
             },
-            child: const Text('Export'),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              minimumSize: Size(60.w, 36.h),
+            ),
+            child: Text('Export', style: TextStyle(fontSize: 14.sp)),
           ),
         ],
       ),
@@ -325,42 +410,93 @@ class SettingsController extends GetxController {
 
   /// Show import dialog
   void showImportDialog() {
+    final passwordController = TextEditingController();
+
     Get.dialog(
       AlertDialog(
-        title: const Text('Import Passwords'),
-        content: const Text(
-          'Select an encrypted backup file to import your passwords.',
+        title: Text(
+          'Import Passwords',
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
         ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+        content: Container(
+          constraints: BoxConstraints(maxHeight: 120.h),
+          width: double.maxFinite,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Enter the password used to encrypt the backup file:',
+                style: TextStyle(fontSize: 14.sp),
+              ),
+              SizedBox(height: 16.h),
+              TextField(
+                controller: passwordController,
+                decoration: InputDecoration(
+                  labelText: 'Import Password',
+                  labelStyle: TextStyle(fontSize: 14.sp),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 16.h,
+                  ),
+                ),
+                style: TextStyle(fontSize: 16.sp),
+                obscureText: true,
+              ),
+            ],
+          ),
+        ),
+        actionsPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Get.back(),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              minimumSize: Size(60.w, 36.h),
+            ),
+            child: Text('Cancel', style: TextStyle(fontSize: 14.sp)),
+          ),
+          SizedBox(width: 8.w),
           TextButton(
             onPressed: () {
+              final password = passwordController.text;
+
+              if (password.isEmpty) {
+                Fluttertoast.showToast(
+                  msg: 'Please enter the import password',
+                  fontSize: 14.sp,
+                );
+                return;
+              }
+
               Get.back();
-              _importPasswords();
+              _importPasswords(password);
             },
-            child: const Text('Select File'),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              minimumSize: Size(60.w, 36.h),
+            ),
+            child: Text('Select File', style: TextStyle(fontSize: 14.sp)),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _exportPasswords() async {
+  Future<void> _exportPasswords(String password) async {
     try {
       isLoading.value = true;
-      final exportData = await _passwordRepository.exportPasswords(
-        'master_password',
-      ); // TODO: Use a real master password
+      final exportData = await _passwordRepository.exportPasswords(password);
 
       final result = await FilePicker.platform.saveFile(
         dialogTitle: 'Save Passwords',
-        fileName: 'lockbloom_export_${DateTime.now().toIso8601String()}.json',
+        fileName: 'lockbloom_export_${DateTime.now().millisecondsSinceEpoch}.json',
         bytes: utf8.encode(exportData),
       );
 
       if (result != null) {
         Fluttertoast.showToast(
-          msg: 'Passwords exported successfully to $result',
+          msg: 'Passwords exported successfully',
         );
       } else {
         Fluttertoast.showToast(msg: 'Export cancelled');
@@ -374,7 +510,7 @@ class SettingsController extends GetxController {
     }
   }
 
-  Future<void> _importPasswords() async {
+  Future<void> _importPasswords(String password) async {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -386,10 +522,7 @@ class SettingsController extends GetxController {
         final file = File(result.files.single.path!);
         final encryptedData = await file.readAsString();
 
-        await _passwordRepository.importPasswords(
-          encryptedData,
-          'master_password',
-        ); // TODO: Use a real master password
+        await _passwordRepository.importPasswords(encryptedData, password);
         await _passwordController.loadPasswords();
 
         Fluttertoast.showToast(msg: 'Passwords imported successfully');

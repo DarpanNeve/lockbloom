@@ -5,34 +5,40 @@ import 'package:lockbloom/app/controllers/auth_controller.dart';
 import 'package:lockbloom/app/widgets/password_strength_indicator.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:upgrader/upgrader.dart';
 
 class AuthView extends GetView<AuthController> {
   const AuthView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
-              Theme.of(context).colorScheme.background,
-            ],
+    return UpgradeAlert(
+      barrierDismissible: false,
+      showIgnore: false,
+      showLater: false,
+      child: Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                Theme.of(context).colorScheme.background,
+              ],
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(AppTheme.spacingLg.w),
-            child: Obx(() {
-              if (!controller.isSetupComplete.value) {
-                return _buildSetupView(context);
-              } else {
-                return _buildLoginView(context);
-              }
-            }),
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.all(AppTheme.spacingLg.w),
+              child: Obx(() {
+                if (!controller.isSetupComplete.value) {
+                  return _buildSetupView(context);
+                } else {
+                  return _buildLoginView(context);
+                }
+              }),
+            ),
           ),
         ),
       ),
@@ -179,7 +185,7 @@ class AuthView extends GetView<AuthController> {
       child: Column(
         children: [
           SizedBox(height: AppTheme.spacingXxl.h),
-          
+
           // App Logo and Name
           Column(
             children: [
@@ -210,9 +216,9 @@ class AuthView extends GetView<AuthController> {
               ),
             ],
           ),
-          
+
           SizedBox(height: AppTheme.spacingXl.h),
-          
+
           // PIN Input
           Column(
             children: [

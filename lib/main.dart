@@ -59,28 +59,24 @@ class LockBloomApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UpgradeAlert(
-      barrierDismissible: false,
-      showIgnore: false,
-      child: ScreenUtilInit(
-        designSize: const Size(375, 812), // iPhone 13 Pro size
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (context, child) {
-          return GetMaterialApp(
-            title: 'LockBloom',
-            debugShowCheckedModeBanner: false,
-            initialBinding: InitialBinding(),
-            initialRoute: AppPages.INITIAL,
-            getPages: AppPages.routes,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: Get.find<ThemeService>().theme,
-            locale: Get.deviceLocale,
-            fallbackLocale: const Locale('en', 'US'),
-          );
-        },
-      ),
+    return ScreenUtilInit(
+      designSize: const Size(375, 812), // iPhone 13 Pro size
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return GetMaterialApp(
+          title: 'LockBloom',
+          debugShowCheckedModeBanner: false,
+          initialBinding: InitialBinding(),
+          initialRoute: AppPages.INITIAL,
+          getPages: AppPages.routes,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: Get.find<ThemeService>().theme,
+          locale: Get.deviceLocale,
+          fallbackLocale: const Locale('en', 'US'),
+        );
+      },
     );
   }
 }

@@ -116,35 +116,36 @@ class PasswordRepository extends GetxService {
       'timestamp': DateTime.now().toIso8601String(),
       'passwords': passwords.map((p) => p.toJson()).toList(),
     };
-    
-    // Create a temporary encrypter for export with master password
-    // Note: This is a simplified approach. In production, use proper key derivation
+
     final exportJson = jsonEncode(exportData);
-    return _encryptionService.encrypt(exportJson);
+    return _encryptionService.encryptWithPassword(exportJson, masterPassword);
   }
 
   /// Import passwords from encrypted JSON
   Future<void> importPasswords(String encryptedData, String masterPassword) async {
     try {
-      final decryptedJson = _encryptionService.decrypt(encryptedData);
+      final decryptedJson = _encryptionService.decryptWithPassword(encryptedData, masterPassword);
       final Map<String, dynamic> exportData = jsonDecode(decryptedJson);
-      
+
       if (exportData['version'] != '1.0') {
         throw Exception('Unsupported export version');
       }
-      
+
       final List<dynamic> passwordList = exportData['passwords'];
       final importedPasswords = passwordList.map((json) => PasswordEntry.fromJson(json)).toList();
-      
+
       // Merge with existing passwords (avoid duplicates by ID)
       final existingPasswords = await getAllPasswords();
       final existingIds = existingPasswords.map((p) => p.id).toSet();
-      
+
       final newPasswords = importedPasswords.where((p) => !existingIds.contains(p.id)).toList();
       final allPasswords = [...existingPasswords, ...newPasswords];
-      
+
       await _savePasswordList(allPasswords);
     } catch (e) {
+      if (e.toString().contains('Failed to decrypt data with password')) {
+        throw Exception('Invalid password or corrupted file');
+      }
       throw Exception('Failed to import passwords: ${e.toString()}');
     }
   }
