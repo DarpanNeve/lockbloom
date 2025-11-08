@@ -48,7 +48,25 @@ for arg in "$@"; do
 done
 
 # Define the location of the service account JSON file.
-SERVICE_ACCOUNT_JSON="./service_account.json"
+# Use environment variable if set, otherwise check common secure locations
+# NEVER store service_account.json in the project directory or git!
+if [ -n "$SERVICE_ACCOUNT_JSON" ]; then
+  # Use the environment variable if provided
+  SERVICE_ACCOUNT_JSON="$SERVICE_ACCOUNT_JSON"
+elif [ -f "$HOME/.secrets/lockbloom/service_account.json" ]; then
+  # Check user's secure directory
+  SERVICE_ACCOUNT_JSON="$HOME/.secrets/lockbloom/service_account.json"
+elif [ -f "$HOME/.config/lockbloom/service_account.json" ]; then
+  # Alternative secure location
+  SERVICE_ACCOUNT_JSON="$HOME/.config/lockbloom/service_account.json"
+else
+  # Default to project root (for backward compatibility, but warn)
+  SERVICE_ACCOUNT_JSON="./service_account.json"
+  echo "WARNING: Using service_account.json from project root. Consider moving to a secure location."
+  echo "Recommended: Store at \$HOME/.secrets/lockbloom/service_account.json"
+  echo "Or set SERVICE_ACCOUNT_JSON environment variable to specify the path."
+fi
+
 PACKAGE_NAME="com.dn.lockbloom"
 
 # Check if Shorebird CLI is installed

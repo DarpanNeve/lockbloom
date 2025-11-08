@@ -43,4 +43,47 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# === CRITICAL SECRETS & CREDENTIALS ===
+# Google Cloud service account keys (Play Store deployment)
+service_account.json
+**/service_account*.json
+**/*-service-account*.json
+google-services-account.json
+
+# Android signing keys
+key.properties
+**/*.keystore
+**/*.jks
+upload-keystore.jks
+release-keystore.jks
+
+# Environment variables & configuration
 .env
+.env.*
+.env.local
+.env.production
+.env.staging
+secrets.yaml
+secrets.json
+
+# Certificates & private keys
+**/*.pem
+**/*.p12
+**/*.cert
+**/*.der
+**/*.crt
+**/*.key
+
+# Fastlane & deployment
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/.env*
+
+# Backup files that might contain sensitive data
+*.backup
+*.bak
+*_backup
+*_bak
