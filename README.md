@@ -119,7 +119,6 @@ If LockBloom helps keep your passwords secure, consider supporting its developme
 **[☕ Buy Me a Coffee](https://buymeacoffee.com/darpanneve)**
 
 [![GitHub Sponsor](https://img.shields.io/badge/Sponsor-GitHub-pink?style=for-the-badge&logo=github)](https://github.com/sponsors/DarpanNeve)
-[![PayPal](https://img.shields.io/badge/Donate-PayPal-blue?style=for-the-badge&logo=paypal)](https://paypal.me/darpanneve)
 
 </div>
 
