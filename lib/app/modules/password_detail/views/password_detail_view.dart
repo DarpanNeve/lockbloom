@@ -77,6 +77,13 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         // Header Card with Favorite
         Card(
           margin: EdgeInsets.zero,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+            side: BorderSide(
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+            ),
+          ),
           child: Padding(
             padding: EdgeInsets.all(AppTheme.spacingLg.w),
             child: Row(
@@ -105,7 +112,9 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                     children: [
                       Text(
                         entry.label,
-                        style: Theme.of(context).textTheme.headlineSmall,
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       if (entry.website?.isNotEmpty == true) ...[
                         SizedBox(height: AppTheme.spacingXs.h),
@@ -129,8 +138,8 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                     });
                   },
                   icon: Icon(
-                    entry.isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: entry.isFavorite ? AppTheme.errorColor : Theme.of(context).colorScheme.outline,
+                    entry.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                    color: entry.isFavorite ? AppTheme.secondaryColor : Theme.of(context).colorScheme.outline,
                   ),
                 ),
               ],
@@ -145,7 +154,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           context,
           label: 'Username',
           value: entry.username,
-          icon: Icons.person_outline,
+          icon: Icons.person_outline_rounded,
           canCopy: true,
           onCopy: () => _passwordController.copyUsername(entry),
         ),
@@ -163,7 +172,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
             context,
             label: 'Website',
             value: entry.website!,
-            icon: Icons.web,
+            icon: Icons.language_rounded,
             canCopy: true,
           ),
           SizedBox(height: AppTheme.spacingMd.h),
@@ -203,7 +212,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           controller: _passwordController.labelController,
           decoration: const InputDecoration(
             labelText: 'Label *',
-            prefixIcon: Icon(Icons.label_outline),
+            prefixIcon: Icon(Icons.label_outline_rounded),
           ),
         ),
         
@@ -213,7 +222,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           controller: _passwordController.usernameController,
           decoration: const InputDecoration(
             labelText: 'Username/Email *',
-            prefixIcon: Icon(Icons.person_outline),
+            prefixIcon: Icon(Icons.person_outline_rounded),
           ),
         ),
         
@@ -223,21 +232,21 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           controller: _passwordController.passwordController,
           decoration: InputDecoration(
             labelText: 'Password *',
-            prefixIcon: const Icon(Icons.lock_outline),
+            prefixIcon: const Icon(Icons.lock_outline_rounded),
             suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
                   onPressed: _passwordController.useGeneratedPassword,
-                  icon: const Icon(Icons.auto_awesome),
+                  icon: const Icon(Icons.auto_awesome_rounded),
                   tooltip: 'Generate Password',
                 ),
                 Obx(() => IconButton(
                   onPressed: () => _passwordController.showPassword.toggle(),
                   icon: Icon(
                     _passwordController.showPassword.value
-                        ? Icons.visibility_off
-                        : Icons.visibility,
+                        ? Icons.visibility_off_rounded
+                        : Icons.visibility_rounded,
                   ),
                 )),
               ],
@@ -252,7 +261,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           controller: _passwordController.websiteController,
           decoration: const InputDecoration(
             labelText: 'Website',
-            prefixIcon: Icon(Icons.web),
+            prefixIcon: Icon(Icons.language_rounded),
           ),
         ),
         
@@ -262,7 +271,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           controller: _passwordController.tagsController,
           decoration: const InputDecoration(
             labelText: 'Tags (comma separated)',
-            prefixIcon: Icon(Icons.tag),
+            prefixIcon: Icon(Icons.tag_rounded),
           ),
         ),
         
@@ -312,6 +321,13 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
   }) {
     return Card(
       margin: EdgeInsets.zero,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+        ),
+      ),
       child: Padding(
         padding: EdgeInsets.all(AppTheme.spacingMd.w),
         child: Column(
@@ -338,6 +354,8 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                     onPressed: onCopy,
                     icon: const Icon(Icons.copy_rounded),
                     iconSize: 18.w,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                   ),
               ],
             ),
@@ -359,6 +377,13 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
   Widget _buildPasswordField(BuildContext context) {
     return Card(
       margin: EdgeInsets.zero,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+        ),
+      ),
       child: Padding(
         padding: EdgeInsets.all(AppTheme.spacingMd.w),
         child: Column(
@@ -367,7 +392,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
             Row(
               children: [
                 Icon(
-                  Icons.lock_outline,
+                  Icons.lock_outline_rounded,
                   size: 20.w,
                   color: Theme.of(context).colorScheme.primary,
                 ),
@@ -383,14 +408,19 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                 IconButton(
                   onPressed: _revealPassword,
                   icon: Icon(
-                    isPasswordRevealed ? Icons.visibility_off : Icons.visibility,
+                    isPasswordRevealed ? Icons.visibility_off_rounded : Icons.visibility_rounded,
                   ),
-                  iconSize: 18.w,
+                  iconSize: 20.w,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
+                SizedBox(width: AppTheme.spacingMd.w),
                 IconButton(
                   onPressed: () => _passwordController.copyPassword(entry),
                   icon: const Icon(Icons.copy_rounded),
                   iconSize: 18.w,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
               ],
             ),
@@ -403,6 +433,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                 fontFamily: 'monospace',
                 letterSpacing: isPasswordRevealed ? 0 : 4,
                 color: Theme.of(context).colorScheme.onSurface,
+                fontSize: 16.sp,
               ),
             ),
           ],
@@ -414,6 +445,13 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
   Widget _buildTagsField(BuildContext context) {
     return Card(
       margin: EdgeInsets.zero,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+        ),
+      ),
       child: Padding(
         padding: EdgeInsets.all(AppTheme.spacingMd.w),
         child: Column(
@@ -422,7 +460,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
             Row(
               children: [
                 Icon(
-                  Icons.tag,
+                  Icons.tag_rounded,
                   size: 20.w,
                   color: Theme.of(context).colorScheme.primary,
                 ),
@@ -444,6 +482,12 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                 return Chip(
                   label: Text(tag),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  labelStyle: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontSize: 12.sp,
+                  ),
+                  side: BorderSide.none,
                 );
               }).toList(),
             ),
@@ -458,6 +502,13 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
     
     return Card(
       margin: EdgeInsets.zero,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+        ),
+      ),
       child: Padding(
         padding: EdgeInsets.all(AppTheme.spacingMd.w),
         child: Column(
@@ -466,7 +517,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
             Row(
               children: [
                 Icon(
-                  Icons.history,
+                  Icons.history_rounded,
                   size: 20.w,
                   color: Theme.of(context).colorScheme.primary,
                 ),
@@ -533,18 +584,31 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
 
   IconData _getEntryIcon() {
     final website = entry.website?.toLowerCase() ?? '';
-    if (website.contains('google') || website.contains('gmail')) {
-      return Icons.mail;
-    } else if (website.contains('facebook')) {
-      return Icons.facebook;
-    } else if (website.contains('twitter')) {
-      return Icons.alternate_email;
-    } else if (website.contains('github')) {
-      return Icons.code;
-    } else if (website.contains('linkedin')) {
-      return Icons.work;
+    final label = entry.label.toLowerCase();
+    
+    if (website.contains('google') || 
+        website.contains('gmail') || 
+        label.contains('google') || 
+        label.contains('gmail')) {
+      return Icons.mail_outline_rounded;
+    } else if (website.contains('facebook') || label.contains('facebook')) {
+      return Icons.facebook_rounded;
+    } else if (website.contains('twitter') || label.contains('twitter') || label.contains('x.com')) {
+      return Icons.alternate_email_rounded;
+    } else if (website.contains('github') || label.contains('github')) {
+      return Icons.code_rounded;
+    } else if (website.contains('linkedin') || label.contains('linkedin')) {
+      return Icons.work_outline_rounded;
+    } else if (website.contains('netflix') || label.contains('netflix')) {
+      return Icons.movie_outlined;
+    } else if (website.contains('spotify') || label.contains('spotify')) {
+      return Icons.music_note_rounded;
+    } else if (website.contains('amazon') || label.contains('amazon')) {
+      return Icons.shopping_cart_outlined;
+    } else if (website.isNotEmpty) {
+      return Icons.language_rounded;
     } else {
-      return Icons.web;
+      return Icons.lock_outline_rounded;
     }
   }
 

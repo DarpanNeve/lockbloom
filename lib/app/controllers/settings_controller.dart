@@ -136,22 +136,24 @@ class SettingsController extends GetxController {
     Get.dialog(
       AlertDialog(
         title: const Text('Auto-Lock Timeout'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children:
-              timeoutOptions.map((option) {
-                return RadioListTile<int>(
-                  title: Text(option['label'] as String),
-                  value: option['value'] as int,
-                  groupValue: autoLockTimeout.value,
-                  onChanged: (value) {
-                    if (value != null) {
-                      updateAutoLockTimeout(value);
-                      Get.back();
-                    }
-                  },
-                );
-              }).toList(),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children:
+                timeoutOptions.map((option) {
+                  return RadioListTile<int>(
+                    title: Text(option['label'] as String),
+                    value: option['value'] as int,
+                    groupValue: autoLockTimeout.value,
+                    onChanged: (value) {
+                      if (value != null) {
+                        updateAutoLockTimeout(value);
+                        Get.back();
+                      }
+                    },
+                  );
+                }).toList(),
+          ),
         ),
       ),
     );
@@ -162,22 +164,24 @@ class SettingsController extends GetxController {
     Get.dialog(
       AlertDialog(
         title: const Text('Clipboard Clear Time'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children:
-              clipboardOptions.map((option) {
-                return RadioListTile<int>(
-                  title: Text(option['label'] as String),
-                  value: option['value'] as int,
-                  groupValue: clipboardClearTime.value,
-                  onChanged: (value) {
-                    if (value != null) {
-                      updateClipboardClearTime(value);
-                      Get.back();
-                    }
-                  },
-                );
-              }).toList(),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children:
+                clipboardOptions.map((option) {
+                  return RadioListTile<int>(
+                    title: Text(option['label'] as String),
+                    value: option['value'] as int,
+                    groupValue: clipboardClearTime.value,
+                    onChanged: (value) {
+                      if (value != null) {
+                        updateClipboardClearTime(value);
+                        Get.back();
+                      }
+                    },
+                  );
+                }).toList(),
+          ),
         ),
       ),
     );
@@ -191,60 +195,39 @@ class SettingsController extends GetxController {
 
     Get.dialog(
       AlertDialog(
-        title: Text(
-          'Change PIN',
-          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
-        ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
-        content: Container(
-          constraints: BoxConstraints(maxHeight: 250.h),
-          width: double.maxFinite,
+        title: const Text('Change PIN'),
+        content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: currentPinController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Current PIN',
-                  labelStyle: TextStyle(fontSize: 14.sp),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12.w,
-                    vertical: 16.h,
-                  ),
+                  prefixIcon: Icon(Icons.lock_outline_rounded),
                 ),
-                style: TextStyle(fontSize: 16.sp),
                 keyboardType: TextInputType.number,
                 obscureText: true,
                 maxLength: 8,
               ),
-              Spacer(),
+              SizedBox(height: 16.h),
               TextField(
                 controller: newPinController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'New PIN',
-                  labelStyle: TextStyle(fontSize: 14.sp),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12.w,
-                    vertical: 16.h,
-                  ),
+                  prefixIcon: Icon(Icons.lock_rounded),
                 ),
-                style: TextStyle(fontSize: 16.sp),
                 keyboardType: TextInputType.number,
                 obscureText: true,
                 maxLength: 8,
               ),
-              Spacer(),
+              SizedBox(height: 16.h),
               TextField(
                 controller: confirmPinController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Confirm New PIN',
-                  labelStyle: TextStyle(fontSize: 14.sp),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12.w,
-                    vertical: 16.h,
-                  ),
+                  prefixIcon: Icon(Icons.lock_rounded),
                 ),
-                style: TextStyle(fontSize: 16.sp),
                 keyboardType: TextInputType.number,
                 obscureText: true,
                 maxLength: 8,
@@ -252,23 +235,16 @@ class SettingsController extends GetxController {
             ],
           ),
         ),
-        actionsPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              minimumSize: Size(60.w, 36.h),
-            ),
-            child: Text('Cancel', style: TextStyle(fontSize: 14.sp)),
+            child: const Text('Cancel'),
           ),
-          SizedBox(width: 8.w),
           TextButton(
             onPressed: () {
               if (newPinController.text != confirmPinController.text) {
                 Fluttertoast.showToast(
                   msg: 'New PIN and confirmation do not match',
-                  fontSize: 14.sp,
                 );
                 return;
               }
@@ -278,11 +254,7 @@ class SettingsController extends GetxController {
               );
               Get.back();
             },
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              minimumSize: Size(60.w, 36.h),
-            ),
-            child: Text('Change', style: TextStyle(fontSize: 14.sp)),
+            child: const Text('Change'),
           ),
         ],
       ),
@@ -308,63 +280,40 @@ class SettingsController extends GetxController {
 
     Get.dialog(
       AlertDialog(
-        title: Text(
-          'Export Passwords',
-          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
-        ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
-        content: Container(
-          constraints: BoxConstraints(maxHeight: 200.h),
-          width: double.maxFinite,
+        title: const Text('Export Passwords'),
+        content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              const Text(
                 'Enter a password to encrypt your export file:',
-                style: TextStyle(fontSize: 14.sp),
               ),
               SizedBox(height: 16.h),
               TextField(
                 controller: passwordController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Export Password',
-                  labelStyle: TextStyle(fontSize: 14.sp),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12.w,
-                    vertical: 16.h,
-                  ),
+                  prefixIcon: Icon(Icons.key_rounded),
                 ),
-                style: TextStyle(fontSize: 16.sp),
                 obscureText: true,
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: 16.h),
               TextField(
                 controller: confirmPasswordController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Confirm Password',
-                  labelStyle: TextStyle(fontSize: 14.sp),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12.w,
-                    vertical: 16.h,
-                  ),
+                  prefixIcon: Icon(Icons.key_rounded),
                 ),
-                style: TextStyle(fontSize: 16.sp),
                 obscureText: true,
               ),
             ],
           ),
         ),
-        actionsPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              minimumSize: Size(60.w, 36.h),
-            ),
-            child: Text('Cancel', style: TextStyle(fontSize: 14.sp)),
+            child: const Text('Cancel'),
           ),
-          SizedBox(width: 8.w),
           TextButton(
             onPressed: () {
               final password = passwordController.text;
@@ -373,7 +322,6 @@ class SettingsController extends GetxController {
               if (password.isEmpty) {
                 Fluttertoast.showToast(
                   msg: 'Please enter a password',
-                  fontSize: 14.sp,
                 );
                 return;
               }
@@ -381,7 +329,6 @@ class SettingsController extends GetxController {
               if (password.length < 6) {
                 Fluttertoast.showToast(
                   msg: 'Password must be at least 6 characters',
-                  fontSize: 14.sp,
                 );
                 return;
               }
@@ -389,7 +336,6 @@ class SettingsController extends GetxController {
               if (password != confirmPassword) {
                 Fluttertoast.showToast(
                   msg: 'Passwords do not match',
-                  fontSize: 14.sp,
                 );
                 return;
               }
@@ -397,11 +343,7 @@ class SettingsController extends GetxController {
               Get.back();
               _exportPasswords(password);
             },
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              minimumSize: Size(60.w, 36.h),
-            ),
-            child: Text('Export', style: TextStyle(fontSize: 14.sp)),
+            child: const Text('Export'),
           ),
         ],
       ),
@@ -414,49 +356,31 @@ class SettingsController extends GetxController {
 
     Get.dialog(
       AlertDialog(
-        title: Text(
-          'Import Passwords',
-          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
-        ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
-        content: Container(
-          constraints: BoxConstraints(maxHeight: 120.h),
-          width: double.maxFinite,
+        title: const Text('Import Passwords'),
+        content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              const Text(
                 'Enter the password used to encrypt the backup file:',
-                style: TextStyle(fontSize: 14.sp),
               ),
               SizedBox(height: 16.h),
               TextField(
                 controller: passwordController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Import Password',
-                  labelStyle: TextStyle(fontSize: 14.sp),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 12.w,
-                    vertical: 16.h,
-                  ),
+                  prefixIcon: Icon(Icons.key_rounded),
                 ),
-                style: TextStyle(fontSize: 16.sp),
                 obscureText: true,
               ),
             ],
           ),
         ),
-        actionsPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              minimumSize: Size(60.w, 36.h),
-            ),
-            child: Text('Cancel', style: TextStyle(fontSize: 14.sp)),
+            child: const Text('Cancel'),
           ),
-          SizedBox(width: 8.w),
           TextButton(
             onPressed: () {
               final password = passwordController.text;
@@ -464,7 +388,6 @@ class SettingsController extends GetxController {
               if (password.isEmpty) {
                 Fluttertoast.showToast(
                   msg: 'Please enter the import password',
-                  fontSize: 14.sp,
                 );
                 return;
               }
@@ -472,11 +395,7 @@ class SettingsController extends GetxController {
               Get.back();
               _importPasswords(password);
             },
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              minimumSize: Size(60.w, 36.h),
-            ),
-            child: Text('Select File', style: TextStyle(fontSize: 14.sp)),
+            child: const Text('Select File'),
           ),
         ],
       ),

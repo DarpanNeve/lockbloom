@@ -11,7 +11,10 @@ class SettingsView extends GetView<SettingsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(
+        title: const Text('Settings'),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(AppTheme.spacingMd.w),
         child: Column(
@@ -21,13 +24,10 @@ class SettingsView extends GetView<SettingsController> {
             _buildSectionHeader(context, 'Security'),
             _buildSettingsCard(context, [
               _buildSettingsTile(
-                icon: Icons.fingerprint,
+                icon: Icons.fingerprint_rounded,
                 title: 'Biometric Authentication',
                 subtitle: 'Use fingerprint or face to unlock',
                 trailing: Obx(() {
-                  print(
-                    "biometric value: ${Get.find<AuthController>().isBiometricEnabled.value}",
-                  );
                   final authController = Get.find<AuthController>();
                   return Switch(
                     value: authController.isBiometricEnabled.value,
@@ -50,7 +50,7 @@ class SettingsView extends GetView<SettingsController> {
               ),
               Obx(
                 () => _buildSettingsTile(
-                  icon: Icons.timer,
+                  icon: Icons.timer_rounded,
                   title: 'Auto-Lock Timeout',
                   subtitle: controller.getTimeoutDisplayText(
                     controller.autoLockTimeout.value,
@@ -63,7 +63,7 @@ class SettingsView extends GetView<SettingsController> {
                 color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
               ),
               _buildSettingsTile(
-                icon: Icons.vpn_key,
+                icon: Icons.vpn_key_rounded,
                 title: 'Change PIN',
                 subtitle: 'Update your security PIN',
                 onTap: controller.showChangePinDialog,
@@ -77,7 +77,7 @@ class SettingsView extends GetView<SettingsController> {
             _buildSettingsCard(context, [
               Obx(
                 () => _buildSettingsTile(
-                  icon: Icons.content_copy,
+                  icon: Icons.content_copy_rounded,
                   title: 'Clipboard Clear Time',
                   subtitle: controller.getClipboardDisplayText(
                     controller.clipboardClearTime.value,
@@ -90,7 +90,7 @@ class SettingsView extends GetView<SettingsController> {
                 color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
               ),
               _buildSettingsTile(
-                icon: Icons.history,
+                icon: Icons.history_rounded,
                 title: 'Password History',
                 subtitle: 'Remember password changes',
                 trailing: Obx(
@@ -108,7 +108,7 @@ class SettingsView extends GetView<SettingsController> {
             _buildSectionHeader(context, 'Appearance'),
             _buildSettingsCard(context, [
               _buildSettingsTile(
-                icon: Icons.palette,
+                icon: Icons.palette_rounded,
                 title: 'Theme',
                 subtitle: controller.currentThemeText,
                 onTap: controller.showThemeDialog,
@@ -121,7 +121,7 @@ class SettingsView extends GetView<SettingsController> {
             _buildSectionHeader(context, 'Data'),
             _buildSettingsCard(context, [
               _buildSettingsTile(
-                icon: Icons.download,
+                icon: Icons.download_rounded,
                 title: 'Export Passwords',
                 subtitle: 'Create encrypted backup',
                 onTap: controller.showExportDialog,
@@ -131,7 +131,7 @@ class SettingsView extends GetView<SettingsController> {
                 color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
               ),
               _buildSettingsTile(
-                icon: Icons.upload,
+                icon: Icons.upload_rounded,
                 title: 'Import Passwords',
                 subtitle: 'Restore from backup',
                 onTap: controller.showImportDialog,
@@ -144,7 +144,7 @@ class SettingsView extends GetView<SettingsController> {
             _buildSectionHeader(context, 'About'),
             _buildSettingsCard(context, [
               _buildSettingsTile(
-                icon: Icons.info,
+                icon: Icons.info_outline_rounded,
                 title: 'Version',
                 subtitle: '1.0.0',
               ),
@@ -153,7 +153,7 @@ class SettingsView extends GetView<SettingsController> {
                 color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
               ),
               _buildSettingsTile(
-                icon: Icons.security,
+                icon: Icons.security_rounded,
                 title: 'Privacy Policy',
                 subtitle: 'How we protect your data',
                 onTap: () {
@@ -165,7 +165,7 @@ class SettingsView extends GetView<SettingsController> {
                 color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
               ),
               _buildSettingsTile(
-                icon: Icons.description,
+                icon: Icons.description_rounded,
                 title: 'Terms of Service',
                 subtitle: 'Usage terms and conditions',
                 onTap: () {
@@ -180,7 +180,7 @@ class SettingsView extends GetView<SettingsController> {
             _buildSectionHeader(context, 'Danger Zone', isError: true),
             _buildSettingsCard(context, [
               _buildSettingsTile(
-                icon: Icons.warning,
+                icon: Icons.warning_rounded,
                 title: 'Reset App',
                 subtitle: 'Delete all data and settings',
                 onTap: controller.showResetAppDialog,
@@ -195,7 +195,7 @@ class SettingsView extends GetView<SettingsController> {
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: () => Get.find<AuthController>().logout(),
-                icon: const Icon(Icons.logout),
+                icon: const Icon(Icons.logout_rounded),
                 label: const Text('Logout'),
                 style: OutlinedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: AppTheme.spacingMd.h),
@@ -216,12 +216,12 @@ class SettingsView extends GetView<SettingsController> {
     bool isError = false,
   }) {
     return Padding(
-      padding: EdgeInsets.only(bottom: AppTheme.spacingMd.h),
+      padding: EdgeInsets.only(bottom: AppTheme.spacingSm.h, left: AppTheme.spacingXs.w),
       child: Text(
         title,
-        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-          color: isError ? Theme.of(context).colorScheme.error : null,
-          fontWeight: FontWeight.w600,
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          color: isError ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
@@ -230,6 +230,13 @@ class SettingsView extends GetView<SettingsController> {
   Widget _buildSettingsCard(BuildContext context, List<Widget> children) {
     return Card(
       margin: EdgeInsets.zero,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+        ),
+      ),
       child: Column(children: children),
     );
   }
@@ -243,6 +250,10 @@ class SettingsView extends GetView<SettingsController> {
     bool isDestructive = false,
   }) {
     return ListTile(
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: AppTheme.spacingMd.w,
+        vertical: 4.h,
+      ),
       leading: Container(
         padding: EdgeInsets.all(AppTheme.spacingSm.w),
         decoration: BoxDecoration(
@@ -263,8 +274,8 @@ class SettingsView extends GetView<SettingsController> {
       ),
       title: Text(
         title,
-        style: Get.textTheme.labelLarge?.copyWith(
-          fontWeight: FontWeight.w500,
+        style: Get.textTheme.bodyLarge?.copyWith(
+          fontWeight: FontWeight.w600,
           color: isDestructive ? Get.theme.colorScheme.error : null,
         ),
       ),
@@ -275,7 +286,7 @@ class SettingsView extends GetView<SettingsController> {
         ),
       ),
       trailing:
-          trailing ?? (onTap != null ? const Icon(Icons.chevron_right) : null),
+          trailing ?? (onTap != null ? Icon(Icons.chevron_right_rounded, color: Get.theme.colorScheme.outline) : null),
       onTap: onTap,
     );
   }

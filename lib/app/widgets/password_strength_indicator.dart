@@ -50,7 +50,7 @@ class PasswordStrengthIndicator extends StatelessWidget {
       height: 6.h,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppTheme.radiusXs),
-        color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppTheme.radiusXs),

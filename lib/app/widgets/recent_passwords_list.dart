@@ -23,7 +23,7 @@ class RecentPasswordsList extends GetView<PasswordController> {
           height: 120.h,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+            color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
             borderRadius: BorderRadius.circular(AppTheme.radiusMd),
             border: Border.all(
               color: Theme.of(context).colorScheme.outline.withOpacity(0.3),

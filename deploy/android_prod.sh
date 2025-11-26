@@ -161,7 +161,7 @@ create_patch() {
 
   # Create and release patch
   echo "Creating Shorebird patch for Android..."
-  shorebird patch android --release-version="$(grep '^version:' pubspec.yaml | sed 's/version: //')" --flutter-version 3.32.0
+  shorebird patch android --release-version="$(grep '^version:' pubspec.yaml | sed 's/version: //')" --flutter-version 3.38.1
 
   echo "=== Patch created and deployed successfully ==="
 }
@@ -182,7 +182,7 @@ full_deployment() {
 
   echo "=== Building Android App Bundle (AAB) with Shorebird ==="
   # Use Shorebird release command instead of flutter build appbundle
-  shorebird release android --flutter-version 3.32.0
+  shorebird release android --flutter-version 3.38.1
 
   # Define the expected path to the built App Bundle.
   APP_BUNDLE_PATH="build/app/outputs/bundle/release/app-release.aab"

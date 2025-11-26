@@ -21,12 +21,18 @@ class PasswordEntryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('PasswordEntryCard: Building card for label: ${entry.label}'); // Added log
     return Card(
       margin: EdgeInsets.zero,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+        ),
+      ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
         child: Padding(
           padding: EdgeInsets.all(AppTheme.spacingMd.w),
           child: Column(
@@ -34,19 +40,20 @@ class PasswordEntryCard extends StatelessWidget {
             children: [
               // Header Row
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Icon
                   Container(
-                    width: 40.w,
-                    height: 40.w,
+                    width: 48.w,
+                    height: 48.w,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                      borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                     ),
                     child: Icon(
                       _getEntryIcon(),
                       color: Theme.of(context).colorScheme.primary,
-                      size: 20.w,
+                      size: 24.w,
                     ),
                   ),
                   
@@ -57,14 +64,47 @@ class PasswordEntryCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          entry.label,
-                          style: Theme.of(context).textTheme.headlineSmall,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                entry.label,
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (onToggleFavorite != null)
+                              InkWell(
+                                onTap: onToggleFavorite,
+                                borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                                child: Padding(
+                                  padding: EdgeInsets.all(AppTheme.spacingXs.w),
+                                  child: Icon(
+                                    entry.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                                    color: entry.isFavorite ? AppTheme.secondaryColor : Theme.of(context).colorScheme.outline,
+                                    size: 20.w,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
-                        if (entry.website?.isNotEmpty == true) ...[
+                        if (entry.username.isNotEmpty) ...[
                           SizedBox(height: AppTheme.spacingXs.h),
+                          Text(
+                            entry.username,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                        if (entry.website?.isNotEmpty == true) ...[
+                          SizedBox(height: 2.h),
                           Text(
                             entry.website!,
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -75,41 +115,6 @@ class PasswordEntryCard extends StatelessWidget {
                           ),
                         ],
                       ],
-                    ),
-                  ),
-                  
-                  // Favorite Button
-                  if (onToggleFavorite != null)
-                    IconButton(
-                      onPressed: onToggleFavorite,
-                      icon: Icon(
-                        entry.isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: entry.isFavorite ? AppTheme.errorColor : Theme.of(context).colorScheme.outline,
-                      ),
-                      iconSize: 20.w,
-                    ),
-                ],
-              ),
-              
-              SizedBox(height: AppTheme.spacingMd.h),
-              
-              // Username
-              Row(
-                children: [
-                  Icon(
-                    Icons.person_outline,
-                    size: 16.w,
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
-                  SizedBox(width: AppTheme.spacingSm.w),
-                  Expanded(
-                    child: Text(
-                      entry.username.isNotEmpty ? entry.username : 'No username',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
@@ -126,16 +131,17 @@ class PasswordEntryCard extends StatelessWidget {
                     return Container(
                       padding: EdgeInsets.symmetric(
                         horizontal: AppTheme.spacingSm.w,
-                        vertical: AppTheme.spacingXs.h,
+                        vertical: 4.h,
                       ),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondaryContainer,
-                        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                       ),
                       child: Text(
                         tag,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSecondaryContainer,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     );
@@ -144,69 +150,40 @@ class PasswordEntryCard extends StatelessWidget {
                 SizedBox(height: AppTheme.spacingMd.h),
               ],
               
+              Divider(height: 1, color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
+              
+              SizedBox(height: AppTheme.spacingSm.h),
+
               // Action Buttons
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   if (onCopyUsername != null)
-                    _buildActionButton(
-                      context,
-                      icon: Icons.person,
-                      label: 'Username',
+                    TextButton.icon(
                       onPressed: onCopyUsername!,
+                      icon: Icon(Icons.person_outline_rounded, size: 18.w),
+                      label: const Text('Username'),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
+                        minimumSize: Size(0, 36.h),
+                      ),
                     ),
-                  if (onCopyPassword != null)
-                    _buildActionButton(
-                      context,
-                      icon: Icons.lock,
-                      label: 'Password',
+                  if (onCopyPassword != null) ...[
+                    SizedBox(width: AppTheme.spacingSm.w),
+                    TextButton.icon(
                       onPressed: onCopyPassword!,
+                      icon: Icon(Icons.copy_rounded, size: 18.w),
+                      label: const Text('Password'),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
+                        minimumSize: Size(0, 36.h),
+                      ),
                     ),
-                  _buildActionButton(
-                    context,
-                    icon: Icons.open_in_new,
-                    label: 'Details',
-                    onPressed: onTap ?? () {},
-                  ),
+                  ],
                 ],
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return InkWell(
-      onTap: onPressed,
-      borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: AppTheme.spacingMd.w,
-          vertical: AppTheme.spacingSm.h,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 18.w,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            SizedBox(height: AppTheme.spacingXs.h),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -220,25 +197,25 @@ class PasswordEntryCard extends StatelessWidget {
         website.contains('gmail') || 
         label.contains('google') || 
         label.contains('gmail')) {
-      return Icons.mail;
+      return Icons.mail_outline_rounded;
     } else if (website.contains('facebook') || label.contains('facebook')) {
-      return Icons.facebook;
-    } else if (website.contains('twitter') || label.contains('twitter')) {
-      return Icons.alternate_email;
+      return Icons.facebook_rounded;
+    } else if (website.contains('twitter') || label.contains('twitter') || label.contains('x.com')) {
+      return Icons.alternate_email_rounded;
     } else if (website.contains('github') || label.contains('github')) {
-      return Icons.code;
+      return Icons.code_rounded;
     } else if (website.contains('linkedin') || label.contains('linkedin')) {
-      return Icons.work;
+      return Icons.work_outline_rounded;
     } else if (website.contains('netflix') || label.contains('netflix')) {
-      return Icons.movie;
+      return Icons.movie_outlined;
     } else if (website.contains('spotify') || label.contains('spotify')) {
-      return Icons.music_note;
+      return Icons.music_note_rounded;
     } else if (website.contains('amazon') || label.contains('amazon')) {
-      return Icons.shopping_cart;
+      return Icons.shopping_cart_outlined;
     } else if (website.isNotEmpty) {
-      return Icons.web;
+      return Icons.language_rounded;
     } else {
-      return Icons.lock_outline;
+      return Icons.lock_outline_rounded;
     }
   }
 }

@@ -6,6 +6,8 @@ import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/routes/app_pages.dart';
 import 'package:lockbloom/app/widgets/password_entry_card.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
+import 'package:lockbloom/app/modules/saved_passwords/views/widgets/add_password_sheet.dart';
+import 'package:lockbloom/app/modules/saved_passwords/views/widgets/password_filter_sheet.dart';
 
 class SavedPasswordsView extends GetView<PasswordController> {
   const SavedPasswordsView({super.key});
@@ -17,8 +19,12 @@ class SavedPasswordsView extends GetView<PasswordController> {
         title: const Text('Saved Passwords'),
         actions: [
           IconButton(
-            onPressed: _showAddPasswordSheet,
-            icon: const Icon(Icons.add_rounded),
+            onPressed: () => Get.bottomSheet(
+              const AddPasswordSheet(),
+              isScrollControlled: true,
+            ),
+            icon: const Icon(Icons.add_circle_outline_rounded),
+            tooltip: 'Add Password',
           ),
         ],
       ),
@@ -26,7 +32,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
         children: [
           // Search Bar
           Padding(
-           padding: EdgeInsets.all(AppTheme.spacingMd.w),
+            padding: EdgeInsets.all(AppTheme.spacingMd.w),
             child: TextField(
               onChanged: controller.searchPasswords,
               decoration: InputDecoration(
@@ -43,8 +49,12 @@ class SavedPasswordsView extends GetView<PasswordController> {
                     );
                   }
                   return IconButton(
-                    onPressed: _showFilterSheet,
+                    onPressed: () => Get.bottomSheet(
+                      const PasswordFilterSheet(),
+                      isScrollControlled: true,
+                    ),
                     icon: const Icon(Icons.filter_list_rounded),
+                    tooltip: 'Filter',
                   );
                 }),
               ),
@@ -56,24 +66,28 @@ class SavedPasswordsView extends GetView<PasswordController> {
             if (controller.selectedTags.isNotEmpty) {
               return Container(
                 height: 40.h,
-                margin: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
+                margin: EdgeInsets.only(
+                  left: AppTheme.spacingMd.w,
+                  right: AppTheme.spacingMd.w,
+                  bottom: AppTheme.spacingSm.h,
+                ),
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: controller.selectedTags.length,
                   itemBuilder: (context, index) {
                     final tag = controller.selectedTags[index];
-                    return Container(
-                      margin: EdgeInsets.only(right: AppTheme.spacingSm.w),
+                    return Padding(
+                      padding: EdgeInsets.only(right: AppTheme.spacingSm.w),
                       child: Chip(
                         label: Text(tag),
                         onDeleted: () {
-                          final tags = List<String>.from(
-                            controller.selectedTags,
-                          );
+                          final tags = List<String>.from(controller.selectedTags);
                           tags.remove(tag);
                           controller.filterByTags(tags);
                         },
-                        deleteIcon: const Icon(Icons.close, size: 16),
+                        deleteIcon: const Icon(Icons.close_rounded, size: 16),
+                        visualDensity: VisualDensity.compact,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     );
                   },
@@ -95,26 +109,21 @@ class SavedPasswordsView extends GetView<PasswordController> {
               }
 
               return ListView.builder(
-                padding: EdgeInsets.all(AppTheme.spacingMd.w),
+                padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
                 itemCount: controller.filteredPasswords.length,
                 itemBuilder: (context, index) {
                   final password = controller.filteredPasswords[index];
-                  print(
-                    'SavedPasswordsView: Building item for password: ${password.label}',
-                  ); // Added log
                   return Padding(
                     padding: EdgeInsets.only(bottom: AppTheme.spacingMd.h),
                     child: PasswordEntryCard(
                       entry: password,
-                      onTap:
-                          () => Get.toNamed(
-                            Routes.PASSWORD_DETAIL,
-                            arguments: password,
-                          ),
+                      onTap: () => Get.toNamed(
+                        Routes.PASSWORD_DETAIL,
+                        arguments: password,
+                      ),
                       onCopyPassword: () => controller.copyPassword(password),
                       onCopyUsername: () => controller.copyUsername(password),
-                      onToggleFavorite:
-                          () => controller.toggleFavorite(password),
+                      onToggleFavorite: () => controller.toggleFavorite(password),
                     ),
                   );
                 },
@@ -128,277 +137,55 @@ class SavedPasswordsView extends GetView<PasswordController> {
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.lock_outline_rounded,
-            size: 80.w,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-          SizedBox(height: AppTheme.spacingLg.h),
-          Text(
-            'No passwords found',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          SizedBox(height: AppTheme.spacingSm.h),
-          Text(
-            'Start by adding your first password',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: AppTheme.spacingLg.h),
-          ElevatedButton.icon(
-            onPressed: _showAddPasswordSheet,
-            icon: const Icon(Icons.add_rounded),
-            label: const Text('Add Password'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showAddPasswordSheet() {
-    Get.bottomSheet(
-      Container(
-        height: Get.height * 0.8,
-        padding: EdgeInsets.all(AppTheme.spacingMd.w),
-        decoration: BoxDecoration(
-          color: Theme.of(Get.context!).colorScheme.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(AppTheme.spacingMd)),
-        ),
+      child: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Add Password', 
-                  style: Theme.of(Get.context!).textTheme.headlineSmall,
-                ),
-                IconButton(
-                  onPressed: () => Get.back(),
-                  icon: const Icon(Icons.close_rounded),
-                ),
-              ],
+            Container(
+              padding: EdgeInsets.all(AppTheme.spacingXl.w),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.lock_outline_rounded,
+                size: 64.w,
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+              ),
             ),
-
             SizedBox(height: AppTheme.spacingLg.h),
-
-            // Form
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: controller.labelController,
-                      decoration: const InputDecoration(
-                        labelText: 'Label *',
-                        hintText: 'e.g., Gmail, Facebook',
-                        prefixIcon: Icon(Icons.label_outline),
-                      ),
-                    ),
-
-                    SizedBox(height: AppTheme.spacingMd.h),
-
-                    TextField(
-                      controller: controller.usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Username/Email *',
-                        prefixIcon: Icon(Icons.person_outline),
-                      ),
-                    ),
-
-                    SizedBox(height: AppTheme.spacingMd.h),
-
-                    Obx(
-                      () => TextField(
-                        controller: controller.passwordController,
-                        decoration: InputDecoration(
-                          labelText: 'Password *',
-                          prefixIcon: const Icon(Icons.lock_outline),
-                          suffixIcon: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                onPressed: controller.useGeneratedPassword,
-                                icon: const Icon(Icons.auto_awesome),
-                                tooltip: 'Use Generated Password',
-                              ),
-                              Obx(
-                                () => IconButton(
-                                  onPressed:
-                                      () => controller.showPassword.toggle(),
-                                  icon: Icon(
-                                    controller.showPassword.value
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        obscureText: !controller.showPassword.value,
-                        onChanged: controller.calculatePasswordStrength,
-                      ),
-                    ),
-
-                    SizedBox(height: AppTheme.spacingMd.h),
-
-                    TextField(
-                      controller: controller.websiteController,
-                      decoration: const InputDecoration(
-                        labelText: 'Website',
-                        hintText: 'https://example.com',
-                        prefixIcon: Icon(Icons.web),
-                      ),
-                    ),
-
-                    SizedBox(height: AppTheme.spacingMd.h),
-
-                    TextField(
-                      controller: controller.tagsController,
-                      decoration: const InputDecoration(
-                        labelText: 'Tags (comma separated)',
-                        hintText: 'work, social, email',
-                        prefixIcon: Icon(Icons.tag),
-                      ),
-                    ),
-
-                    SizedBox(height: AppTheme.spacingMd.h),
-
-                    TextField(
-                      controller: controller.notesController,
-                      decoration: const InputDecoration(
-                        labelText: 'Notes',
-                        prefixIcon: Icon(Icons.note_outlined),
-                      ),
-                      maxLines: 3,
-                    ),
-                  ],
-                ),
-              ),
+            Text(
+              'No passwords found',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
-
-            // Save Button
-            SizedBox(height: AppTheme.spacingMd.h),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  final tags =
-                      controller.tagsController.text
-                          .split(',')
-                          .map((e) => e.trim())
-                          .where((e) => e.isNotEmpty)
-                          .toList();
-
-                  controller.savePassword(
-                    label: controller.labelController.text,
-                    username: controller.usernameController.text,
-                    password: controller.passwordController.text,
-                    website: controller.websiteController.text,
-                    notes: controller.notesController.text,
-                    tags: tags,
-                  );
-
-                  Get.back();
-                },
-                child: const Text('Save Password'),
+            SizedBox(height: AppTheme.spacingSm.h),
+            Text(
+              'Your digital vault is empty.\nAdd your first password to get started.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: AppTheme.spacingLg.h),
+            ElevatedButton.icon(
+              onPressed: () => Get.bottomSheet(
+                const AddPasswordSheet(),
+                isScrollControlled: true,
+              ),
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Add Password'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacingXl.w,
+                  vertical: AppTheme.spacingMd.h,
+                ),
               ),
             ),
           ],
         ),
       ),
-      isScrollControlled: true,
-    );
-  }
-
-  void _showFilterSheet() {
-    final allTags = controller.getAllTags();
-
-    Get.bottomSheet(
-      Container(
-        height: Get.height * 0.6,
-        padding: EdgeInsets.all(AppTheme.spacingMd.w),
-        decoration: BoxDecoration(
-          color: Theme.of(Get.context!).colorScheme.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(AppTheme.spacingMd)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Filter by Tags', 
-                  style: Theme.of(Get.context!).textTheme.headlineSmall,
-                ),
-                TextButton(
-                  onPressed: () {
-                    controller.filterByTags([]);
-                    Get.back();
-                  },
-                  child: const Text('Clear All'),
-                ),
-              ],
-            ),
-
-            SizedBox(height: AppTheme.spacingMd.h),
-
-            if (allTags.isEmpty)
-              const Expanded(child: Center(child: Text('No tags available')))
-            else
-              Expanded(
-                child: Wrap(
-                  spacing: AppTheme.spacingSm.w,
-                  runSpacing: AppTheme.spacingSm.h,
-                  children:
-                      allTags.map((tag) {
-                        return Obx(() {
-                          final isSelected = controller.selectedTags.contains(
-                            tag,
-                          );
-                          return FilterChip(
-                            label: Text(tag),
-                            selected: isSelected,
-                            onSelected: (selected) {
-                              final tags = List<String>.from(
-                                controller.selectedTags,
-                              );
-                              if (selected) {
-                                tags.add(tag);
-                              } else {
-                                tags.remove(tag);
-                              }
-                              controller.filterByTags(tags);
-                            },
-                          );
-                        });
-                      }).toList(),
-                ),
-              ),
-
-            // Apply Button
-            SizedBox(height: AppTheme.spacingMd.h),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Get.back(),
-                child: const Text('Apply Filters'),
-              ),
-            ),
-          ],
-        ),
-      ),
-      isScrollControlled: true,
     );
   }
 }

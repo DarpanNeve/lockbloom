@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AppTheme {
-  // Primary Color Palette
-  static const Color primaryColor = Color(0xFF6366F1); // Indigo
-  static const Color primaryLightColor = Color(0xFF8B92FF);
-  static const Color primaryDarkColor = Color(0xFF4338CA);
-  static const Color primaryContainerColor = Color(0xFFE0E7FF);
-  static const Color onPrimaryContainerColor = Color(0xFF1E1B4B);
+  // Primary Color Palette (Teal - Trust & Security)
+  static const Color primaryColor = Color(0xFF0D9488); // Teal 600
+  static const Color primaryLightColor = Color(0xFF2DD4BF); // Teal 400
+  static const Color primaryDarkColor = Color(0xFF115E59); // Teal 800
+  static const Color primaryContainerColor = Color(0xFFF0FDFA); // Teal 50
+  static const Color onPrimaryContainerColor = Color(0xFF134E4A); // Teal 900
 
-  // Secondary Color Palette
-  static const Color secondaryColor = Color(0xFF14B8A6); // Teal
-  static const Color secondaryLightColor = Color(0xFF5EEAD4);
-  static const Color secondaryDarkColor = Color(0xFF0F766E);
-  static const Color secondaryContainerColor = Color(0xFFCCFBF1);
-  static const Color onSecondaryContainerColor = Color(0xFF134E4A);
+  // Secondary Color Palette (Rose - Accent & Action)
+  static const Color secondaryColor = Color(0xFFE11D48); // Rose 600
+  static const Color secondaryLightColor = Color(0xFFFB7185); // Rose 400
+  static const Color secondaryDarkColor = Color(0xFF9F1239); // Rose 800
+  static const Color secondaryContainerColor = Color(0xFFFFF1F2); // Rose 50
+  static const Color onSecondaryContainerColor = Color(0xFF881337); // Rose 900
 
   // Accent Colors
   static const Color accentColor = Color(0xFFF59E0B); // Amber
@@ -23,22 +23,22 @@ class AppTheme {
   static const Color errorColor = Color(0xFFEF4444); // Red
 
   // Light Theme Colors
-  static const Color lightBackgroundColor = Color(0xFFFAFAFA);
+  static const Color lightBackgroundColor = Color(0xFFF8FAFC); // Slate 50
   static const Color lightSurfaceColor = Color(0xFFFFFFFF);
   static const Color lightCardColor = Color(0xFFFFFFFF);
-  static const Color lightOutlineColor = Color(0xFFE5E7EB);
-  static const Color lightOutlineVariantColor = Color(0xFFF3F4F6);
-  static const Color lightOnSurfaceColor = Color(0xFF1F2937);
-  static const Color lightOnSurfaceVariantColor = Color(0xFF6B7280);
+  static const Color lightOutlineColor = Color(0xFFE2E8F0); // Slate 200
+  static const Color lightOutlineVariantColor = Color(0xFFF1F5F9); // Slate 100
+  static const Color lightOnSurfaceColor = Color(0xFF0F172A); // Slate 900
+  static const Color lightOnSurfaceVariantColor = Color(0xFF64748B); // Slate 500
 
   // Dark Theme Colors
-  static const Color darkBackgroundColor = Color(0xFF0F172A);
-  static const Color darkSurfaceColor = Color(0xFF1E293B);
-  static const Color darkCardColor = Color(0xFF334155);
-  static const Color darkOutlineColor = Color(0xFF475569);
-  static const Color darkOutlineVariantColor = Color(0xFF64748B);
-  static const Color darkOnSurfaceColor = Color(0xFFF1F5F9);
-  static const Color darkOnSurfaceVariantColor = Color(0xFFCBD5E1);
+  static const Color darkBackgroundColor = Color(0xFF0F172A); // Slate 900
+  static const Color darkSurfaceColor = Color(0xFF1E293B); // Slate 800
+  static const Color darkCardColor = Color(0xFF1E293B); // Slate 800 (Same as surface for seamless look)
+  static const Color darkOutlineColor = Color(0xFF334155); // Slate 700
+  static const Color darkOutlineVariantColor = Color(0xFF475569); // Slate 600
+  static const Color darkOnSurfaceColor = Color(0xFFF8FAFC); // Slate 50
+  static const Color darkOnSurfaceVariantColor = Color(0xFF94A3B8); // Slate 400
 
   static ThemeData get lightTheme {
     final colorScheme = ColorScheme.light(
@@ -56,12 +56,10 @@ class AppTheme {
       onError: Colors.white,
       surface: lightSurfaceColor,
       onSurface: lightOnSurfaceColor,
-      surfaceVariant: lightOutlineVariantColor,
+      surfaceContainerHighest: lightOutlineVariantColor,
       onSurfaceVariant: lightOnSurfaceVariantColor,
       outline: lightOutlineColor,
       outlineVariant: lightOutlineVariantColor,
-      background: lightBackgroundColor,
-      onBackground: lightOnSurfaceColor,
       inverseSurface: darkSurfaceColor,
       onInverseSurface: darkOnSurfaceColor,
       inversePrimary: primaryLightColor,
@@ -72,15 +70,13 @@ class AppTheme {
       brightness: Brightness.light,
       colorScheme: colorScheme,
       fontFamily: 'Inter',
-
-      // Scaffold Theme
       scaffoldBackgroundColor: lightBackgroundColor,
 
       // AppBar Theme
       appBarTheme: AppBarTheme(
         elevation: 0,
-        scrolledUnderElevation: 1,
-        backgroundColor: lightSurfaceColor,
+        scrolledUnderElevation: 0,
+        backgroundColor: lightBackgroundColor, // Seamless with background
         foregroundColor: lightOnSurfaceColor,
         surfaceTintColor: Colors.transparent,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
@@ -88,19 +84,23 @@ class AppTheme {
         titleTextStyle: const TextStyle(
           color: lightOnSurfaceColor,
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           fontFamily: 'Inter',
+          letterSpacing: -0.5,
         ),
         iconTheme: const IconThemeData(color: lightOnSurfaceColor, size: 24),
       ),
 
       // Card Theme
       cardTheme: CardThemeData(
-        elevation: 2,
+        elevation: 0, // Flat design
         color: lightCardColor,
-        shadowColor: Colors.black.withOpacity(0.08),
+        shadowColor: Colors.black.withOpacity(0.04),
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: lightOutlineColor, width: 1),
+        ),
         margin: EdgeInsets.zero,
       ),
 
@@ -111,10 +111,9 @@ class AppTheme {
           foregroundColor: Colors.white,
           disabledBackgroundColor: lightOutlineColor,
           disabledForegroundColor: lightOnSurfaceVariantColor,
-          elevation: 2,
-          shadowColor: primaryColor.withOpacity(0.3),
+          elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           textStyle: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 16,
@@ -128,8 +127,8 @@ class AppTheme {
           foregroundColor: primaryColor,
           disabledForegroundColor: lightOnSurfaceVariantColor,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          side: const BorderSide(color: primaryColor, width: 1.5),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          side: const BorderSide(color: lightOutlineColor, width: 1),
           textStyle: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 16,
@@ -143,9 +142,10 @@ class AppTheme {
           foregroundColor: primaryColor,
           disabledForegroundColor: lightOnSurfaceVariantColor,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: const TextStyle(
             fontWeight: FontWeight.w600,
-            fontSize: 16,
+            fontSize: 14,
             fontFamily: 'Inter',
           ),
         ),
@@ -154,26 +154,26 @@ class AppTheme {
       // Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: lightOutlineVariantColor,
+        fillColor: lightSurfaceColor,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: lightOutlineColor),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: lightOutlineColor),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: primaryColor, width: 2),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: primaryColor, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: errorColor),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: errorColor, width: 2),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: errorColor, width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -182,10 +182,17 @@ class AppTheme {
         hintStyle: TextStyle(
           color: lightOnSurfaceVariantColor,
           fontFamily: 'Inter',
+          fontSize: 14,
         ),
         labelStyle: TextStyle(
           color: lightOnSurfaceVariantColor,
           fontFamily: 'Inter',
+          fontSize: 14,
+        ),
+        floatingLabelStyle: TextStyle(
+          color: primaryColor,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w600,
         ),
       ),
 
@@ -194,7 +201,7 @@ class AppTheme {
         backgroundColor: lightSurfaceColor,
         selectedItemColor: primaryColor,
         unselectedItemColor: lightOnSurfaceVariantColor,
-        elevation: 8,
+        elevation: 0,
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: const TextStyle(
           fontWeight: FontWeight.w600,
@@ -206,34 +213,48 @@ class AppTheme {
           fontSize: 12,
           fontFamily: 'Inter',
         ),
+        showUnselectedLabels: true,
       ),
 
       // Chip Theme
       chipTheme: ChipThemeData(
-        backgroundColor: primaryContainerColor,
+        backgroundColor: lightOutlineVariantColor,
         labelStyle: const TextStyle(
-          color: onPrimaryContainerColor,
+          color: lightOnSurfaceColor,
           fontWeight: FontWeight.w500,
           fontFamily: 'Inter',
+          fontSize: 13,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: const BorderSide(color: Colors.transparent),
+        ),
+        selectedColor: primaryContainerColor,
+        secondaryLabelStyle: const TextStyle(
+          color: onPrimaryContainerColor,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'Inter',
+          fontSize: 13,
+        ),
+        checkmarkColor: onPrimaryContainerColor,
       ),
 
       // Switch Theme
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
+            return Colors.white;
+          }
+          return lightOnSurfaceVariantColor;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return primaryColor;
           }
           return lightOutlineColor;
         }),
-        trackColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return primaryColor.withOpacity(0.5);
-          }
-          return lightOutlineVariantColor;
-        }),
+        trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
       ),
 
       // Text Theme
@@ -244,13 +265,15 @@ class AppTheme {
           color: lightOnSurfaceColor,
           height: 1.2,
           fontFamily: 'Inter',
+          letterSpacing: -1.0,
         ),
         displayMedium: TextStyle(
           fontSize: 28,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: lightOnSurfaceColor,
           height: 1.2,
           fontFamily: 'Inter',
+          letterSpacing: -0.5,
         ),
         displaySmall: TextStyle(
           fontSize: 24,
@@ -290,7 +313,7 @@ class AppTheme {
         bodyMedium: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: lightOnSurfaceColor,
+          color: lightOnSurfaceVariantColor, // Softer body text
           height: 1.5,
           fontFamily: 'Inter',
         ),
@@ -310,7 +333,7 @@ class AppTheme {
         labelMedium: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: lightOnSurfaceColor,
+          color: lightOnSurfaceVariantColor,
           fontFamily: 'Inter',
         ),
         labelSmall: TextStyle(
@@ -318,6 +341,7 @@ class AppTheme {
           fontWeight: FontWeight.w600,
           color: lightOnSurfaceVariantColor,
           fontFamily: 'Inter',
+          letterSpacing: 0.5,
         ),
       ),
     );
@@ -326,25 +350,23 @@ class AppTheme {
   static ThemeData get darkTheme {
     final colorScheme = ColorScheme.dark(
       primary: primaryLightColor,
-      onPrimary: Colors.white,
+      onPrimary: darkBackgroundColor,
       primaryContainer: primaryDarkColor,
       onPrimaryContainer: primaryLightColor,
-      secondary: secondaryColor,
-      onSecondary: Colors.white,
+      secondary: secondaryLightColor,
+      onSecondary: darkBackgroundColor,
       secondaryContainer: secondaryDarkColor,
       onSecondaryContainer: secondaryLightColor,
       tertiary: accentColor,
-      onTertiary: Colors.white,
+      onTertiary: darkBackgroundColor,
       error: errorColor,
       onError: Colors.white,
       surface: darkSurfaceColor,
       onSurface: darkOnSurfaceColor,
-      surfaceVariant: darkCardColor,
+      surfaceContainerHighest: darkOutlineVariantColor,
       onSurfaceVariant: darkOnSurfaceVariantColor,
       outline: darkOutlineColor,
       outlineVariant: darkOutlineVariantColor,
-      background: darkBackgroundColor,
-      onBackground: darkOnSurfaceColor,
       inverseSurface: lightSurfaceColor,
       onInverseSurface: lightOnSurfaceColor,
       inversePrimary: primaryColor,
@@ -355,15 +377,13 @@ class AppTheme {
       brightness: Brightness.dark,
       colorScheme: colorScheme,
       fontFamily: 'Inter',
-
-      // Scaffold Theme
       scaffoldBackgroundColor: darkBackgroundColor,
 
       // AppBar Theme
       appBarTheme: AppBarTheme(
         elevation: 0,
-        scrolledUnderElevation: 1,
-        backgroundColor: darkSurfaceColor,
+        scrolledUnderElevation: 0,
+        backgroundColor: darkBackgroundColor,
         foregroundColor: darkOnSurfaceColor,
         surfaceTintColor: Colors.transparent,
         systemOverlayStyle: SystemUiOverlayStyle.light,
@@ -371,19 +391,23 @@ class AppTheme {
         titleTextStyle: const TextStyle(
           color: darkOnSurfaceColor,
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           fontFamily: 'Inter',
+          letterSpacing: -0.5,
         ),
         iconTheme: const IconThemeData(color: darkOnSurfaceColor, size: 24),
       ),
 
       // Card Theme
       cardTheme: CardThemeData(
-        elevation: 2,
-        color: darkCardColor,
-        shadowColor: Colors.black.withOpacity(0.3),
+        elevation: 0,
+        color: darkSurfaceColor,
+        shadowColor: Colors.black.withOpacity(0.2),
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: darkOutlineColor.withOpacity(0.5), width: 1),
+        ),
         margin: EdgeInsets.zero,
       ),
 
@@ -391,13 +415,12 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryLightColor,
-          foregroundColor: Colors.white,
+          foregroundColor: darkBackgroundColor,
           disabledBackgroundColor: darkOutlineColor,
           disabledForegroundColor: darkOnSurfaceVariantColor,
-          elevation: 2,
-          shadowColor: primaryLightColor.withOpacity(0.3),
+          elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           textStyle: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 16,
@@ -411,8 +434,8 @@ class AppTheme {
           foregroundColor: primaryLightColor,
           disabledForegroundColor: darkOnSurfaceVariantColor,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          side: const BorderSide(color: primaryLightColor, width: 1.5),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          side: const BorderSide(color: darkOutlineColor, width: 1),
           textStyle: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 16,
@@ -426,9 +449,10 @@ class AppTheme {
           foregroundColor: primaryLightColor,
           disabledForegroundColor: darkOnSurfaceVariantColor,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: const TextStyle(
             fontWeight: FontWeight.w600,
-            fontSize: 16,
+            fontSize: 14,
             fontFamily: 'Inter',
           ),
         ),
@@ -437,26 +461,26 @@ class AppTheme {
       // Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: darkCardColor,
+        fillColor: darkSurfaceColor,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: darkOutlineColor),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: darkOutlineColor),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: primaryLightColor, width: 2),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: primaryLightColor, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: errorColor),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: errorColor, width: 2),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: errorColor, width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -465,19 +489,26 @@ class AppTheme {
         hintStyle: TextStyle(
           color: darkOnSurfaceVariantColor,
           fontFamily: 'Inter',
+          fontSize: 14,
         ),
         labelStyle: TextStyle(
           color: darkOnSurfaceVariantColor,
           fontFamily: 'Inter',
+          fontSize: 14,
+        ),
+        floatingLabelStyle: TextStyle(
+          color: primaryLightColor,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w600,
         ),
       ),
 
       // Bottom Navigation Bar Theme
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: darkSurfaceColor,
+        backgroundColor: darkBackgroundColor,
         selectedItemColor: primaryLightColor,
         unselectedItemColor: darkOnSurfaceVariantColor,
-        elevation: 8,
+        elevation: 0,
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: const TextStyle(
           fontWeight: FontWeight.w600,
@@ -489,34 +520,48 @@ class AppTheme {
           fontSize: 12,
           fontFamily: 'Inter',
         ),
+        showUnselectedLabels: true,
       ),
 
       // Chip Theme
       chipTheme: ChipThemeData(
-        backgroundColor: primaryDarkColor,
+        backgroundColor: darkOutlineColor,
         labelStyle: const TextStyle(
-          color: primaryLightColor,
+          color: darkOnSurfaceColor,
           fontWeight: FontWeight.w500,
           fontFamily: 'Inter',
+          fontSize: 13,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: const BorderSide(color: Colors.transparent),
+        ),
+        selectedColor: primaryDarkColor,
+        secondaryLabelStyle: const TextStyle(
+          color: primaryLightColor,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'Inter',
+          fontSize: 13,
+        ),
+        checkmarkColor: primaryLightColor,
       ),
 
       // Switch Theme
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
+            return darkBackgroundColor;
+          }
+          return darkOnSurfaceVariantColor;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return primaryLightColor;
           }
           return darkOutlineColor;
         }),
-        trackColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return primaryLightColor.withOpacity(0.5);
-          }
-          return darkOutlineVariantColor;
-        }),
+        trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
       ),
 
       // Text Theme
@@ -527,13 +572,15 @@ class AppTheme {
           color: darkOnSurfaceColor,
           height: 1.2,
           fontFamily: 'Inter',
+          letterSpacing: -1.0,
         ),
         displayMedium: TextStyle(
           fontSize: 28,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: darkOnSurfaceColor,
           height: 1.2,
           fontFamily: 'Inter',
+          letterSpacing: -0.5,
         ),
         displaySmall: TextStyle(
           fontSize: 24,
@@ -573,7 +620,7 @@ class AppTheme {
         bodyMedium: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: darkOnSurfaceColor,
+          color: darkOnSurfaceVariantColor,
           height: 1.5,
           fontFamily: 'Inter',
         ),
@@ -593,7 +640,7 @@ class AppTheme {
         labelMedium: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: darkOnSurfaceColor,
+          color: darkOnSurfaceVariantColor,
           fontFamily: 'Inter',
         ),
         labelSmall: TextStyle(
@@ -601,6 +648,7 @@ class AppTheme {
           fontWeight: FontWeight.w600,
           color: darkOnSurfaceVariantColor,
           fontFamily: 'Inter',
+          letterSpacing: 0.5,
         ),
       ),
     );
