@@ -55,7 +55,6 @@ class SettingsController extends GetxController {
     _loadSettings();
   }
 
-  /// Load settings from storage
   void _loadSettings() {
     autoLockTimeout.value =
         _storageService.read<int>(_autoLockTimeoutKey) ?? 300;
@@ -65,21 +64,18 @@ class SettingsController extends GetxController {
         _storageService.read<bool>(_passwordHistoryKey) ?? true;
   }
 
-  /// Update auto-lock timeout
   Future<void> updateAutoLockTimeout(int timeout) async {
     autoLockTimeout.value = timeout;
     await _storageService.write(_autoLockTimeoutKey, timeout);
     Fluttertoast.showToast(msg: 'Auto-lock timeout updated');
   }
 
-  /// Update clipboard clear time
   Future<void> updateClipboardClearTime(int time) async {
     clipboardClearTime.value = time;
     await _storageService.write(_clipboardClearTimeKey, time);
     Fluttertoast.showToast(msg: 'Clipboard clear time updated');
   }
 
-  /// Toggle password history
   Future<void> togglePasswordHistory(bool enabled) async {
     isPasswordHistoryEnabled.value = enabled;
     await _storageService.write(_passwordHistoryKey, enabled);
@@ -88,7 +84,6 @@ class SettingsController extends GetxController {
     );
   }
 
-  /// Get current theme mode display text
   String get currentThemeText {
     switch (_themeService.theme) {
       case ThemeMode.light:
@@ -100,7 +95,6 @@ class SettingsController extends GetxController {
     }
   }
 
-  /// Show theme selection dialog
   void showThemeDialog() {
     Get.dialog(
       AlertDialog(
@@ -131,7 +125,6 @@ class SettingsController extends GetxController {
     );
   }
 
-  /// Show auto-lock timeout dialog
   void showAutoLockDialog() {
     Get.dialog(
       AlertDialog(
@@ -159,7 +152,6 @@ class SettingsController extends GetxController {
     );
   }
 
-  /// Show clipboard clear time dialog
   void showClipboardDialog() {
     Get.dialog(
       AlertDialog(
@@ -187,7 +179,6 @@ class SettingsController extends GetxController {
     );
   }
 
-  /// Show change PIN dialog
   void showChangePinDialog() {
     final currentPinController = TextEditingController();
     final newPinController = TextEditingController();
@@ -261,19 +252,16 @@ class SettingsController extends GetxController {
     );
   }
 
-  /// Get timeout display text
   String getTimeoutDisplayText(int timeout) {
     final option = timeoutOptions.firstWhere((o) => o['value'] == timeout);
     return option['label'] as String;
   }
 
-  /// Get clipboard clear time display text
   String getClipboardDisplayText(int time) {
     final option = clipboardOptions.firstWhere((o) => o['value'] == time);
     return option['label'] as String;
   }
 
-  /// Show export dialog
   void showExportDialog() {
     final passwordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
@@ -350,7 +338,6 @@ class SettingsController extends GetxController {
     );
   }
 
-  /// Show import dialog
   void showImportDialog() {
     final passwordController = TextEditingController();
 
@@ -457,7 +444,6 @@ class SettingsController extends GetxController {
     }
   }
 
-  /// Show reset app confirmation
   void showResetAppDialog() {
     Get.dialog(
       AlertDialog(

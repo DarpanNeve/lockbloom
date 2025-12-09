@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/repositories/password_repository.dart';
@@ -63,28 +64,20 @@ class PasswordController extends GetxController {
     super.onClose();
   }
 
-  /// Load all passwords
   Future<void> loadPasswords() async {
-    print('PasswordController: loadPasswords called.');
     isLoading.value = true;
     try {
       final loadedPasswords = await _repository.getAllPasswords();
-      print(
-        'PasswordController: Loaded ${loadedPasswords.length} passwords from repository.',
-      );
       passwords.value = loadedPasswords;
       _filterPasswords();
-      print('PasswordController: Passwords loaded and filtered.');
-    } catch (e) {
+    } catch (e, stack) {
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'loadPasswords failed');
       Fluttertoast.showToast(msg: 'Failed to load passwords: ${e.toString()}');
-      print('PasswordController: Error loading passwords: $e');
     } finally {
       isLoading.value = false;
-      print('PasswordController: isLoading set to false.');
     }
   }
 
-  /// Generate a new password
   void generatePassword() {
     try {
       final password = _passwordService.generatePassword(generatorConfig.value);
@@ -97,13 +90,11 @@ class PasswordController extends GetxController {
     }
   }
 
-  /// Update generator configuration
   void updateGeneratorConfig(PasswordGeneratorConfig config) {
     generatorConfig.value = config;
     generatePassword();
   }
 
-  /// Save a password entry
   Future<void> savePassword({
     String? id,
     required String label,
@@ -125,7 +116,6 @@ class PasswordController extends GetxController {
 
     isLoading.value = true;
     try {
-      // Encrypt the password
       final encryptedPassword = _encryptionService.encrypt(password);
 
       final entry = PasswordEntry(
@@ -137,7 +127,6 @@ class PasswordController extends GetxController {
         notes: notes?.trim() ?? '',
         tags: tags ?? [],
         createdAt: id == null ? DateTime.now() : DateTime.now(),
-        // Will be updated in repository
         updatedAt: DateTime.now(),
       );
 
@@ -148,14 +137,14 @@ class PasswordController extends GetxController {
         msg: id == null ? 'Password saved' : 'Password updated',
       );
       _clearForm();
-    } catch (e) {
+    } catch (e, stack) {
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'savePassword failed');
       Fluttertoast.showToast(msg: 'Failed to save password: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
   }
 
-  /// Delete a password entry
   Future<void> deletePassword(String id) async {
     final confirm = await Get.dialog<bool>(
       AlertDialog(
@@ -183,7 +172,8 @@ class PasswordController extends GetxController {
         await _repository.deletePassword(id);
         await loadPasswords();
         Fluttertoast.showToast(msg: 'Password deleted');
-      } catch (e) {
+      } catch (e, stack) {
+        FirebaseCrashlytics.instance.recordError(e, stack, reason: 'deletePassword failed');
         Fluttertoast.showToast(
           msg: 'Failed to delete password: ${e.toString()}',
         );
@@ -193,7 +183,6 @@ class PasswordController extends GetxController {
     }
   }
 
-  /// Get decrypted password
   String getDecryptedPassword(PasswordEntry entry) {
     try {
       return _encryptionService.decrypt(entry.encryptedPassword);
@@ -202,14 +191,12 @@ class PasswordController extends GetxController {
     }
   }
 
-  /// Copy password to clipboard
   Future<void> copyPassword(PasswordEntry entry) async {
     try {
       final password = getDecryptedPassword(entry);
       await Clipboard.setData(ClipboardData(text: password));
       Fluttertoast.showToast(msg: 'Password copied to clipboard');
 
-      // Clear clipboard after 30 seconds for security
       Future.delayed(const Duration(seconds: 30), () {
         Clipboard.setData(const ClipboardData(text: ''));
       });
@@ -218,7 +205,6 @@ class PasswordController extends GetxController {
     }
   }
 
-  /// Copy username to clipboard
   Future<void> copyUsername(PasswordEntry entry) async {
     try {
       await Clipboard.setData(ClipboardData(text: entry.username));
@@ -228,7 +214,6 @@ class PasswordController extends GetxController {
     }
   }
 
-  /// Toggle favorite status
   Future<void> toggleFavorite(PasswordEntry entry) async {
     try {
       final updatedEntry = entry.copyWith(isFavorite: !entry.isFavorite);
@@ -239,27 +224,18 @@ class PasswordController extends GetxController {
     }
   }
 
-  /// Search passwords
   void searchPasswords(String query) {
     searchQuery.value = query;
   }
 
-  /// Filter passwords by tags
   void filterByTags(List<String> tags) {
     selectedTags.value = tags;
     _filterPasswords();
   }
 
-  /// Filter passwords based on search query and selected tags
   void _filterPasswords() {
-    print('PasswordController: _filterPasswords called.');
-    print('  searchQuery: ${searchQuery.value}');
-    print('  selectedTags: ${selectedTags.value}');
-    print('  Total passwords: ${passwords.length}');
-
     var filtered = passwords.toList();
 
-    // Filter by search query
     if (searchQuery.value.isNotEmpty) {
       final query = searchQuery.value.toLowerCase();
       filtered =
@@ -275,7 +251,6 @@ class PasswordController extends GetxController {
               .toList();
     }
 
-    // Filter by selected tags
     if (selectedTags.isNotEmpty) {
       filtered =
           filtered
@@ -286,10 +261,8 @@ class PasswordController extends GetxController {
     }
 
     filteredPasswords.value = filtered;
-    print('  Filtered passwords count: ${filteredPasswords.length}');
   }
 
-  /// Get all unique tags
   List<String> getAllTags() {
     final allTags = <String>{};
     for (final password in passwords) {
@@ -298,7 +271,6 @@ class PasswordController extends GetxController {
     return allTags.toList()..sort();
   }
 
-  /// Load password for editing
   void loadPasswordForEdit(PasswordEntry entry) {
     labelController.text = entry.label;
     usernameController.text = entry.username;
@@ -308,7 +280,6 @@ class PasswordController extends GetxController {
     tagsController.text = entry.tags.join(', ');
   }
 
-  /// Clear form
   void _clearForm() {
     labelController.clear();
     usernameController.clear();
@@ -318,17 +289,14 @@ class PasswordController extends GetxController {
     tagsController.clear();
   }
 
-  /// Use generated password in form
   void useGeneratedPassword() {
     passwordController.text = generatedPassword.value;
   }
 
-  /// Calculate password strength for manual input
   void calculatePasswordStrength(String password) {
     passwordStrength.value = _passwordService.calculateStrength(password);
   }
 
-  /// Export passwords
   Future<void> exportPasswords() async {
     try {
       final exportData = await _repository.exportPasswords('export_password');
@@ -342,7 +310,6 @@ class PasswordController extends GetxController {
     }
   }
 
-  /// Get password statistics
   Future<Map<String, dynamic>> getPasswordStats() async {
     return await _repository.getPasswordStats();
   }

@@ -1,4 +1,5 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/routes/app_pages.dart';
@@ -38,32 +39,43 @@ class AuthController extends GetxController {
     super.onClose();
   }
 
-  /// Check initial authentication state
+  static const int _maxFailedAttempts = 5;
+  static const Duration _lockoutDuration = Duration(seconds: 30);
+  static const String _failedAttemptsKey = 'auth_failed_attempts';
+  static const String _lockoutUntilKey = 'auth_lockout_until';
+
+  final failedAttempts = 0.obs;
+  final lockoutUntil = Rxn<DateTime>();
+
   Future<void> _checkInitialState() async {
     isLoading.value = true;
 
     try {
-      // Check if biometric is available
       isBiometricAvailable.value = await _biometricService.isAvailable();
 
-      // Check if setup is complete
       isSetupComplete.value =
           _storageService.read<bool>(_isSetupCompleteKey) ?? false;
 
-      // Check if biometric is enabled
       isBiometricEnabled.value =
           _storageService.read<bool>(_biometricEnabledKey) ?? false;
+      
+      final storedAttempts = _storageService.read<int>(_failedAttemptsKey);
+      if (storedAttempts != null) failedAttempts.value = storedAttempts;
 
-      // Initialize encryption service
+      final storedLockout = _storageService.read<String>(_lockoutUntilKey);
+      if (storedLockout != null) {
+        lockoutUntil.value = DateTime.tryParse(storedLockout);
+      }
+
       await _encryptionService.init();
-    } catch (e) {
+    } catch (e, stack) {
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'Auth checkInitialState failed');
       Fluttertoast.showToast(msg: 'Failed to initialize app: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
   }
 
-  /// Setup PIN for first time users
   Future<void> setupPin(String pin) async {
     if (pin.length < 4) {
       Fluttertoast.showToast(msg: 'PIN must be at least 4 digits');
@@ -73,18 +85,14 @@ class AuthController extends GetxController {
     isLoading.value = true;
 
     try {
-      // Encrypt and store PIN
       final encryptedPin = _encryptionService.encrypt(pin);
       await _storageService.writeSecure(_pinKey, encryptedPin);
 
-      // Mark setup as complete
       await _storageService.write(_isSetupCompleteKey, true);
       isSetupComplete.value = true;
 
-      // Log sign_up event
       FirebaseAnalytics.instance.logSignUp(signUpMethod: 'pin');
 
-      // If biometric is available, ask user if they want to enable it
       if (isBiometricAvailable.value) {
         final toEnableBiometric = await Get.dialog<bool>(
           AlertDialog(
@@ -109,17 +117,73 @@ class AuthController extends GetxController {
         }
       }
 
-      // Navigate to home
       Get.offAllNamed(Routes.HOME);
-    } catch (e) {
+    } catch (e, stack) {
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'setupPin failed');
       Fluttertoast.showToast(msg: 'Failed to setup PIN: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
   }
 
-  /// Authenticate with PIN
+  Future<bool> verifyPin(String pin) async {
+    if (lockoutUntil.value != null) {
+      if (DateTime.now().isBefore(lockoutUntil.value!)) {
+        final remaining = lockoutUntil.value!.difference(DateTime.now()).inSeconds;
+        Fluttertoast.showToast(msg: 'Too many attempts. Try again in ${remaining}s');
+        return false;
+      } else {
+        lockoutUntil.value = null;
+        failedAttempts.value = 0;
+        await _storageService.remove(_lockoutUntilKey);
+        await _storageService.remove(_failedAttemptsKey);
+      }
+    }
+
+    try {
+      final encryptedStoredPin = await _storageService.readSecure(_pinKey);
+      if (encryptedStoredPin == null) {
+        return false;
+      }
+
+      final storedPin = _encryptionService.decrypt(encryptedStoredPin);
+
+      if (pin == storedPin) {
+        failedAttempts.value = 0;
+        await _storageService.remove(_failedAttemptsKey);
+        return true;
+      } else {
+        failedAttempts.value++;
+        await _storageService.write(_failedAttemptsKey, failedAttempts.value);
+        
+        if (failedAttempts.value >= _maxFailedAttempts) {
+            lockoutUntil.value = DateTime.now().add(_lockoutDuration);
+            await _storageService.write(_lockoutUntilKey, lockoutUntil.value!.toIso8601String());
+            Fluttertoast.showToast(msg: 'Too many failed attempts. Locked for 30s.');
+        }
+        return false;
+      }
+    } catch (e, stack) {
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'verifyPin failed');
+      return false;
+    }
+  }
+
   Future<void> authenticateWithPin(String pin) async {
+    if (lockoutUntil.value != null) {
+        if (DateTime.now().isBefore(lockoutUntil.value!)) {
+            final remaining = lockoutUntil.value!.difference(DateTime.now()).inSeconds;
+            Fluttertoast.showToast(msg: 'Too many attempts. Try again in ${remaining}s');
+            return;
+        } else {
+            // Lockout expired
+            lockoutUntil.value = null;
+            failedAttempts.value = 0;
+            await _storageService.remove(_lockoutUntilKey);
+            await _storageService.remove(_failedAttemptsKey);
+        }
+    }
+
     isLoading.value = true;
 
     try {
@@ -135,20 +199,34 @@ class AuthController extends GetxController {
 
       if (pin == storedPin) {
         isAuthenticated.value = true;
+        
+        failedAttempts.value = 0;
+        await _storageService.remove(_failedAttemptsKey);
+        
         FirebaseAnalytics.instance.logLogin(loginMethod: 'pin');
         Get.offAllNamed(Routes.HOME);
       } else {
-        Fluttertoast.showToast(msg: 'Incorrect PIN');
+        failedAttempts.value++;
+        await _storageService.write(_failedAttemptsKey, failedAttempts.value);
+        
+        if (failedAttempts.value >= _maxFailedAttempts) {
+            lockoutUntil.value = DateTime.now().add(_lockoutDuration);
+            await _storageService.write(_lockoutUntilKey, lockoutUntil.value!.toIso8601String());
+            Fluttertoast.showToast(msg: 'Too many failed attempts. Locked for 30s.');
+        } else {
+            Fluttertoast.showToast(msg: 'Incorrect PIN. Attempts: ${failedAttempts.value}/$_maxFailedAttempts');
+        }
+        
         pinController.clear();
       }
-    } catch (e) {
+    } catch (e, stack) {
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'authenticateWithPin failed');
       Fluttertoast.showToast(msg: 'Authentication failed: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
   }
 
-  /// Authenticate with biometric
   Future<void> authenticateWithBiometric() async {
     if (!isBiometricEnabled.value || !isBiometricAvailable.value) return;
 
@@ -162,14 +240,13 @@ class AuthController extends GetxController {
         FirebaseAnalytics.instance.logLogin(loginMethod: 'biometric');
         Get.offAllNamed(Routes.HOME);
       }
-    } catch (e) {
+    } catch (e, stack) {
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'authenticateWithBiometric failed');
       Fluttertoast.showToast(msg: 'Biometric authentication failed');
     }
   }
 
-  /// Enable biometric authentication
   Future<void> enableBiometric() async {
-    print('enableBiometric called');
     if (!isBiometricAvailable.value) {
       Fluttertoast.showToast(msg: 'Biometric authentication not available');
       return;
@@ -185,19 +262,18 @@ class AuthController extends GetxController {
         isBiometricEnabled.value = true;
         Fluttertoast.showToast(msg: 'Biometric authentication enabled');
       }
-    } catch (e) {
+    } catch (e, stack) {
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'enableBiometric failed');
       Fluttertoast.showToast(msg: 'Failed to enable biometric authentication');
     }
   }
 
-  /// Disable biometric authentication
   Future<void> disableBiometric() async {
     await _storageService.write(_biometricEnabledKey, false);
     isBiometricEnabled.value = false;
     Fluttertoast.showToast(msg: 'Biometric authentication disabled');
   }
 
-  /// Change PIN
   Future<void> changePin(String currentPin, String newPin) async {
     if (newPin.length < 4) {
       Fluttertoast.showToast(msg: 'PIN must be at least 4 digits');
@@ -207,7 +283,6 @@ class AuthController extends GetxController {
     isLoading.value = true;
 
     try {
-      // Verify current PIN
       final encryptedStoredPin = await _storageService.readSecure(_pinKey);
       if (encryptedStoredPin == null) {
         Fluttertoast.showToast(msg: 'No PIN found');
@@ -221,20 +296,19 @@ class AuthController extends GetxController {
         return;
       }
 
-      // Save new PIN
       final encryptedNewPin = _encryptionService.encrypt(newPin);
       await _storageService.writeSecure(_pinKey, encryptedNewPin);
 
       FirebaseAnalytics.instance.logEvent(name: 'change_pin');
       Fluttertoast.showToast(msg: 'PIN changed successfully');
-    } catch (e) {
+    } catch (e, stack) {
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'changePin failed');
       Fluttertoast.showToast(msg: 'Failed to change PIN: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
   }
 
-  /// Logout user
   void logout() {
     isAuthenticated.value = false;
     pinController.clear();
@@ -242,7 +316,6 @@ class AuthController extends GetxController {
     Get.offAllNamed(Routes.AUTH);
   }
 
-  /// Reset app (clear all data)
   Future<void> resetApp() async {
     final confirm = await Get.dialog<bool>(
       AlertDialog(
@@ -276,7 +349,8 @@ class AuthController extends GetxController {
 
         Get.offAllNamed(Routes.SPLASH);
         Fluttertoast.showToast(msg: 'App has been reset');
-      } catch (e) {
+      } catch (e, stack) {
+        FirebaseCrashlytics.instance.recordError(e, stack, reason: 'resetApp failed');
         Fluttertoast.showToast(msg: 'Failed to reset app: ${e.toString()}');
       }
     }

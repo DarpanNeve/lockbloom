@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lockbloom/app/controllers/password_controller.dart';
+import 'package:lockbloom/app/controllers/auth_controller.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/services/biometric_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -18,6 +19,7 @@ class PasswordDetailView extends StatefulWidget {
 class _PasswordDetailViewState extends State<PasswordDetailView> {
   final PasswordController _passwordController = Get.find();
   final BiometricService _biometricService = Get.find();
+  final AuthController _authController = Get.find();
   
   late PasswordEntry entry;
   bool isPasswordRevealed = false;
@@ -613,24 +615,17 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
   }
 
   Future<void> _revealPassword() async {
-    print('PasswordDetailView: _revealPassword called. isPasswordRevealed: $isPasswordRevealed');
-
     if (isPasswordRevealed) {
       setState(() {
         isPasswordRevealed = false;
       });
-      print('PasswordDetailView: Password already revealed, hiding it.');
       return;
     }
 
-    print('PasswordDetailView: Checking biometric availability and enablement.');
-    // Check if biometric is available and enabled
     final bool biometricAvailable = await _biometricService.isAvailable();
     final bool biometricEnabledInApp = await _biometricService.isBiometricEnabledInApp();
-    print('PasswordDetailView: Biometric available: $biometricAvailable, enabled in app: $biometricEnabledInApp');
 
     if (biometricAvailable && biometricEnabledInApp) {
-      print('PasswordDetailView: Attempting biometric authentication.');
       final authenticated = await _biometricService.authenticate(
         localizedReason: 'Authenticate to reveal password',
       );
@@ -639,57 +634,71 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         setState(() {
           isPasswordRevealed = true;
         });
-        print('PasswordDetailView: Biometric authentication successful. Password revealed.');
 
-        // Auto-hide password after 30 seconds
         Future.delayed(const Duration(seconds: 30), () {
           if (mounted) {
             setState(() {
               isPasswordRevealed = false;
             });
-            print('PasswordDetailView: Auto-hiding password after 30 seconds.');
           }
         });
-      } else {
-        print('PasswordDetailView: Biometric authentication failed.');
       }
     } else {
-      print('PasswordDetailView: Biometric not available or not enabled in app. Showing confirmation dialog.');
-      // Show confirmation dialog if biometric is not available
-      final confirm = await Get.dialog<bool>(
+      final pinController = TextEditingController();
+      final verified = await Get.dialog<bool>(
         AlertDialog(
-          title: const Text('Reveal Password'),
-          content: const Text('Are you sure you want to reveal the password?'),
+          title: const Text('Enter PIN'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Enter your PIN to reveal the password.'),
+              SizedBox(height: 16.h),
+              TextField(
+                controller: pinController,
+                obscureText: true,
+                keyboardType: TextInputType.number,
+                maxLength: 8,
+                decoration: const InputDecoration(
+                  labelText: 'PIN',
+                  prefixIcon: Icon(Icons.lock_outline_rounded),
+                ),
+                autofocus: true,
+              ),
+            ],
+          ),
           actions: [
             TextButton(
               onPressed: () => Get.back(result: false),
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () => Get.back(result: true),
-              child: const Text('Reveal'),
+              onPressed: () async {
+                final isValid = await _authController.verifyPin(pinController.text);
+                if (isValid) {
+                  Get.back(result: true);
+                } else {
+                  // verifyPin handles toast feedback
+                  pinController.clear();
+                }
+              },
+              child: const Text('Verify'),
             ),
           ],
         ),
       );
 
-      if (confirm == true) {
+      if (verified == true) {
         setState(() {
           isPasswordRevealed = true;
         });
-        print('PasswordDetailView: Confirmation received. Password revealed.');
 
-        // Auto-hide password after 30 seconds
         Future.delayed(const Duration(seconds: 30), () {
           if (mounted) {
             setState(() {
               isPasswordRevealed = false;
             });
-            print('PasswordDetailView: Auto-hiding password after 30 seconds.');
           }
         });
-      } else {
-        print('PasswordDetailView: Confirmation denied. Password not revealed.');
       }
     }
   }

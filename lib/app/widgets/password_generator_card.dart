@@ -323,7 +323,6 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: Theme.of(context).colorScheme.primary,
           ),
         ],
       ),

@@ -51,6 +51,13 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
+  // Enable edge-to-edge mode
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.transparent,
+    statusBarColor: Colors.transparent,
+  ));
+
   runApp(const LockBloomApp());
 }
 

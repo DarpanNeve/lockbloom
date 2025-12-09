@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/password_controller.dart';
 import 'package:lockbloom/app/routes/app_pages.dart';
 import 'package:lockbloom/app/widgets/password_entry_card.dart';
+import 'package:lockbloom/app/widgets/skeleton_password_card.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 
 class RecentPasswordsList extends GetView<PasswordController> {
@@ -13,7 +14,12 @@ class RecentPasswordsList extends GetView<PasswordController> {
   Widget build(BuildContext context) {
     return Obx(() {
       if (controller.isLoading.value) {
-        return const Center(child: CircularProgressIndicator());
+        return Column(
+          children: List.generate(
+            3,
+            (index) => const SkeletonPasswordCard(),
+          ),
+        );
       }
 
       final recentPasswords = controller.passwords.take(3).toList();

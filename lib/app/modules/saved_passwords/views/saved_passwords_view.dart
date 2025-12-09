@@ -5,6 +5,7 @@ import 'package:lockbloom/app/controllers/password_controller.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/routes/app_pages.dart';
 import 'package:lockbloom/app/widgets/password_entry_card.dart';
+import 'package:lockbloom/app/widgets/skeleton_password_card.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 import 'package:lockbloom/app/modules/saved_passwords/views/widgets/add_password_sheet.dart';
 import 'package:lockbloom/app/modules/saved_passwords/views/widgets/password_filter_sheet.dart';
@@ -101,7 +102,11 @@ class SavedPasswordsView extends GetView<PasswordController> {
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
+                return ListView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
+                  itemCount: 6,
+                  itemBuilder: (context, index) => const SkeletonPasswordCard(),
+                );
               }
 
               if (controller.filteredPasswords.isEmpty) {

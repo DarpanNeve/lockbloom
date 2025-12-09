@@ -59,10 +59,14 @@ class SplashView extends GetView<SplashController> {
                           ),
                         ],
                       ),
-                      child: Icon(
-                        Icons.lock_rounded,
-                        size: 60.w,
-                        color: Theme.of(context).colorScheme.primary,
+                      child: Padding(
+                        padding: EdgeInsets.all(AppTheme.spacingMd.w),
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/images/icon.png',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
                     ),
 

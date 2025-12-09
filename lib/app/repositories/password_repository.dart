@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/services/encryption_service.dart';
@@ -12,46 +13,41 @@ class PasswordRepository extends GetxService {
   final StorageService _storageService = Get.find();
   final Uuid _uuid = const Uuid();
 
-  /// Get all password entries
+  List<PasswordEntry>? _passwordCache;
+
   Future<List<PasswordEntry>> getAllPasswords() async {
-    print('PasswordRepository: getAllPasswords called.');
+    if (_passwordCache != null) {
+      return _passwordCache!;
+    }
+
     try {
       final encryptedData = await _storageService.readSecure(_passwordsKey);
-      print('PasswordRepository: Encrypted data from storage: ${encryptedData != null ? 'present' : 'null'}');
 
       if (encryptedData == null) {
-        print('PasswordRepository: No encrypted data found, returning empty list.');
+        _passwordCache = [];
         return [];
       }
 
       final decryptedJson = _encryptionService.decrypt(encryptedData);
-      print('PasswordRepository: Decrypted JSON length: ${decryptedJson.length}');
-
       final List<dynamic> passwordList = jsonDecode(decryptedJson);
-      print('PasswordRepository: Decoded password list count: ${passwordList.length}');
 
       final List<PasswordEntry> entries = passwordList.map((json) => PasswordEntry.fromJson(json)).toList();
-      print('PasswordRepository: Converted to ${entries.length} PasswordEntry objects.');
+      _passwordCache = entries;
       return entries;
-    } catch (e) {
-      print('PasswordRepository: Error in getAllPasswords: $e');
-      // If decryption fails, return empty list (data might be corrupted)
+    } catch (e, stack) {
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'getAllPasswords failed');
       return [];
     }
   }
 
-  /// Save a password entry
   Future<void> savePassword(PasswordEntry entry) async {
     final passwords = await getAllPasswords();
     
-    // Check if entry already exists (update) or is new (create)
     final existingIndex = passwords.indexWhere((p) => p.id == entry.id);
     
     if (existingIndex != -1) {
-      // Update existing entry
       passwords[existingIndex] = entry.copyWith(updatedAt: DateTime.now());
     } else {
-      // Add new entry
       passwords.add(entry.copyWith(
         id: entry.id.isEmpty ? _uuid.v4() : entry.id,
         createdAt: entry.createdAt,
@@ -59,17 +55,17 @@ class PasswordRepository extends GetxService {
       ));
     }
     
+    _passwordCache = passwords;
     await _savePasswordList(passwords);
   }
 
-  /// Delete a password entry
   Future<void> deletePassword(String id) async {
     final passwords = await getAllPasswords();
     passwords.removeWhere((p) => p.id == id);
+    _passwordCache = passwords;
     await _savePasswordList(passwords);
   }
 
-  /// Get a specific password entry by ID
   Future<PasswordEntry?> getPassword(String id) async {
     final passwords = await getAllPasswords();
     try {
@@ -79,7 +75,6 @@ class PasswordRepository extends GetxService {
     }
   }
 
-  /// Search passwords by query
   Future<List<PasswordEntry>> searchPasswords(String query) async {
     final passwords = await getAllPasswords();
     if (query.isEmpty) return passwords;
@@ -93,7 +88,6 @@ class PasswordRepository extends GetxService {
         p.tags.any((tag) => tag.toLowerCase().contains(lowerQuery))).toList();
   }
 
-  /// Filter passwords by tags
   Future<List<PasswordEntry>> filterPasswordsByTags(List<String> tags) async {
     final passwords = await getAllPasswords();
     if (tags.isEmpty) return passwords;
@@ -102,13 +96,11 @@ class PasswordRepository extends GetxService {
         tags.any((tag) => p.tags.contains(tag))).toList();
   }
 
-  /// Get favorite passwords
   Future<List<PasswordEntry>> getFavoritePasswords() async {
     final passwords = await getAllPasswords();
     return passwords.where((p) => p.isFavorite).toList();
   }
 
-  /// Export passwords as encrypted JSON
   Future<String> exportPasswords(String masterPassword) async {
     final passwords = await getAllPasswords();
     final exportData = {
@@ -121,36 +113,35 @@ class PasswordRepository extends GetxService {
     return _encryptionService.encryptWithPassword(exportJson, masterPassword);
   }
 
-  /// Import passwords from encrypted JSON
   Future<void> importPasswords(String encryptedData, String masterPassword) async {
     try {
       final decryptedJson = _encryptionService.decryptWithPassword(encryptedData, masterPassword);
       final Map<String, dynamic> exportData = jsonDecode(decryptedJson);
 
-      if (exportData['version'] != '1.0') {
+      if (exportData['version'].toString() != '1.0') {
         throw Exception('Unsupported export version');
       }
 
       final List<dynamic> passwordList = exportData['passwords'];
       final importedPasswords = passwordList.map((json) => PasswordEntry.fromJson(json)).toList();
 
-      // Merge with existing passwords (avoid duplicates by ID)
       final existingPasswords = await getAllPasswords();
       final existingIds = existingPasswords.map((p) => p.id).toSet();
 
       final newPasswords = importedPasswords.where((p) => !existingIds.contains(p.id)).toList();
       final allPasswords = [...existingPasswords, ...newPasswords];
 
+      _passwordCache = allPasswords;
       await _savePasswordList(allPasswords);
-    } catch (e) {
-      if (e.toString().contains('Failed to decrypt data with password')) {
+    } catch (e, stack) {
+      if (e.toString().contains('Failed to decrypt data')) {
         throw Exception('Invalid password or corrupted file');
       }
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'importPasswords failed');
       throw Exception('Failed to import passwords: ${e.toString()}');
     }
   }
 
-  /// Save the password list to secure storage
   Future<void> _savePasswordList(List<PasswordEntry> passwords) async {
     final jsonList = passwords.map((p) => p.toJson()).toList();
     final jsonString = jsonEncode(jsonList);
@@ -159,12 +150,11 @@ class PasswordRepository extends GetxService {
     await _storageService.writeSecure(_passwordsKey, encryptedData);
   }
 
-  /// Clear all passwords (for app reset)
   Future<void> clearAllPasswords() async {
+    _passwordCache = null;
     await _storageService.deleteSecure(_passwordsKey);
   }
 
-  /// Get password statistics
   Future<Map<String, dynamic>> getPasswordStats() async {
     final passwords = await getAllPasswords();
     

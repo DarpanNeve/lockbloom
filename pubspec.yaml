@@ -1,7 +1,7 @@
 name: lockbloom
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.17+18
+version: 1.0.20+21
 
 environment:
   sdk: ^3.7.0
@@ -39,7 +39,7 @@ dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/short_icon.png" # Your app icon
+  image_path: "assets/images/icon.png" # Your app icon
   remove_alpha_ios: true
   background_color: "#F2E7CB" # background color for the icon
   adaptive_icon_background: "#F2E7CB" # background color for the adaptive icon
@@ -62,4 +62,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/images/
     - shorebird.yaml

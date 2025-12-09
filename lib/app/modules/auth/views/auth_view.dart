@@ -28,15 +28,17 @@ class AuthView extends GetView<AuthController> {
             ),
           ),
           child: SafeArea(
-            child: Padding(
-              padding: EdgeInsets.all(AppTheme.spacingLg.w),
-              child: Obx(() {
-                if (!controller.isSetupComplete.value) {
-                  return _buildSetupView(context);
-                } else {
-                  return _buildLoginView(context);
-                }
-              }),
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(AppTheme.spacingLg.w),
+                child: Obx(() {
+                  if (!controller.isSetupComplete.value) {
+                    return _buildSetupView(context);
+                  } else {
+                    return _buildLoginView(context);
+                  }
+                }),
+              ),
             ),
           ),
         ),
@@ -44,47 +46,58 @@ class AuthView extends GetView<AuthController> {
     );
   }
 
+  Widget _buildLogo(BuildContext context) {
+    return Container(
+      width: 120.w,
+      height: 120.w,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.all(AppTheme.spacingMd.w),
+      child: ClipOval(
+        child: Image.asset(
+          'assets/images/icon.png',
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
   Widget _buildSetupView(BuildContext context) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: AppTheme.spacingXxl.h),
-
           // Welcome Section
-          Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(AppTheme.spacingLg.w),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.lock_outline_rounded,
-                  size: 48.w,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              SizedBox(height: AppTheme.spacingLg.h),
-              Text(
-                'Welcome to LockBloom',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: AppTheme.spacingSm.h),
-              Text(
-                'Create a secure PIN to protect your passwords',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+          _buildLogo(context),
+          SizedBox(height: AppTheme.spacingLg.h),
+          Text(
+            'Welcome to LockBloom',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: AppTheme.spacingSm.h),
+          Text(
+            'Create a secure PIN to protect your passwords',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            textAlign: TextAlign.center,
           ),
 
           SizedBox(height: AppTheme.spacingXl.h),
+          
           // PIN Setup Form
           Column(
             children: [
@@ -98,9 +111,6 @@ class AuthView extends GetView<AuthController> {
                 keyboardType: TextInputType.number,
                 obscureText: true,
                 maxLength: 8,
-                onChanged: (value) {
-                  // You could add real-time PIN strength validation here
-                },
               ),
 
               SizedBox(height: AppTheme.spacingMd.h),
@@ -128,27 +138,27 @@ class AuthView extends GetView<AuthController> {
                         controller.isLoading.value
                             ? null
                             : () {
-                              if (controller.pinController.text !=
-                                  controller.confirmPinController.text) {
-                                Fluttertoast.showToast(
-                                  msg: 'PINs do not match',
+                                if (controller.pinController.text !=
+                                    controller.confirmPinController.text) {
+                                  Fluttertoast.showToast(
+                                    msg: 'PINs do not match',
+                                  );
+                                  return;
+                                }
+                                controller.setupPin(
+                                  controller.pinController.text,
                                 );
-                                return;
-                              }
-                              controller.setupPin(
-                                controller.pinController.text,
-                              );
-                            },
+                              },
                     child:
                         controller.isLoading.value
                             ? SizedBox(
-                              height: 20.h,
-                              width: 20.w,
-                              child: const CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
+                                height: 20.h,
+                                width: 20.w,
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
                             : const Text('Setup PIN'),
                   ),
                 ),
@@ -157,6 +167,7 @@ class AuthView extends GetView<AuthController> {
           ),
 
           SizedBox(height: AppTheme.spacingXl.h),
+          
           // Security Note
           Container(
             padding: EdgeInsets.all(AppTheme.spacingMd.w),
@@ -167,25 +178,25 @@ class AuthView extends GetView<AuthController> {
                 color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
               ),
             ),
-            child: Column(
+            child: Row(
               children: [
                 Icon(
                   Icons.security_rounded,
                   color: Theme.of(context).colorScheme.primary,
-                  size: 32.w,
+                  size: 24.w,
                 ),
-                SizedBox(height: AppTheme.spacingSm.h),
-                Text(
-                  'Your PIN is encrypted and stored securely on your device. We cannot recover it if you forget it.',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                SizedBox(width: AppTheme.spacingMd.w),
+                Expanded(
+                  child: Text(
+                    'Your PIN is encrypted and stored securely on your device.',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ],
             ),
           ),
-          SizedBox(height: AppTheme.spacingXxl.h),
         ],
       ),
     );
@@ -193,41 +204,25 @@ class AuthView extends GetView<AuthController> {
 
   Widget _buildLoginView(BuildContext context) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: AppTheme.spacingXxl.h),
-
           // App Logo and Name
-          Column(
-            children: [
-              Container(
-                width: 100.w,
-                height: 100.w,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-                ),
-                child: Icon(
-                  Icons.lock_rounded,
-                  size: 50.w,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              SizedBox(height: AppTheme.spacingLg.h),
-              Text(
-                'LockBloom',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: AppTheme.spacingSm.h),
-              Text(
-                'Enter your PIN to continue',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
+          _buildLogo(context),
+          SizedBox(height: AppTheme.spacingLg.h),
+          Text(
+            'LockBloom',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: AppTheme.spacingSm.h),
+          Text(
+            'Enter your PIN to continue',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
 
           SizedBox(height: AppTheme.spacingXl.h),
@@ -247,7 +242,7 @@ class AuthView extends GetView<AuthController> {
                 onSubmitted: (value) => controller.authenticateWithPin(value),
               ),
 
-              SizedBox(height: AppTheme.spacingXxl.h * 2),
+              SizedBox(height: AppTheme.spacingXl.h),
 
               // Login Button
               Obx(
@@ -258,18 +253,18 @@ class AuthView extends GetView<AuthController> {
                         controller.isLoading.value
                             ? null
                             : () => controller.authenticateWithPin(
-                              controller.pinController.text,
-                            ),
+                                  controller.pinController.text,
+                                ),
                     child:
                         controller.isLoading.value
                             ? SizedBox(
-                              height: 20.h,
-                              width: 20.w,
-                              child: const CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
+                                height: 20.h,
+                                width: 20.w,
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
                             : const Text('Unlock'),
                   ),
                 ),
@@ -297,7 +292,19 @@ class AuthView extends GetView<AuthController> {
               }),
             ],
           ),
+          
           SizedBox(height: AppTheme.spacingXl.h),
+          
+          // Forgot PIN / Reset Option (Hidden but accessible)
+          TextButton(
+            onPressed: controller.resetApp, // Assuming resetApp confirms with user
+            child: Text(
+              'Forgot PIN?',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+          ),
         ],
       ),
     );

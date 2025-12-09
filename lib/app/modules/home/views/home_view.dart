@@ -18,7 +18,18 @@ class HomeView extends GetView<HomeController> {
     final List<Widget> _pages = [
       Scaffold(
         appBar: AppBar(
-          title: const Text('LockBloom'), 
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                'assets/images/icon.png',
+                height: 24.w,
+                width: 24.w,
+              ),
+              SizedBox(width: AppTheme.spacingSm.w),
+              const Text('LockBloom'),
+            ],
+          ),
           centerTitle: true,
           surfaceTintColor: Colors.transparent,
         ),
