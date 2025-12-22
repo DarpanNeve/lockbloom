@@ -17,7 +17,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Saved Passwords'),
+        title: Text('vault'.tr),
         actions: [
           IconButton(
             onPressed: () => Get.bottomSheet(
@@ -27,7 +27,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
               enableDrag: false,
             ),
             icon: const Icon(Icons.add_rounded),
-            tooltip: 'Add Password',
+            tooltip: 'add_password'.tr,
           ),
         ],
       ),
@@ -40,13 +40,13 @@ class SavedPasswordsView extends GetView<PasswordController> {
               child: TextField(
                 onChanged: controller.searchPasswords,
                 decoration: InputDecoration(
-                  hintText: 'Search passwords...',
+                  hintText: '${'search'.tr}...',
                   prefixIcon: const Icon(Icons.search_rounded),
                   suffixIcon: Obx(() {
                     if (controller.searchQuery.value.isNotEmpty) {
                       return Semantics(
                         button: true,
-                        label: 'Clear search',
+                        label: 'close'.tr,
                         child: IconButton(
                           onPressed: () {
                             controller.searchPasswords('');
@@ -57,7 +57,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
                     }
                     return Semantics(
                       button: true,
-                      label: 'Filter passwords',
+                      label: 'Filter',
                       child: IconButton(
                         onPressed: () => Get.bottomSheet(
                           const PasswordFilterSheet(),
@@ -176,14 +176,14 @@ class SavedPasswordsView extends GetView<PasswordController> {
             ),
             SizedBox(height: AppTheme.spacingLg.h),
             Text(
-              'No passwords found',
+              'empty_vault'.tr,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
             SizedBox(height: AppTheme.spacingSm.h),
             Text(
-              'Your digital vault is empty.\nAdd your first password to get started.',
+              'add_first_password'.tr,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -198,7 +198,7 @@ class SavedPasswordsView extends GetView<PasswordController> {
                 enableDrag: false,
               ),
               icon: const Icon(Icons.add_rounded),
-              label: const Text('Add Password'),
+              label: Text('add_password'.tr),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(
                   horizontal: AppTheme.spacingXl.w,

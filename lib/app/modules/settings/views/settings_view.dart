@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/auth_controller.dart';
 import 'package:lockbloom/app/controllers/settings_controller.dart';
+import 'package:lockbloom/app/services/locale_service.dart';
+import 'package:lockbloom/app/services/theme_service.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 
 class SettingsView extends GetView<SettingsController> {
@@ -12,7 +14,7 @@ class SettingsView extends GetView<SettingsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text('settings'.tr),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -20,13 +22,12 @@ class SettingsView extends GetView<SettingsController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Security Section
-            _buildSectionHeader(context, 'Security'),
+            _buildSectionHeader(context, 'security'.tr),
             _buildSettingsCard(context, [
               _buildSettingsTile(
                 icon: Icons.fingerprint_rounded,
-                title: 'Biometric Authentication',
-                subtitle: 'Use fingerprint or face to unlock',
+                title: 'biometric_auth'.tr,
+                subtitle: 'biometric_subtitle'.tr,
                 trailing: Obx(() {
                   final authController = Get.find<AuthController>();
                   return Switch(
@@ -51,7 +52,7 @@ class SettingsView extends GetView<SettingsController> {
               Obx(
                 () => _buildSettingsTile(
                   icon: Icons.timer_rounded,
-                  title: 'Auto-Lock Timeout',
+                  title: 'auto_lock_timeout'.tr,
                   subtitle: controller.getTimeoutDisplayText(
                     controller.autoLockTimeout.value,
                   ),
@@ -64,21 +65,20 @@ class SettingsView extends GetView<SettingsController> {
               ),
               _buildSettingsTile(
                 icon: Icons.vpn_key_rounded,
-                title: 'Change PIN',
-                subtitle: 'Update your security PIN',
+                title: 'change_pin'.tr,
+                subtitle: 'update_pin'.tr,
                 onTap: controller.showChangePinDialog,
               ),
             ]),
 
             SizedBox(height: AppTheme.spacingLg.h),
 
-            // Privacy Section
-            _buildSectionHeader(context, 'Privacy'),
+            _buildSectionHeader(context, 'privacy'.tr),
             _buildSettingsCard(context, [
               Obx(
                 () => _buildSettingsTile(
                   icon: Icons.content_copy_rounded,
-                  title: 'Clipboard Clear Time',
+                  title: 'clipboard_clear_time'.tr,
                   subtitle: controller.getClipboardDisplayText(
                     controller.clipboardClearTime.value,
                   ),
@@ -91,8 +91,8 @@ class SettingsView extends GetView<SettingsController> {
               ),
               _buildSettingsTile(
                 icon: Icons.history_rounded,
-                title: 'Password History',
-                subtitle: 'Remember password changes',
+                title: 'password_history'.tr,
+                subtitle: 'remember_changes'.tr,
                 trailing: Obx(
                   () => Switch(
                     value: controller.isPasswordHistoryEnabled.value,
@@ -104,25 +104,76 @@ class SettingsView extends GetView<SettingsController> {
 
             SizedBox(height: AppTheme.spacingLg.h),
 
-            _buildSectionHeader(context, 'Appearance'),
+            _buildSectionHeader(context, 'appearance'.tr),
             _buildSettingsCard(context, [
               Obx(() => _buildSettingsTile(
                 icon: Icons.palette_rounded,
-                title: 'Theme',
+                title: 'theme'.tr,
                 subtitle: controller.currentThemeText,
                 onTap: controller.showThemeDialog,
               )),
+              Divider(
+                height: 1,
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+              ),
+              Obx(() {
+                final themeService = Get.find<ThemeService>();
+                return _buildSettingsTile(
+                  icon: Icons.color_lens_rounded,
+                  title: 'accent_color'.tr,
+                  subtitle: controller.currentAccentColorName,
+                  onTap: controller.showAccentColorDialog,
+                  trailing: Container(
+                    width: 24.w,
+                    height: 24.w,
+                    decoration: BoxDecoration(
+                      color: themeService.accentColor.primary,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline,
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                );
+              }),
+              Divider(
+                height: 1,
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+              ),
+              Obx(() {
+                final localeService = Get.find<LocaleService>();
+                return _buildSettingsTile(
+                  icon: Icons.language_rounded,
+                  title: 'language'.tr,
+                  subtitle: controller.currentLanguageName,
+                  onTap: controller.showLanguageDialog,
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        localeService.currentLocaleFlag,
+                        style: TextStyle(fontSize: 20.sp),
+                      ),
+                      SizedBox(width: 8.w),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
+                    ],
+                  ),
+                );
+              }),
             ]),
 
             SizedBox(height: AppTheme.spacingLg.h),
 
-            // Data Section
-            _buildSectionHeader(context, 'Data'),
+            _buildSectionHeader(context, 'data'.tr),
             _buildSettingsCard(context, [
               _buildSettingsTile(
                 icon: Icons.download_rounded,
-                title: 'Export Passwords',
-                subtitle: 'Create encrypted backup',
+                title: 'export_passwords'.tr,
+                subtitle: 'create_backup'.tr,
                 onTap: controller.showExportDialog,
               ),
               Divider(
@@ -131,19 +182,19 @@ class SettingsView extends GetView<SettingsController> {
               ),
               _buildSettingsTile(
                 icon: Icons.upload_rounded,
-                title: 'Import Passwords',
-                subtitle: 'Restore from backup',
+                title: 'import_passwords'.tr,
+                subtitle: 'restore_backup'.tr,
                 onTap: controller.showImportDialog,
               ),
             ]),
 
             SizedBox(height: AppTheme.spacingLg.h),
 
-            _buildSectionHeader(context, 'About'),
+            _buildSectionHeader(context, 'about'.tr),
             _buildSettingsCard(context, [
               Obx(() => _buildSettingsTile(
                 icon: Icons.info_outline_rounded,
-                title: 'Version',
+                title: 'version'.tr,
                 subtitle: controller.appVersion.value,
               )),
               Divider(
@@ -152,8 +203,8 @@ class SettingsView extends GetView<SettingsController> {
               ),
               _buildSettingsTile(
                 icon: Icons.security_rounded,
-                title: 'Privacy Policy',
-                subtitle: 'How we protect your data',
+                title: 'privacy_policy'.tr,
+                subtitle: 'privacy_policy_subtitle'.tr,
                 onTap: controller.openPrivacyPolicy,
               ),
               Divider(
@@ -162,21 +213,20 @@ class SettingsView extends GetView<SettingsController> {
               ),
               _buildSettingsTile(
                 icon: Icons.description_rounded,
-                title: 'Terms of Service',
-                subtitle: 'Usage terms and conditions',
+                title: 'terms_of_service'.tr,
+                subtitle: 'terms_subtitle'.tr,
                 onTap: controller.openTermsOfService,
               ),
             ]),
 
             SizedBox(height: AppTheme.spacingXl.h),
 
-            // Danger Zone
-            _buildSectionHeader(context, 'Danger Zone', isError: true),
+            _buildSectionHeader(context, 'danger_zone'.tr, isError: true),
             _buildSettingsCard(context, [
               _buildSettingsTile(
                 icon: Icons.warning_rounded,
-                title: 'Reset App',
-                subtitle: 'Delete all data and settings',
+                title: 'reset_app'.tr,
+                subtitle: 'reset_subtitle'.tr,
                 onTap: controller.showResetAppDialog,
                 isDestructive: true,
               ),
@@ -184,13 +234,12 @@ class SettingsView extends GetView<SettingsController> {
 
             SizedBox(height: AppTheme.spacingXl.h),
 
-            // Logout Button
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: () => Get.find<AuthController>().logout(),
                 icon: const Icon(Icons.logout_rounded),
-                label: const Text('Logout'),
+                label: Text('logout'.tr),
                 style: OutlinedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: AppTheme.spacingMd.h),
                 ),

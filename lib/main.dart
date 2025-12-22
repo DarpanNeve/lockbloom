@@ -4,10 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/bindings/initial_binding.dart';
+import 'package:lockbloom/app/core/localization/app_translations.dart';
 import 'package:lockbloom/app/routes/app_pages.dart';
+import 'package:lockbloom/app/services/locale_service.dart';
 import 'package:lockbloom/app/services/storage_service.dart';
 import 'package:lockbloom/app/services/theme_service.dart';
-import 'package:lockbloom/app/themes/app_theme.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart';
@@ -29,6 +30,7 @@ void main() async {
 
   await Get.putAsync(() => StorageService().init());
   await Get.putAsync(() => ThemeService().init());
+  await Get.putAsync(() => LocaleService().init());
   
   final shorebirdUpdater = ShorebirdUpdater();
   final status = await shorebirdUpdater.checkForUpdate();
@@ -56,23 +58,27 @@ class LockBloomApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeService = Get.find<ThemeService>();
+    final localeService = Get.find<LocaleService>();
+    
     return ScreenUtilInit(
-      designSize: const Size(375, 812), // iPhone 13 Pro size
+      designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return GetMaterialApp(
+        return Obx(() => GetMaterialApp(
           title: 'LockBloom',
           debugShowCheckedModeBanner: false,
           initialBinding: InitialBinding(),
           initialRoute: AppPages.INITIAL,
           getPages: AppPages.routes,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: Get.find<ThemeService>().theme,
-          locale: Get.deviceLocale,
+          theme: themeService.lightTheme,
+          darkTheme: themeService.darkTheme,
+          themeMode: themeService.theme,
+          translations: AppTranslations(),
+          locale: localeService.currentLocale,
           fallbackLocale: const Locale('en', 'US'),
-        );
+        ));
       },
     );
   }

@@ -26,7 +26,6 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
             Row(
               children: [
                 Container(
@@ -43,7 +42,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                 ),
                 SizedBox(width: AppTheme.spacingMd.w),
                 Text(
-                  'Password Generator',
+                  'password_generator'.tr,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -53,7 +52,6 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
             
             SizedBox(height: AppTheme.spacingLg.h),
             
-            // Generated Password Display
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(AppTheme.spacingMd.w),
@@ -80,7 +78,6 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                   
                   SizedBox(height: AppTheme.spacingMd.h),
                   
-                  // Password Strength Indicator
                   Obx(() => PasswordStrengthIndicator(
                     strength: controller.passwordStrength.value,
                   )),
@@ -90,14 +87,13 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
             
             SizedBox(height: AppTheme.spacingMd.h),
             
-            // Action Buttons
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: controller.generatePassword,
                     icon: const Icon(Icons.refresh_rounded, size: 18),
-                    label: const Text('Generate'),
+                    label: Text('generate_password'.tr.split(' ')[0]),
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 12.h),
                     ),
@@ -111,13 +107,13 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                       if (password.isEmpty) return;
                       await Clipboard.setData(ClipboardData(text: password));
                       HapticFeedback.lightImpact();
-                      Fluttertoast.showToast(msg: 'Password copied to clipboard');
+                      Fluttertoast.showToast(msg: 'password_copied'.tr);
                       Future.delayed(const Duration(seconds: 30), () {
                         Clipboard.setData(const ClipboardData(text: ''));
                       });
                     },
                     icon: const Icon(Icons.copy_rounded, size: 18),
-                    label: const Text('Copy'),
+                    label: Text('copy'.tr),
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 12.h),
                     ),
@@ -128,7 +124,6 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
             
             SizedBox(height: AppTheme.spacingLg.h),
             
-            // Generator Options
             _buildGeneratorOptions(context),
           ],
         ),
@@ -141,7 +136,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
         title: Text(
-          'Generator Options',
+          'password_length'.tr.split(' ')[0],
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
@@ -156,7 +151,6 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
         children: [
           Column(
             children: [
-              // Length Slider
               Obx(() => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -164,7 +158,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Length',
+                        'password_length'.tr,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       Container(
@@ -213,12 +207,11 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
               
               SizedBox(height: AppTheme.spacingMd.h),
               
-              // Character Type Options
               Obx(() => Column(
                 children: [
                   _buildOptionRow(
                     context,
-                    'Include Uppercase (A-Z)',
+                    'include_uppercase'.tr,
                     controller.generatorConfig.value.includeUppercase,
                     (value) => controller.updateGeneratorConfig(
                       controller.generatorConfig.value.copyWith(
@@ -228,7 +221,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                   ),
                   _buildOptionRow(
                     context,
-                    'Include Lowercase (a-z)',
+                    'include_lowercase'.tr,
                     controller.generatorConfig.value.includeLowercase,
                     (value) => controller.updateGeneratorConfig(
                       controller.generatorConfig.value.copyWith(
@@ -238,7 +231,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                   ),
                   _buildOptionRow(
                     context,
-                    'Include Numbers (0-9)',
+                    'include_numbers'.tr,
                     controller.generatorConfig.value.includeNumbers,
                     (value) => controller.updateGeneratorConfig(
                       controller.generatorConfig.value.copyWith(
@@ -248,7 +241,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                   ),
                   _buildOptionRow(
                     context,
-                    'Include Symbols (!@#\$%)',
+                    'include_symbols'.tr,
                     controller.generatorConfig.value.includeSymbols,
                     (value) => controller.updateGeneratorConfig(
                       controller.generatorConfig.value.copyWith(
@@ -261,7 +254,6 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
               
               SizedBox(height: AppTheme.spacingMd.h),
               
-              // Advanced Options
               Obx(() => Column(
                 children: [
                   _buildOptionRow(

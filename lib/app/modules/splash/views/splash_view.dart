@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/modules/splash/controllers/splash_controller.dart';
+import 'package:lockbloom/app/services/theme_service.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 
 class SplashView extends GetView<SplashController> {
@@ -19,7 +20,7 @@ class SplashView extends GetView<SplashController> {
             end: Alignment.bottomRight,
             colors: [
               Theme.of(context).colorScheme.primary,
-              AppTheme.primaryDarkColor,
+              Get.find<ThemeService>().accentColor.primaryDark,
             ],
           ),
         ),

@@ -77,11 +77,10 @@ class AuthView extends GetView<AuthController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Welcome Section
           _buildLogo(context),
           SizedBox(height: AppTheme.spacingLg.h),
           Text(
-            'Welcome to LockBloom',
+            '${'welcome_back'.tr.split('!')[0]} ${'app_name'.tr}',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -89,7 +88,7 @@ class AuthView extends GetView<AuthController> {
           ),
           SizedBox(height: AppTheme.spacingSm.h),
           Text(
-            'Create a secure PIN to protect your passwords',
+            'secure_vault'.tr,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
@@ -102,10 +101,10 @@ class AuthView extends GetView<AuthController> {
             children: [
               TextField(
                 controller: controller.pinController,
-                decoration: const InputDecoration(
-                  labelText: 'Create PIN',
-                  hintText: '4-8 digits required',
-                  prefixIcon: Icon(Icons.lock_outline_rounded),
+                decoration: InputDecoration(
+                  labelText: 'create_pin'.tr,
+                  hintText: '4-8 digits',
+                  prefixIcon: const Icon(Icons.lock_outline_rounded),
                   counterText: '',
                 ),
                 keyboardType: TextInputType.number,
@@ -117,10 +116,10 @@ class AuthView extends GetView<AuthController> {
 
               TextField(
                 controller: controller.confirmPinController,
-                decoration: const InputDecoration(
-                  labelText: 'Confirm PIN',
-                  hintText: 'Re-enter your PIN',
-                  prefixIcon: Icon(Icons.lock_rounded),
+                decoration: InputDecoration(
+                  labelText: 'confirm_pin'.tr,
+                  hintText: 'confirm_pin'.tr,
+                  prefixIcon: const Icon(Icons.lock_rounded),
                   counterText: '',
                 ),
                 keyboardType: TextInputType.number,
@@ -130,7 +129,6 @@ class AuthView extends GetView<AuthController> {
 
               SizedBox(height: AppTheme.spacingXl.h),
 
-              // Setup Button
               Obx(
                 () => SizedBox(
                   width: double.infinity,
@@ -151,7 +149,7 @@ class AuthView extends GetView<AuthController> {
                                 
                                 if (pin != confirmPin) {
                                   Fluttertoast.showToast(
-                                    msg: 'PINs do not match',
+                                    msg: 'pin_not_match'.tr,
                                   );
                                   return;
                                 }
@@ -167,7 +165,7 @@ class AuthView extends GetView<AuthController> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text('Setup PIN'),
+                            : Text('create_pin'.tr),
                   ),
                 ),
               ),
@@ -176,7 +174,6 @@ class AuthView extends GetView<AuthController> {
 
           SizedBox(height: AppTheme.spacingXl.h),
           
-          // Security Note
           Container(
             padding: EdgeInsets.all(AppTheme.spacingMd.w),
             decoration: BoxDecoration(
@@ -196,7 +193,7 @@ class AuthView extends GetView<AuthController> {
                 SizedBox(width: AppTheme.spacingMd.w),
                 Expanded(
                   child: Text(
-                    'Your PIN is encrypted and stored securely on your device.',
+                    'vault_description'.tr,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -216,18 +213,17 @@ class AuthView extends GetView<AuthController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // App Logo and Name
           _buildLogo(context),
           SizedBox(height: AppTheme.spacingLg.h),
           Text(
-            'LockBloom',
+            'app_name'.tr,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
           SizedBox(height: AppTheme.spacingSm.h),
           Text(
-            'Enter your PIN to continue',
+            'enter_pin'.tr,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
@@ -235,14 +231,13 @@ class AuthView extends GetView<AuthController> {
 
           SizedBox(height: AppTheme.spacingXl.h),
 
-          // PIN Input
           Column(
             children: [
               TextField(
                 controller: controller.pinController,
-                decoration: const InputDecoration(
-                  labelText: 'Enter PIN',
-                  prefixIcon: Icon(Icons.lock_outline_rounded),
+                decoration: InputDecoration(
+                  labelText: 'enter_pin'.tr,
+                  prefixIcon: const Icon(Icons.lock_outline_rounded),
                   counterText: '',
                 ),
                 keyboardType: TextInputType.number,
@@ -253,7 +248,6 @@ class AuthView extends GetView<AuthController> {
 
               SizedBox(height: AppTheme.spacingXl.h),
 
-              // Login Button
               Obx(
                 () => SizedBox(
                   width: double.infinity,
@@ -274,7 +268,7 @@ class AuthView extends GetView<AuthController> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text('Unlock'),
+                            : Text('confirm'.tr),
                   ),
                 ),
               ),
@@ -287,11 +281,11 @@ class AuthView extends GetView<AuthController> {
                       SizedBox(height: AppTheme.spacingMd.h),
                       Semantics(
                         button: true,
-                        label: 'Authenticate with biometric',
+                        label: 'use_biometric'.tr,
                         child: OutlinedButton.icon(
                           onPressed: controller.authenticateWithBiometric,
                           icon: const Icon(Icons.fingerprint_rounded),
-                          label: const Text('Use Biometric'),
+                          label: Text('use_biometric'.tr),
                           style: OutlinedButton.styleFrom(
                             minimumSize: Size(double.infinity, 48.h),
                           ),
@@ -307,11 +301,10 @@ class AuthView extends GetView<AuthController> {
           
           SizedBox(height: AppTheme.spacingXl.h),
           
-          // Forgot PIN / Reset Option (Hidden but accessible)
           TextButton(
-            onPressed: controller.resetApp, // Assuming resetApp confirms with user
+            onPressed: controller.resetApp,
             child: Text(
-              'Forgot PIN?',
+              'forgot_pin'.tr,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.error,
               ),

@@ -8,6 +8,7 @@ import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/services/biometric_service.dart';
 import 'package:lockbloom/app/services/encryption_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:lockbloom/app/core/theme/app_colors.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 
 class PasswordDetailView extends StatefulWidget {
@@ -48,19 +49,19 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           PopupMenuButton<String>(
             onSelected: _handleMenuSelection,
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'duplicate',
                 child: ListTile(
-                  leading: Icon(Icons.copy_rounded),
-                  title: Text('Duplicate'),
+                  leading: const Icon(Icons.copy_rounded),
+                  title: Text('duplicate'.tr),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
                 child: ListTile(
-                  leading: Icon(Icons.delete_rounded, color: Colors.red),
-                  title: Text('Delete', style: TextStyle(color: Colors.red)),
+                  leading: const Icon(Icons.delete_rounded, color: Colors.red),
+                  title: Text('delete'.tr, style: const TextStyle(color: Colors.red)),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
@@ -144,7 +145,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                   },
                   icon: Icon(
                     entry.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                    color: entry.isFavorite ? AppTheme.secondaryColor : Theme.of(context).colorScheme.outline,
+                    color: entry.isFavorite ? AppColors.secondaryColor : Theme.of(context).colorScheme.outline,
                   ),
                 ),
               ],
@@ -157,7 +158,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         // Username Field
         _buildDetailField(
           context,
-          label: 'Username',
+          label: 'username'.tr,
           value: entry.username,
           icon: Icons.person_outline_rounded,
           canCopy: true,
@@ -175,7 +176,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         if (entry.website?.isNotEmpty == true) ...[
           _buildDetailField(
             context,
-            label: 'Website',
+            label: 'website'.tr,
             value: entry.website!,
             icon: Icons.language_rounded,
             canCopy: true,
@@ -193,7 +194,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         if (entry.notes.isNotEmpty) ...[
           _buildDetailField(
             context,
-            label: 'Notes',
+            label: 'notes'.tr,
             value: entry.notes,
             icon: Icons.note_outlined,
             maxLines: null,
@@ -217,9 +218,9 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
       children: [
         TextField(
           controller: _passwordController.labelController,
-          decoration: const InputDecoration(
-            labelText: 'Label *',
-            prefixIcon: Icon(Icons.label_outline_rounded),
+          decoration: InputDecoration(
+            labelText: '${'title'.tr} *',
+            prefixIcon: const Icon(Icons.label_outline_rounded),
           ),
         ),
         
@@ -227,9 +228,9 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         
         TextField(
           controller: _passwordController.usernameController,
-          decoration: const InputDecoration(
-            labelText: 'Username/Email *',
-            prefixIcon: Icon(Icons.person_outline_rounded),
+          decoration: InputDecoration(
+            labelText: '${'username'.tr} *',
+            prefixIcon: const Icon(Icons.person_outline_rounded),
           ),
         ),
         
@@ -238,7 +239,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         TextField(
           controller: _passwordController.passwordController,
           decoration: InputDecoration(
-            labelText: 'Password *',
+            labelText: '${'password'.tr} *',
             prefixIcon: const Icon(Icons.lock_outline_rounded),
             suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,
@@ -246,7 +247,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                 IconButton(
                   onPressed: _passwordController.useGeneratedPassword,
                   icon: const Icon(Icons.auto_awesome_rounded),
-                  tooltip: 'Generate Password',
+                  tooltip: 'generate_password'.tr,
                 ),
                 Obx(() => IconButton(
                   onPressed: () => _passwordController.showPassword.toggle(),
@@ -266,9 +267,9 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         
         TextField(
           controller: _passwordController.websiteController,
-          decoration: const InputDecoration(
-            labelText: 'Website',
-            prefixIcon: Icon(Icons.language_rounded),
+          decoration: InputDecoration(
+            labelText: 'website'.tr,
+            prefixIcon: const Icon(Icons.language_rounded),
           ),
         ),
         
@@ -276,9 +277,9 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         
         TextField(
           controller: _passwordController.tagsController,
-          decoration: const InputDecoration(
-            labelText: 'Tags (comma separated)',
-            prefixIcon: Icon(Icons.tag_rounded),
+          decoration: InputDecoration(
+            labelText: '${'tags'.tr} (comma separated)',
+            prefixIcon: const Icon(Icons.tag_rounded),
           ),
         ),
         
@@ -286,9 +287,9 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         
         TextField(
           controller: _passwordController.notesController,
-          decoration: const InputDecoration(
-            labelText: 'Notes',
-            prefixIcon: Icon(Icons.note_outlined),
+          decoration: InputDecoration(
+            labelText: 'notes'.tr,
+            prefixIcon: const Icon(Icons.note_outlined),
           ),
           maxLines: 3,
         ),
@@ -301,14 +302,14 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
             Expanded(
               child: OutlinedButton(
                 onPressed: _cancelEdit,
-                child: const Text('Cancel'),
+                child: Text('cancel'.tr),
               ),
             ),
             SizedBox(width: AppTheme.spacingMd.w),
             Expanded(
               child: ElevatedButton(
                 onPressed: _saveChanges,
-                child: const Text('Save Changes'),
+                child: Text('save_changes'.tr),
               ),
             ),
           ],
@@ -405,7 +406,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                 ),
                 SizedBox(width: AppTheme.spacingSm.w),
                 Text(
-                  'Password',
+                  'password'.tr,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.primary,
@@ -473,7 +474,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                 ),
                 SizedBox(width: AppTheme.spacingSm.w),
                 Text(
-                  'Tags',
+                  'tags'.tr,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.primary,
@@ -530,7 +531,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                 ),
                 SizedBox(width: AppTheme.spacingSm.w),
                 Text(
-                  'History',
+                  'history'.tr,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.primary,
@@ -546,7 +547,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Created',
+                        'created'.tr,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -566,7 +567,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Last Modified',
+                        'last_modified'.tr,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -632,7 +633,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
 
     if (biometricAvailable && biometricEnabledInApp) {
       final authenticated = await _biometricService.authenticate(
-        localizedReason: 'Authenticate to reveal password',
+        localizedReason: 'authenticate_to_reveal'.tr,
       );
 
       if (authenticated) {
@@ -642,20 +643,20 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
       final pinController = TextEditingController();
       final verified = await Get.dialog<bool>(
         AlertDialog(
-          title: const Text('Enter PIN'),
+          title: Text('enter_pin'.tr),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Enter your PIN to reveal the password.'),
+              Text('enter_pin_to_reveal'.tr),
               SizedBox(height: 16.h),
               TextField(
                 controller: pinController,
                 obscureText: true,
                 keyboardType: TextInputType.number,
                 maxLength: 8,
-                decoration: const InputDecoration(
-                  labelText: 'PIN',
-                  prefixIcon: Icon(Icons.lock_outline_rounded),
+                decoration: InputDecoration(
+                  labelText: 'enter_pin'.tr,
+                  prefixIcon: const Icon(Icons.lock_outline_rounded),
                   counterText: '',
                 ),
                 autofocus: true,
@@ -665,7 +666,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           actions: [
             TextButton(
               onPressed: () => Get.back(result: false),
-              child: const Text('Cancel'),
+              child: Text('cancel'.tr),
             ),
             TextButton(
               onPressed: () async {
@@ -676,7 +677,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                   pinController.clear();
                 }
               },
-              child: const Text('Verify'),
+              child: Text('verify'.tr),
             ),
           ],
         ),
@@ -777,14 +778,14 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
 
   void _duplicateEntry() {
     _passwordController.savePassword(
-      label: '${entry.label} (Copy)',
+      label: '${entry.label} (${'copy'.tr})',
       username: entry.username,
       password: _passwordController.getDecryptedPassword(entry),
       website: entry.website,
       notes: entry.notes,
       tags: entry.tags,
     );
-    Fluttertoast.showToast(msg: 'Password duplicated');
+    Fluttertoast.showToast(msg: 'password_saved'.tr);
   }
 
   void _deleteEntry() {

@@ -46,7 +46,7 @@ class RecentPasswordsList extends GetView<PasswordController> {
               ),
               SizedBox(height: AppTheme.spacingSm.h),
               Text(
-                'No passwords saved yet',
+                'no_passwords_yet'.tr,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),

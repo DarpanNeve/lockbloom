@@ -47,7 +47,7 @@ class HomeView extends GetView<HomeController> {
               width: 24.w,
             ),
             SizedBox(width: AppTheme.spacingSm.w),
-            const Text('LockBloom'),
+            Text('app_name'.tr),
           ],
         ),
         centerTitle: true,
@@ -114,7 +114,7 @@ class HomeView extends GetView<HomeController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Welcome back!',
+            'welcome_back'.tr,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -122,7 +122,7 @@ class HomeView extends GetView<HomeController> {
           ),
           SizedBox(height: AppTheme.spacingSm.h),
           Text(
-            'Generate secure passwords and manage your credentials safely.',
+            'welcome_message'.tr,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.white.withValues(alpha: 0.9),
             ),
@@ -137,7 +137,7 @@ class HomeView extends GetView<HomeController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Quick Actions', 
+          'quick_actions'.tr, 
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -149,8 +149,8 @@ class HomeView extends GetView<HomeController> {
               child: _buildActionCard(
                 context,
                 icon: Icons.add_circle_outline_rounded,
-                title: 'Add Password',
-                subtitle: 'Save new',
+                title: 'add_password'.tr,
+                subtitle: 'save_new'.tr,
                 onTap: () => Get.bottomSheet(
                   const AddPasswordSheet(),
                   isScrollControlled: true,
@@ -164,9 +164,9 @@ class HomeView extends GetView<HomeController> {
               child: _buildActionCard(
                 context,
                 icon: Icons.view_list_rounded,
-                title: 'View All',
-                subtitle: 'Browse vault',
-                onTap: () => controller.changePage(1), // Switch to Saved Passwords tab
+                title: 'view_all'.tr,
+                subtitle: 'browse_vault'.tr,
+                onTap: () => controller.changePage(1),
               ),
             ),
           ],
@@ -240,14 +240,14 @@ class HomeView extends GetView<HomeController> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Recent Passwords',
+              'recent_passwords'.tr,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             TextButton(
               onPressed: () => controller.changePage(1),
-              child: const Text('View All'),
+              child: Text('view_all'.tr),
             ),
           ],
         ),
@@ -270,7 +270,7 @@ class HomeView extends GetView<HomeController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Statistics',
+            'statistics'.tr,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -281,7 +281,7 @@ class HomeView extends GetView<HomeController> {
               Expanded(
                 child: _buildStatCard(
                   context,
-                  title: 'Total Passwords',
+                  title: 'total_passwords'.tr,
                   value: (stats['total'] ?? 0).toString(),
                   icon: Icons.lock_outline_rounded,
                   color: Theme.of(context).colorScheme.primary,
@@ -291,7 +291,7 @@ class HomeView extends GetView<HomeController> {
               Expanded(
                 child: _buildStatCard(
                   context,
-                  title: 'Favorites',
+                  title: 'favorites'.tr,
                   value: (stats['favorites'] ?? 0).toString(),
                   icon: Icons.favorite_rounded,
                   color: Theme.of(context).colorScheme.secondary,
@@ -381,21 +381,21 @@ class HomeView extends GetView<HomeController> {
           backgroundColor: Colors.transparent,
           indicatorColor: Theme.of(context).colorScheme.primaryContainer,
           elevation: 0,
-          destinations: const [
+          destinations: [
             NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home_rounded),
-              label: 'Home',
+              icon: const Icon(Icons.home_outlined),
+              selectedIcon: const Icon(Icons.home_rounded),
+              label: 'home'.tr,
             ),
             NavigationDestination(
-              icon: Icon(Icons.lock_outline_rounded),
-              selectedIcon: Icon(Icons.lock_rounded),
-              label: 'Vault',
+              icon: const Icon(Icons.lock_outline_rounded),
+              selectedIcon: const Icon(Icons.lock_rounded),
+              label: 'vault'.tr,
             ),
             NavigationDestination(
-              icon: Icon(Icons.settings_outlined),
-              selectedIcon: Icon(Icons.settings_rounded),
-              label: 'Settings',
+              icon: const Icon(Icons.settings_outlined),
+              selectedIcon: const Icon(Icons.settings_rounded),
+              label: 'settings'.tr,
             ),
           ],
         ),

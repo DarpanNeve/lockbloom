@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
+import 'package:lockbloom/app/core/theme/app_colors.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 
 class PasswordEntryCard extends StatelessWidget {
@@ -185,7 +186,7 @@ class PasswordEntryCard extends StatelessWidget {
                         icon: Icon(
                           entry.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                           color: entry.isFavorite 
-                              ? AppTheme.secondaryColor 
+                              ? AppColors.secondaryColor 
                               : Theme.of(context).colorScheme.outline,
                         ),
                         tooltip: entry.isFavorite ? 'Remove from favorites' : 'Add to favorites',

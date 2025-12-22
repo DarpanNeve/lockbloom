@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:lockbloom/app/core/theme/app_colors.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 
@@ -24,7 +26,7 @@ class PasswordStrengthIndicator extends StatelessWidget {
             ),
             SizedBox(width: AppTheme.spacingMd.w),
             Text(
-              strength.feedback,
+              _getStrengthText(),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: _getStrengthColor(context),
                 fontWeight: FontWeight.w600,
@@ -43,6 +45,22 @@ class PasswordStrengthIndicator extends StatelessWidget {
         ],
       ],
     );
+  }
+
+  String _getStrengthText() {
+    switch (strength.score) {
+      case 1:
+        return 'weak'.tr;
+      case 2:
+        return 'fair'.tr;
+      case 3:
+        return 'good'.tr;
+      case 4:
+      case 5:
+        return 'strong'.tr;
+      default:
+        return '';
+    }
   }
 
   Widget _buildStrengthBar(BuildContext context) {
@@ -66,15 +84,15 @@ class PasswordStrengthIndicator extends StatelessWidget {
   Color _getStrengthColor(BuildContext context) {
     switch (strength.score) {
       case 1:
-        return AppTheme.errorColor;
+        return AppColors.errorColor;
       case 2:
-        return AppTheme.warningColor;
+        return AppColors.warningColor;
       case 3:
-        return AppTheme.accentColor;
+        return AppColors.accentColor;
       case 4:
-        return AppTheme.successColor;
+        return AppColors.successColor;
       case 5:
-        return AppTheme.successColor;
+        return AppColors.successColor;
       default:
         return Theme.of(context).colorScheme.outline;
     }

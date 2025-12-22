@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:lockbloom/app/core/theme/app_colors.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 import 'package:lockbloom/app/modules/saved_passwords/controllers/saved_passwords_controller.dart';
 
@@ -19,12 +20,11 @@ class AddPasswordSheet extends GetView<PasswordController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Add Password',
+                'add_password'.tr,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -41,7 +41,6 @@ class AddPasswordSheet extends GetView<PasswordController> {
 
           SizedBox(height: AppTheme.spacingLg.h),
 
-          // Form
           Expanded(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -49,7 +48,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
                 children: [
                   _buildTextField(
                     controller: controller.labelController,
-                    label: 'Label *',
+                    label: '${'title'.tr} *',
                     hint: 'e.g., Gmail, Facebook',
                     icon: Icons.label_outline_rounded,
                   ),
@@ -58,7 +57,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
 
                   _buildTextField(
                     controller: controller.usernameController,
-                    label: 'Username/Email *',
+                    label: '${'username'.tr} *',
                     icon: Icons.person_outline_rounded,
                   ),
 
@@ -67,7 +66,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
                   Obx(
                     () => _buildTextField(
                       controller: controller.passwordController,
-                      label: 'Password *',
+                      label: '${'password'.tr} *',
                       icon: Icons.lock_outline_rounded,
                       obscureText: !controller.showPassword.value,
                       onChanged: controller.calculatePasswordStrength,
@@ -77,7 +76,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
                           IconButton(
                             onPressed: controller.useGeneratedPassword,
                             icon: const Icon(Icons.auto_awesome_rounded),
-                            tooltip: 'Generate Strong Password',
+                            tooltip: 'generate_password'.tr,
                             color: Theme.of(context).colorScheme.primary,
                           ),
                           IconButton(
@@ -93,14 +92,11 @@ class AddPasswordSheet extends GetView<PasswordController> {
                     ),
                   ),
 
-                  // Password Strength Indicator (Optional enhancement)
-                  // You could add a strength bar here if the controller exposes strength value
-
                   SizedBox(height: AppTheme.spacingMd.h),
 
                   _buildTextField(
                     controller: controller.websiteController,
-                    label: 'Website',
+                    label: 'website'.tr,
                     hint: 'https://example.com',
                     icon: Icons.language_rounded,
                     keyboardType: TextInputType.url,
@@ -110,8 +106,8 @@ class AddPasswordSheet extends GetView<PasswordController> {
 
                   _buildTextField(
                     controller: controller.tagsController,
-                    label: 'Tags',
-                    hint: 'work, social, email (comma separated)',
+                    label: 'category'.tr,
+                    hint: '${'work'.tr}, ${'social'.tr}, ${'finance'.tr}',
                     icon: Icons.tag_rounded,
                   ),
 
@@ -119,18 +115,17 @@ class AddPasswordSheet extends GetView<PasswordController> {
 
                   _buildTextField(
                     controller: controller.notesController,
-                    label: 'Notes',
+                    label: 'notes'.tr,
                     icon: Icons.note_outlined,
                     maxLines: 3,
                   ),
                   
-                  SizedBox(height: AppTheme.spacingXxl.h), // Extra space at bottom
+                  SizedBox(height: AppTheme.spacingXxl.h),
                 ],
               ),
             ),
           ),
 
-          // Save Button
           Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom > 0 ? 0 : AppTheme.spacingSm.h,
@@ -142,7 +137,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 18.h),
                 ),
-                child: const Text('Save Password'),
+                child: Text('save'.tr),
               ),
             ),
           ),
@@ -186,7 +181,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
         'Error',
         'Please fill in all required fields',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppTheme.errorColor,
+        backgroundColor: AppColors.errorColor,
         colorText: Colors.white,
         margin: EdgeInsets.all(AppTheme.spacingMd.w),
       );
