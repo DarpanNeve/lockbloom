@@ -31,7 +31,26 @@ class PasswordRepository extends GetxService {
       final decryptedJson = _encryptionService.decrypt(encryptedData);
       final List<dynamic> passwordList = jsonDecode(decryptedJson);
 
-      final List<PasswordEntry> entries = passwordList.map((json) => PasswordEntry.fromJson(json)).toList();
+      final List<PasswordEntry> entries = [];
+      int skippedCount = 0;
+      
+      for (final json in passwordList) {
+        try {
+          entries.add(PasswordEntry.fromJson(json));
+        } catch (e) {
+          skippedCount++;
+          FirebaseCrashlytics.instance.recordError(
+            e, 
+            null, 
+            reason: 'Skipped corrupted password entry',
+          );
+        }
+      }
+      
+      if (skippedCount > 0) {
+        FirebaseCrashlytics.instance.log('Skipped $skippedCount corrupted entries during load');
+      }
+      
       _passwordCache = entries;
       return entries;
     } catch (e, stack) {
@@ -113,7 +132,10 @@ class PasswordRepository extends GetxService {
     return _encryptionService.encryptWithPassword(exportJson, masterPassword);
   }
 
-  Future<void> importPasswords(String encryptedData, String masterPassword) async {
+  Future<ImportResult> importPasswords(String encryptedData, String masterPassword) async {
+    int imported = 0;
+    int skipped = 0;
+    
     try {
       final decryptedJson = _encryptionService.decryptWithPassword(encryptedData, masterPassword);
       final Map<String, dynamic> exportData = jsonDecode(decryptedJson);
@@ -123,16 +145,37 @@ class PasswordRepository extends GetxService {
       }
 
       final List<dynamic> passwordList = exportData['passwords'];
-      final importedPasswords = passwordList.map((json) => PasswordEntry.fromJson(json)).toList();
+      final List<PasswordEntry> importedPasswords = [];
+      
+      for (final json in passwordList) {
+        try {
+          importedPasswords.add(PasswordEntry.fromJson(json));
+        } catch (e) {
+          skipped++;
+          FirebaseCrashlytics.instance.recordError(
+            e, 
+            null, 
+            reason: 'Skipped corrupted entry during import',
+          );
+        }
+      }
 
       final existingPasswords = await getAllPasswords();
       final existingIds = existingPasswords.map((p) => p.id).toSet();
 
       final newPasswords = importedPasswords.where((p) => !existingIds.contains(p.id)).toList();
+      imported = newPasswords.length;
+      
       final allPasswords = [...existingPasswords, ...newPasswords];
 
       _passwordCache = allPasswords;
       await _savePasswordList(allPasswords);
+      
+      return ImportResult(
+        imported: imported, 
+        skipped: skipped, 
+        total: passwordList.length,
+      );
     } catch (e, stack) {
       if (e.toString().contains('Failed to decrypt data')) {
         throw Exception('Invalid password or corrupted file');
@@ -169,4 +212,16 @@ class PasswordRepository extends GetxService {
           passwords.reduce((a, b) => a.createdAt.isAfter(b.createdAt) ? a : b).createdAt,
     };
   }
+  
+  void invalidateCache() {
+    _passwordCache = null;
+  }
+}
+
+class ImportResult {
+  final int imported;
+  final int skipped;
+  final int total;
+  
+  ImportResult({required this.imported, required this.skipped, required this.total});
 }

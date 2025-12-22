@@ -10,35 +10,57 @@ class PasswordService extends GetxService {
   static const String _ambiguous = '0O1lI';
   static const String _similar = 'il1Lo0O';
 
+  // Pre-filtered character sets
+  static const String _lowercaseNoAmbiguous = 'abcdefghijkmnopqrstvwxyz'; // 'l' removed
+  static const String _lowercaseNoSimilar = 'abcdefghjkmnpqrstvwxyz'; // 'i', 'l', 'o' removed
+  static const String _uppercaseNoAmbiguous = 'ABCDEFGHJKMNPQRSTVWXYZ'; // 'I', 'L', 'O' removed
+  static const String _uppercaseNoSimilar = 'ABCDEFGHJKMNPQRSTVWXYZ'; // 'I', 'L', 'O' removed
+  static const String _numbersNoAmbiguous = '23456789'; // '0', '1' removed
+  static const String _numbersNoSimilar = '23456789'; // '0', '1' removed
+
   /// Generate a password based on configuration
   String generatePassword(PasswordGeneratorConfig config) {
-    String charset = '';
-
-    if (config.includeLowercase) charset += _lowercase;
-    if (config.includeUppercase) charset += _uppercase;
-    if (config.includeNumbers) charset += _numbers;
-    if (config.includeSymbols) charset += _symbols;
-
-    if (config.excludeAmbiguous) {
-      for (String char in _ambiguous.split('')) {
-        charset = charset.replaceAll(char, '');
-      }
+    if (config.pronounceable) {
+      return _generatePronounceablePassword(config.length);
+    }
+    
+    if (!config.includeUppercase && !config.includeLowercase && 
+        !config.includeNumbers && !config.includeSymbols) {
+      throw PasswordGenerationException('At least one character type must be selected');
     }
 
-    if (config.excludeSimilar) {
-      for (String char in _similar.split('')) {
-        charset = charset.replaceAll(char, '');
-      }
+    var charset = '';
+
+    if (config.includeUppercase) {
+      charset += config.excludeAmbiguous
+          ? _uppercaseNoAmbiguous
+          : config.excludeSimilar
+              ? _uppercaseNoSimilar
+              : _uppercase;
+    }
+
+    if (config.includeLowercase) {
+      charset += config.excludeAmbiguous
+          ? _lowercaseNoAmbiguous
+          : config.excludeSimilar
+              ? _lowercaseNoSimilar
+              : _lowercase;
+    }
+
+    if (config.includeNumbers) {
+      charset += config.excludeAmbiguous
+          ? _numbersNoAmbiguous
+          : config.excludeSimilar
+              ? _numbersNoSimilar
+              : _numbers;
+    }
+
+    if (config.includeSymbols) {
+      charset += _symbols;
     }
 
     if (charset.isEmpty) {
-      throw ArgumentError(
-        'No valid characters available for password generation',
-      );
-    }
-
-    if (config.pronounceable) {
-      return _generatePronounceablePassword(config.length);
+      throw PasswordGenerationException('Character set is empty with current settings');
     }
 
     return _generateRandomPassword(charset, config.length, config);
@@ -207,4 +229,12 @@ class PasswordService extends GetxService {
   }
 
   double get ln10 => 2.302585092994046;
+}
+
+class PasswordGenerationException implements Exception {
+  final String message;
+  PasswordGenerationException(this.message);
+  
+  @override
+  String toString() => 'PasswordGenerationException: $message';
 }

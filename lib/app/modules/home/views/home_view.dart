@@ -15,51 +15,69 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _pages = [
-      Scaffold(
-        appBar: AppBar(
-          title: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset(
-                'assets/images/icon.png',
-                height: 24.w,
-                width: 24.w,
-              ),
-              SizedBox(width: AppTheme.spacingSm.w),
-              const Text('LockBloom'),
-            ],
-          ),
-          centerTitle: true,
-          surfaceTintColor: Colors.transparent,
+    return Scaffold(
+      body: Obx(
+        () {
+          final index = controller.currentIndex.value;
+          switch (index) {
+            case 0:
+              return _buildHomeTab(context);
+            case 1:
+              return const SavedPasswordsView();
+            case 2:
+              return const SettingsView();
+            default:
+              return _buildHomeTab(context);
+          }
+        },
+      ),
+      bottomNavigationBar: _buildBottomNavigationBar(context),
+    );
+  }
+  
+  Widget _buildHomeTab(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/images/icon.png',
+              height: 24.w,
+              width: 24.w,
+            ),
+            SizedBox(width: AppTheme.spacingSm.w),
+            const Text('LockBloom'),
+          ],
         ),
-        body: SingleChildScrollView(
+        centerTitle: true,
+        surfaceTintColor: Colors.transparent,
+      ),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SingleChildScrollView(
           padding: EdgeInsets.all(AppTheme.spacingMd.w),
           physics: const BouncingScrollPhysics(),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Welcome Section
               _buildWelcomeSection(context),
 
               SizedBox(height: AppTheme.spacingXl.h),
 
-              // Password Generator Card
               const PasswordGeneratorCard(),
 
               SizedBox(height: AppTheme.spacingXl.h),
 
-              // Quick Actions
               _buildQuickActions(context),
 
               SizedBox(height: AppTheme.spacingXl.h),
 
-              // Recent Passwords
               _buildRecentPasswordsSection(context),
 
               SizedBox(height: AppTheme.spacingXl.h),
 
-              // Statistics
               _buildStatisticsSection(context),
               
               SizedBox(height: AppTheme.spacingXl.h),
@@ -67,18 +85,6 @@ class HomeView extends GetView<HomeController> {
           ),
         ),
       ),
-      const SavedPasswordsView(),
-      const SettingsView(),
-    ];
-
-    return Scaffold(
-      body: Obx(
-        () => IndexedStack(
-          index: controller.currentIndex.value,
-          children: _pages,
-        ),
-      ),
-      bottomNavigationBar: _buildBottomNavigationBar(context),
     );
   }
 
@@ -92,13 +98,13 @@ class HomeView extends GetView<HomeController> {
           end: Alignment.bottomRight,
           colors: [
             Theme.of(context).colorScheme.primary,
-            Theme.of(context).colorScheme.primary.withOpacity(0.8),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(AppTheme.radiusLg),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -118,7 +124,7 @@ class HomeView extends GetView<HomeController> {
           Text(
             'Generate secure passwords and manage your credentials safely.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
             ),
           ),
         ],
@@ -148,6 +154,8 @@ class HomeView extends GetView<HomeController> {
                 onTap: () => Get.bottomSheet(
                   const AddPasswordSheet(),
                   isScrollControlled: true,
+                  isDismissible: false,
+                  enableDrag: false,
                 ),
               ),
             ),
@@ -180,7 +188,7 @@ class HomeView extends GetView<HomeController> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
         ),
       ),
       child: InkWell(
@@ -252,52 +260,48 @@ class HomeView extends GetView<HomeController> {
   Widget _buildStatisticsSection(BuildContext context) {
     final passwordController = Get.find<PasswordController>();
 
-    return FutureBuilder<Map<String, dynamic>>(
-      future: passwordController.getPasswordStats(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const SizedBox.shrink();
-        }
+    return Obx(() {
+      final stats = passwordController.passwordStats;
+      if (stats.isEmpty) {
+        return const SizedBox.shrink();
+      }
 
-        final stats = snapshot.data!;
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Statistics',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Statistics',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: AppTheme.spacingMd.h),
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                  context,
+                  title: 'Total Passwords',
+                  value: (stats['total'] ?? 0).toString(),
+                  icon: Icons.lock_outline_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
-            ),
-            SizedBox(height: AppTheme.spacingMd.h),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard(
-                    context,
-                    title: 'Total Passwords',
-                    value: stats['total'].toString(),
-                    icon: Icons.lock_outline_rounded,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+              SizedBox(width: AppTheme.spacingMd.w),
+              Expanded(
+                child: _buildStatCard(
+                  context,
+                  title: 'Favorites',
+                  value: (stats['favorites'] ?? 0).toString(),
+                  icon: Icons.favorite_rounded,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
-                SizedBox(width: AppTheme.spacingMd.w),
-                Expanded(
-                  child: _buildStatCard(
-                    context,
-                    title: 'Favorites',
-                    value: stats['favorites'].toString(),
-                    icon: Icons.favorite_rounded,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
+              ),
+            ],
+          ),
+        ],
+      );
+    });
   }
 
   Widget _buildStatCard(
@@ -313,7 +317,7 @@ class HomeView extends GetView<HomeController> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
         ),
       ),
       child: Padding(
@@ -327,7 +331,7 @@ class HomeView extends GetView<HomeController> {
                 Container(
                   padding: EdgeInsets.all(AppTheme.spacingXs.w),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                   ),
                   child: Icon(
@@ -365,7 +369,7 @@ class HomeView extends GetView<HomeController> {
         color: Theme.of(context).colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
             width: 1,
           ),
         ),

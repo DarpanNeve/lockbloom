@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/auth_controller.dart';
@@ -10,6 +11,7 @@ import 'package:lockbloom/app/repositories/password_repository.dart';
 import 'package:lockbloom/app/services/storage_service.dart';
 import 'package:lockbloom/app/services/theme_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsController extends GetxController {
   static const String _autoLockTimeoutKey = 'auto_lock_timeout';
@@ -22,11 +24,14 @@ class SettingsController extends GetxController {
   final PasswordController _passwordController = Get.find();
   final PasswordRepository _passwordRepository = Get.find();
 
-  // Observable settings
-  final autoLockTimeout = 300.obs; // 5 minutes default
-  final clipboardClearTime = 30.obs; // 30 seconds default
+  final autoLockTimeout = 300.obs;
+  final clipboardClearTime = 30.obs;
   final isPasswordHistoryEnabled = true.obs;
   final isLoading = false.obs;
+  final appVersion = ''.obs;
+
+  static const String _privacyPolicyUrl = 'https://lockbloom.app/privacy';
+  static const String _termsOfServiceUrl = 'https://lockbloom.app/terms';
 
   // Available timeout options (in seconds)
   final timeoutOptions = [
@@ -53,6 +58,11 @@ class SettingsController extends GetxController {
   void onInit() {
     super.onInit();
     _loadSettings();
+    _loadAppVersion();
+  }
+  
+  Future<void> _loadAppVersion() async {
+    appVersion.value = '1.0.20 (21)';
   }
 
   void _loadSettings() {
@@ -67,6 +77,7 @@ class SettingsController extends GetxController {
   Future<void> updateAutoLockTimeout(int timeout) async {
     autoLockTimeout.value = timeout;
     await _storageService.write(_autoLockTimeoutKey, timeout);
+    _authController.updateAutoLockTimeout(timeout);
     Fluttertoast.showToast(msg: 'Auto-lock timeout updated');
   }
 
@@ -329,13 +340,40 @@ class SettingsController extends GetxController {
               }
 
               Get.back();
-              _exportPasswords(password);
+              _confirmAndExport(password);
             },
             child: const Text('Export'),
           ),
         ],
       ),
     );
+  }
+  
+  Future<void> _confirmAndExport(String password) async {
+    final confirm = await Get.dialog<bool>(
+      AlertDialog(
+        title: const Text('Confirm Export'),
+        content: const Text(
+          'This will create an encrypted backup file containing all your passwords. '
+          'If a file with the same name exists, it will be overwritten.\n\n'
+          'Make sure to remember the export password - you will need it to import the backup.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Get.back(result: true),
+            child: const Text('Export Now'),
+          ),
+        ],
+      ),
+    );
+    
+    if (confirm == true) {
+      await _exportPasswords(password);
+    }
   }
 
   void showImportDialog() {
@@ -423,24 +461,63 @@ class SettingsController extends GetxController {
         allowedExtensions: ['json'],
       );
 
-      if (result != null && result.files.single.path != null) {
-        isLoading.value = true;
-        final file = File(result.files.single.path!);
-        final encryptedData = await file.readAsString();
-
-        await _passwordRepository.importPasswords(encryptedData, password);
-        await _passwordController.loadPasswords();
-
-        Fluttertoast.showToast(msg: 'Passwords imported successfully');
-      } else {
+      if (result == null || result.files.isEmpty) {
         Fluttertoast.showToast(msg: 'Import cancelled');
+        return;
       }
+      
+      final filePath = result.files.single.path;
+      if (filePath == null) {
+        Fluttertoast.showToast(msg: 'Could not access file');
+        return;
+      }
+
+      isLoading.value = true;
+      final file = File(filePath);
+      
+      if (!await file.exists()) {
+        Fluttertoast.showToast(msg: 'File not found');
+        return;
+      }
+      
+      final encryptedData = await file.readAsString();
+
+      await _passwordRepository.importPasswords(encryptedData, password);
+      await _passwordController.loadPasswords();
+      
+      HapticFeedback.lightImpact();
+      Fluttertoast.showToast(msg: 'Passwords imported successfully');
+    } on FileSystemException {
+      Fluttertoast.showToast(msg: 'Could not read file - permission denied');
+    } on FormatException {
+      Fluttertoast.showToast(msg: 'Invalid file format');
     } catch (e) {
-      Fluttertoast.showToast(
-        msg: 'Failed to import passwords: ${e.toString()}',
-      );
+      final message = e.toString();
+      if (message.contains('Invalid password') || message.contains('decrypt')) {
+        Fluttertoast.showToast(msg: 'Incorrect password or corrupted file');
+      } else {
+        Fluttertoast.showToast(msg: 'Import failed - invalid backup file');
+      }
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> openPrivacyPolicy() async {
+    final uri = Uri.parse(_privacyPolicyUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      Fluttertoast.showToast(msg: 'Could not open privacy policy');
+    }
+  }
+
+  Future<void> openTermsOfService() async {
+    final uri = Uri.parse(_termsOfServiceUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      Fluttertoast.showToast(msg: 'Could not open terms of service');
     }
   }
 

@@ -22,7 +22,7 @@ class AuthView extends GetView<AuthController> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                 Theme.of(context).colorScheme.surface,
               ],
             ),
@@ -55,7 +55,7 @@ class AuthView extends GetView<AuthController> {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -98,15 +98,15 @@ class AuthView extends GetView<AuthController> {
 
           SizedBox(height: AppTheme.spacingXl.h),
           
-          // PIN Setup Form
           Column(
             children: [
               TextField(
                 controller: controller.pinController,
                 decoration: const InputDecoration(
                   labelText: 'Create PIN',
-                  hintText: 'Enter at least 4 digits',
+                  hintText: '4-8 digits required',
                   prefixIcon: Icon(Icons.lock_outline_rounded),
+                  counterText: '',
                 ),
                 keyboardType: TextInputType.number,
                 obscureText: true,
@@ -121,6 +121,7 @@ class AuthView extends GetView<AuthController> {
                   labelText: 'Confirm PIN',
                   hintText: 'Re-enter your PIN',
                   prefixIcon: Icon(Icons.lock_rounded),
+                  counterText: '',
                 ),
                 keyboardType: TextInputType.number,
                 obscureText: true,
@@ -138,16 +139,23 @@ class AuthView extends GetView<AuthController> {
                         controller.isLoading.value
                             ? null
                             : () {
-                                if (controller.pinController.text !=
-                                    controller.confirmPinController.text) {
+                                final pin = controller.pinController.text;
+                                final confirmPin = controller.confirmPinController.text;
+                                
+                                if (pin.length < 4) {
+                                  Fluttertoast.showToast(
+                                    msg: 'PIN must be at least 4 digits',
+                                  );
+                                  return;
+                                }
+                                
+                                if (pin != confirmPin) {
                                   Fluttertoast.showToast(
                                     msg: 'PINs do not match',
                                   );
                                   return;
                                 }
-                                controller.setupPin(
-                                  controller.pinController.text,
-                                );
+                                controller.setupPin(pin);
                               },
                     child:
                         controller.isLoading.value
@@ -172,10 +180,10 @@ class AuthView extends GetView<AuthController> {
           Container(
             padding: EdgeInsets.all(AppTheme.spacingMd.w),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(AppTheme.radiusMd),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
               ),
             ),
             child: Row(
@@ -235,6 +243,7 @@ class AuthView extends GetView<AuthController> {
                 decoration: const InputDecoration(
                   labelText: 'Enter PIN',
                   prefixIcon: Icon(Icons.lock_outline_rounded),
+                  counterText: '',
                 ),
                 keyboardType: TextInputType.number,
                 obscureText: true,
@@ -270,19 +279,22 @@ class AuthView extends GetView<AuthController> {
                 ),
               ),
 
-              // Biometric Button (if available and enabled)
               Obx(() {
                 if (controller.isBiometricAvailable.value &&
                     controller.isBiometricEnabled.value) {
                   return Column(
                     children: [
                       SizedBox(height: AppTheme.spacingMd.h),
-                      OutlinedButton.icon(
-                        onPressed: controller.authenticateWithBiometric,
-                        icon: const Icon(Icons.fingerprint_rounded),
-                        label: const Text('Use Biometric'),
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: Size(double.infinity, 48.h),
+                      Semantics(
+                        button: true,
+                        label: 'Authenticate with biometric',
+                        child: OutlinedButton.icon(
+                          onPressed: controller.authenticateWithBiometric,
+                          icon: const Icon(Icons.fingerprint_rounded),
+                          label: const Text('Use Biometric'),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: Size(double.infinity, 48.h),
+                          ),
                         ),
                       ),
                     ],

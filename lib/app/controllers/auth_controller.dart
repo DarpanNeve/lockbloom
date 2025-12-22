@@ -1,6 +1,7 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/routes/app_pages.dart';
 import 'package:lockbloom/app/services/biometric_service.dart';
@@ -8,10 +9,11 @@ import 'package:lockbloom/app/services/encryption_service.dart';
 import 'package:lockbloom/app/services/storage_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class AuthController extends GetxController {
+class AuthController extends GetxController with WidgetsBindingObserver {
   static const String _pinKey = 'user_pin';
   static const String _biometricEnabledKey = 'biometric_enabled';
   static const String _isSetupCompleteKey = 'setup_complete';
+  static const String _autoLockTimeoutKey = 'auto_lock_timeout';
 
   final BiometricService _biometricService = Get.find();
   final EncryptionService _encryptionService = Get.find();
@@ -22,6 +24,9 @@ class AuthController extends GetxController {
   final isBiometricAvailable = false.obs;
   final isSetupComplete = false.obs;
   final isLoading = false.obs;
+  
+  DateTime? _backgroundedAt;
+  int _autoLockTimeout = 300;
 
   final pinController = TextEditingController();
   final confirmPinController = TextEditingController();
@@ -29,23 +34,59 @@ class AuthController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
     _checkInitialState();
   }
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     pinController.dispose();
     confirmPinController.dispose();
     super.onClose();
   }
+  
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      _backgroundedAt = DateTime.now();
+    } else if (state == AppLifecycleState.resumed) {
+      _checkAutoLock();
+    }
+  }
+  
+  void _checkAutoLock() {
+    if (_backgroundedAt == null || !isAuthenticated.value) return;
+    
+    final elapsed = DateTime.now().difference(_backgroundedAt!);
+    if (elapsed.inSeconds >= _autoLockTimeout && _autoLockTimeout > 0) {
+      lockApp();
+    }
+    _backgroundedAt = null;
+  }
+  
+  void lockApp() {
+    isAuthenticated.value = false;
+    pinController.clear();
+    HapticFeedback.mediumImpact();
+    Get.offAllNamed(Routes.AUTH);
+  }
+  
+  void updateAutoLockTimeout(int timeout) {
+    _autoLockTimeout = timeout;
+    _storageService.write(_autoLockTimeoutKey, timeout);
+  }
 
   static const int _maxFailedAttempts = 5;
-  static const Duration _lockoutDuration = Duration(seconds: 30);
   static const String _failedAttemptsKey = 'auth_failed_attempts';
   static const String _lockoutUntilKey = 'auth_lockout_until';
+  static const String _lockoutCountKey = 'auth_lockout_count';
 
   final failedAttempts = 0.obs;
   final lockoutUntil = Rxn<DateTime>();
+  int _lockoutCount = 0;
 
   Future<void> _checkInitialState() async {
     isLoading.value = true;
@@ -66,13 +107,38 @@ class AuthController extends GetxController {
       if (storedLockout != null) {
         lockoutUntil.value = DateTime.tryParse(storedLockout);
       }
+      
+      _lockoutCount = _storageService.read<int>(_lockoutCountKey) ?? 0;
 
       await _encryptionService.init();
     } catch (e, stack) {
       FirebaseCrashlytics.instance.recordError(e, stack, reason: 'Auth checkInitialState failed');
-      Fluttertoast.showToast(msg: 'Failed to initialize app: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Failed to initialize app');
     } finally {
       isLoading.value = false;
+    }
+  }
+  
+  Duration _getLockoutDuration() {
+    switch (_lockoutCount) {
+      case 0:
+        return const Duration(seconds: 30);
+      case 1:
+        return const Duration(minutes: 5);
+      case 2:
+        return const Duration(minutes: 30);
+      default:
+        return const Duration(hours: 24);
+    }
+  }
+  
+  String _formatLockoutRemaining(Duration remaining) {
+    if (remaining.inHours > 0) {
+      return '${remaining.inHours}h ${remaining.inMinutes % 60}m';
+    } else if (remaining.inMinutes > 0) {
+      return '${remaining.inMinutes}m ${remaining.inSeconds % 60}s';
+    } else {
+      return '${remaining.inSeconds}s';
     }
   }
 
@@ -129,8 +195,8 @@ class AuthController extends GetxController {
   Future<bool> verifyPin(String pin) async {
     if (lockoutUntil.value != null) {
       if (DateTime.now().isBefore(lockoutUntil.value!)) {
-        final remaining = lockoutUntil.value!.difference(DateTime.now()).inSeconds;
-        Fluttertoast.showToast(msg: 'Too many attempts. Try again in ${remaining}s');
+        final remaining = lockoutUntil.value!.difference(DateTime.now());
+        Fluttertoast.showToast(msg: 'Too many attempts. Try again in ${_formatLockoutRemaining(remaining)}');
         return false;
       } else {
         lockoutUntil.value = null;
@@ -150,16 +216,21 @@ class AuthController extends GetxController {
 
       if (pin == storedPin) {
         failedAttempts.value = 0;
+        _lockoutCount = 0;
         await _storageService.remove(_failedAttemptsKey);
+        await _storageService.remove(_lockoutCountKey);
         return true;
       } else {
         failedAttempts.value++;
         await _storageService.write(_failedAttemptsKey, failedAttempts.value);
         
         if (failedAttempts.value >= _maxFailedAttempts) {
-            lockoutUntil.value = DateTime.now().add(_lockoutDuration);
-            await _storageService.write(_lockoutUntilKey, lockoutUntil.value!.toIso8601String());
-            Fluttertoast.showToast(msg: 'Too many failed attempts. Locked for 30s.');
+          final lockoutDuration = _getLockoutDuration();
+          lockoutUntil.value = DateTime.now().add(lockoutDuration);
+          await _storageService.write(_lockoutUntilKey, lockoutUntil.value!.toIso8601String());
+          _lockoutCount++;
+          await _storageService.write(_lockoutCountKey, _lockoutCount);
+          Fluttertoast.showToast(msg: 'Too many attempts. Locked for ${_formatLockoutRemaining(lockoutDuration)}');
         }
         return false;
       }
@@ -172,11 +243,10 @@ class AuthController extends GetxController {
   Future<void> authenticateWithPin(String pin) async {
     if (lockoutUntil.value != null) {
         if (DateTime.now().isBefore(lockoutUntil.value!)) {
-            final remaining = lockoutUntil.value!.difference(DateTime.now()).inSeconds;
-            Fluttertoast.showToast(msg: 'Too many attempts. Try again in ${remaining}s');
+            final remaining = lockoutUntil.value!.difference(DateTime.now());
+            Fluttertoast.showToast(msg: 'Too many attempts. Try again in ${_formatLockoutRemaining(remaining)}');
             return;
         } else {
-            // Lockout expired
             lockoutUntil.value = null;
             failedAttempts.value = 0;
             await _storageService.remove(_lockoutUntilKey);
@@ -201,7 +271,9 @@ class AuthController extends GetxController {
         isAuthenticated.value = true;
         
         failedAttempts.value = 0;
+        _lockoutCount = 0;
         await _storageService.remove(_failedAttemptsKey);
+        await _storageService.remove(_lockoutCountKey);
         
         FirebaseAnalytics.instance.logLogin(loginMethod: 'pin');
         Get.offAllNamed(Routes.HOME);
@@ -210,9 +282,12 @@ class AuthController extends GetxController {
         await _storageService.write(_failedAttemptsKey, failedAttempts.value);
         
         if (failedAttempts.value >= _maxFailedAttempts) {
-            lockoutUntil.value = DateTime.now().add(_lockoutDuration);
+            final lockoutDuration = _getLockoutDuration();
+            lockoutUntil.value = DateTime.now().add(lockoutDuration);
             await _storageService.write(_lockoutUntilKey, lockoutUntil.value!.toIso8601String());
-            Fluttertoast.showToast(msg: 'Too many failed attempts. Locked for 30s.');
+            _lockoutCount++;
+            await _storageService.write(_lockoutCountKey, _lockoutCount);
+            Fluttertoast.showToast(msg: 'Too many attempts. Locked for ${_formatLockoutRemaining(lockoutDuration)}');
         } else {
             Fluttertoast.showToast(msg: 'Incorrect PIN. Attempts: ${failedAttempts.value}/$_maxFailedAttempts');
         }
@@ -221,7 +296,7 @@ class AuthController extends GetxController {
       }
     } catch (e, stack) {
       FirebaseCrashlytics.instance.recordError(e, stack, reason: 'authenticateWithPin failed');
-      Fluttertoast.showToast(msg: 'Authentication failed: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Authentication failed');
     } finally {
       isLoading.value = false;
     }

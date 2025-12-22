@@ -16,10 +16,17 @@ class StorageService extends GetxService {
 
   SharedPreferences? _prefs;
 
+  Future<StorageService> init() async {
+    _prefs = await SharedPreferences.getInstance();
+    return this;
+  }
+
   @override
   Future<void> onInit() async {
     super.onInit();
-    _prefs = await SharedPreferences.getInstance();
+    if (_prefs == null) {
+      _prefs = await SharedPreferences.getInstance();
+    }
   }
 
   // Secure Storage Methods (for sensitive data)

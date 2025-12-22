@@ -50,7 +50,7 @@ class _SkeletonPasswordCardState extends State<SkeletonPasswordCard>
               color: Theme.of(context).cardTheme.color,
               borderRadius: BorderRadius.circular(AppTheme.radiusMd),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
               ),
             ),
             child: Row(
@@ -60,7 +60,7 @@ class _SkeletonPasswordCardState extends State<SkeletonPasswordCard>
                   width: 48.w,
                   height: 48.w,
                   decoration: BoxDecoration(
-                    color: baseColor.withOpacity(0.1),
+                    color: baseColor.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -74,7 +74,7 @@ class _SkeletonPasswordCardState extends State<SkeletonPasswordCard>
                         width: 120.w,
                         height: 16.h,
                         decoration: BoxDecoration(
-                          color: baseColor.withOpacity(0.1),
+                          color: baseColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -83,7 +83,7 @@ class _SkeletonPasswordCardState extends State<SkeletonPasswordCard>
                         width: 180.w,
                         height: 12.h,
                         decoration: BoxDecoration(
-                          color: baseColor.withOpacity(0.1),
+                          color: baseColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),

@@ -46,7 +46,7 @@ class SettingsView extends GetView<SettingsController> {
               ),
               Divider(
                 height: 1,
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
               ),
               Obx(
                 () => _buildSettingsTile(
@@ -60,7 +60,7 @@ class SettingsView extends GetView<SettingsController> {
               ),
               Divider(
                 height: 1,
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
               ),
               _buildSettingsTile(
                 icon: Icons.vpn_key_rounded,
@@ -87,7 +87,7 @@ class SettingsView extends GetView<SettingsController> {
               ),
               Divider(
                 height: 1,
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
               ),
               _buildSettingsTile(
                 icon: Icons.history_rounded,
@@ -104,15 +104,14 @@ class SettingsView extends GetView<SettingsController> {
 
             SizedBox(height: AppTheme.spacingLg.h),
 
-            // Appearance Section
             _buildSectionHeader(context, 'Appearance'),
             _buildSettingsCard(context, [
-              _buildSettingsTile(
+              Obx(() => _buildSettingsTile(
                 icon: Icons.palette_rounded,
                 title: 'Theme',
                 subtitle: controller.currentThemeText,
                 onTap: controller.showThemeDialog,
-              ),
+              )),
             ]),
 
             SizedBox(height: AppTheme.spacingLg.h),
@@ -128,7 +127,7 @@ class SettingsView extends GetView<SettingsController> {
               ),
               Divider(
                 height: 1,
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
               ),
               _buildSettingsTile(
                 icon: Icons.upload_rounded,
@@ -140,37 +139,32 @@ class SettingsView extends GetView<SettingsController> {
 
             SizedBox(height: AppTheme.spacingLg.h),
 
-            // About Section
             _buildSectionHeader(context, 'About'),
             _buildSettingsCard(context, [
-              _buildSettingsTile(
+              Obx(() => _buildSettingsTile(
                 icon: Icons.info_outline_rounded,
                 title: 'Version',
-                subtitle: '1.0.0',
-              ),
+                subtitle: controller.appVersion.value,
+              )),
               Divider(
                 height: 1,
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
               ),
               _buildSettingsTile(
                 icon: Icons.security_rounded,
                 title: 'Privacy Policy',
                 subtitle: 'How we protect your data',
-                onTap: () {
-                  // Show privacy policy
-                },
+                onTap: controller.openPrivacyPolicy,
               ),
               Divider(
                 height: 1,
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
               ),
               _buildSettingsTile(
                 icon: Icons.description_rounded,
                 title: 'Terms of Service',
                 subtitle: 'Usage terms and conditions',
-                onTap: () {
-                  // Show terms of service
-                },
+                onTap: controller.openTermsOfService,
               ),
             ]),
 
@@ -234,7 +228,7 @@ class SettingsView extends GetView<SettingsController> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
         ),
       ),
       child: Column(children: children),
@@ -259,7 +253,7 @@ class SettingsView extends GetView<SettingsController> {
         decoration: BoxDecoration(
           color:
               isDestructive
-                  ? Get.theme.colorScheme.errorContainer.withOpacity(0.8)
+                  ? Get.theme.colorScheme.errorContainer.withValues(alpha: 0.8)
                   : Get.theme.colorScheme.primaryContainer,
           borderRadius: BorderRadius.circular(AppTheme.radiusSm),
         ),

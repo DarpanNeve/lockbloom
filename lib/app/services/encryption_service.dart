@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
@@ -10,6 +9,7 @@ import 'package:pointycastle/export.dart';
 class EncryptionService extends GetxService {
   static const String _keyStorageKey = 'com.lockbloom.app.v1.secure_data.master_encryption_key';
   static const String _saltStorageKey = 'com.lockbloom.app.v1.secure_data.master_salt_for_key_derivation';
+  static const String _keyChecksumKey = 'com.lockbloom.app.v1.secure_data.key_checksum';
   
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
     aOptions: AndroidOptions(
@@ -21,36 +21,55 @@ class EncryptionService extends GetxService {
   );
 
   Encrypter? _encrypter;
-  IV? _iv;
+  bool _isNewKeyGenerated = false;
+  
+  bool get wasKeyRegenerated => _isNewKeyGenerated;
 
-  /// Initialize the encryption service
   Future<void> init() async {
     await _initializeKey();
   }
 
-  /// Initialize or retrieve the encryption key
   Future<void> _initializeKey() async {
     try {
       String? keyString = await _secureStorage.read(key: _keyStorageKey);
       String? saltString = await _secureStorage.read(key: _saltStorageKey);
+      String? checksumString = await _secureStorage.read(key: _keyChecksumKey);
 
       if (keyString == null || saltString == null) {
         await _generateNewKey();
+        _isNewKeyGenerated = true;
       } else {
-        final key = Key(base64Decode(keyString));
+        final keyBytes = base64Decode(keyString);
+        final expectedChecksum = _calculateChecksum(keyBytes);
+        
+        if (checksumString != expectedChecksum) {
+          throw EncryptionException('Key integrity check failed');
+        }
+        
+        final key = Key(keyBytes);
         _encrypter = Encrypter(AES(key, mode: AESMode.gcm));
-        _iv = IV.fromSecureRandom(12); // GCM recommended IV length
       }
     } catch (e) {
-      // If there's any issue with existing keys, generate new ones
+      if (e is EncryptionException) {
+        rethrow;
+      }
       await _generateNewKey();
+      _isNewKeyGenerated = true;
     }
   }
 
-  /// Generate a new encryption key
+  String _calculateChecksum(List<int> data) {
+    int sum = 0;
+    for (int byte in data) {
+      sum = (sum + byte) & 0xFFFFFFFF;
+    }
+    return sum.toRadixString(16);
+  }
+
   Future<void> _generateNewKey() async {
-    final key = Key.fromSecureRandom(32); // 256-bit key
+    final key = Key.fromSecureRandom(32);
     final salt = _generateSalt();
+    final checksum = _calculateChecksum(key.bytes);
     
     await _secureStorage.write(
       key: _keyStorageKey,
@@ -60,9 +79,12 @@ class EncryptionService extends GetxService {
       key: _saltStorageKey,
       value: base64Encode(salt),
     );
+    await _secureStorage.write(
+      key: _keyChecksumKey,
+      value: checksum,
+    );
 
     _encrypter = Encrypter(AES(key, mode: AESMode.gcm));
-    _iv = IV.fromSecureRandom(12);
   }
 
   /// Generate a random salt
@@ -117,20 +139,18 @@ class EncryptionService extends GetxService {
     }
   }
 
-  /// Rotate the encryption key and re-encrypt all data
   Future<void> rotateKey() async {
     await _generateNewKey();
   }
 
-  /// Clear all encryption keys (for app reset)
   Future<void> clearKeys() async {
     await _secureStorage.delete(key: _keyStorageKey);
     await _secureStorage.delete(key: _saltStorageKey);
+    await _secureStorage.delete(key: _keyChecksumKey);
     _encrypter = null;
-    _iv = null;
+    _isNewKeyGenerated = false;
   }
 
-  /// Check if encryption is properly initialized
   bool get isInitialized => _encrypter != null;
 
   /// Derive key from password using PBKDF2

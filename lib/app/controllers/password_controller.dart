@@ -30,6 +30,7 @@ class PasswordController extends GetxController {
   final selectedTags = <String>[].obs;
   final isLoading = false.obs;
   final showPassword = false.obs;
+  final passwordStats = <String, dynamic>{}.obs;
 
   // Form controllers
   final labelController = TextEditingController();
@@ -44,13 +45,17 @@ class PasswordController extends GetxController {
     super.onInit();
     loadPasswords();
     generatePassword();
+    _loadPasswordStats();
 
-    // Listen to search query changes
     debounce(
       searchQuery,
       (_) => _filterPasswords(),
       time: const Duration(milliseconds: 300),
     );
+  }
+  
+  Future<void> _loadPasswordStats() async {
+    passwordStats.value = await _repository.getPasswordStats();
   }
 
   @override
@@ -70,9 +75,10 @@ class PasswordController extends GetxController {
       final loadedPasswords = await _repository.getAllPasswords();
       passwords.value = loadedPasswords;
       _filterPasswords();
+      await _loadPasswordStats();
     } catch (e, stack) {
       FirebaseCrashlytics.instance.recordError(e, stack, reason: 'loadPasswords failed');
-      Fluttertoast.showToast(msg: 'Failed to load passwords: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Failed to load passwords');
     } finally {
       isLoading.value = false;
     }
@@ -103,6 +109,7 @@ class PasswordController extends GetxController {
     String? website,
     String? notes,
     List<String>? tags,
+    DateTime? originalCreatedAt,
   }) async {
     if (label.trim().isEmpty) {
       Fluttertoast.showToast(msg: 'Label is required');
@@ -126,20 +133,21 @@ class PasswordController extends GetxController {
         website: website?.trim(),
         notes: notes?.trim() ?? '',
         tags: tags ?? [],
-        createdAt: id == null ? DateTime.now() : DateTime.now(),
+        createdAt: originalCreatedAt ?? DateTime.now(),
         updatedAt: DateTime.now(),
       );
 
       await _repository.savePassword(entry);
       await loadPasswords();
 
+      HapticFeedback.lightImpact();
       Fluttertoast.showToast(
         msg: id == null ? 'Password saved' : 'Password updated',
       );
       _clearForm();
     } catch (e, stack) {
       FirebaseCrashlytics.instance.recordError(e, stack, reason: 'savePassword failed');
-      Fluttertoast.showToast(msg: 'Failed to save password: ${e.toString()}');
+      Fluttertoast.showToast(msg: 'Failed to save password');
     } finally {
       isLoading.value = false;
     }
@@ -171,11 +179,12 @@ class PasswordController extends GetxController {
       try {
         await _repository.deletePassword(id);
         await loadPasswords();
+        HapticFeedback.mediumImpact();
         Fluttertoast.showToast(msg: 'Password deleted');
       } catch (e, stack) {
         FirebaseCrashlytics.instance.recordError(e, stack, reason: 'deletePassword failed');
         Fluttertoast.showToast(
-          msg: 'Failed to delete password: ${e.toString()}',
+          msg: 'Failed to delete password',
         );
       } finally {
         isLoading.value = false;
@@ -195,6 +204,7 @@ class PasswordController extends GetxController {
     try {
       final password = getDecryptedPassword(entry);
       await Clipboard.setData(ClipboardData(text: password));
+      HapticFeedback.lightImpact();
       Fluttertoast.showToast(msg: 'Password copied to clipboard');
 
       Future.delayed(const Duration(seconds: 30), () {
@@ -208,6 +218,7 @@ class PasswordController extends GetxController {
   Future<void> copyUsername(PasswordEntry entry) async {
     try {
       await Clipboard.setData(ClipboardData(text: entry.username));
+      HapticFeedback.lightImpact();
       Fluttertoast.showToast(msg: 'Username copied to clipboard');
     } catch (e) {
       Fluttertoast.showToast(msg: 'Failed to copy username');
@@ -252,10 +263,11 @@ class PasswordController extends GetxController {
     }
 
     if (selectedTags.isNotEmpty) {
+      final currentTags = selectedTags.toList();
       filtered =
           filtered
               .where(
-                (p) => selectedTags.value.any((tag) => p.tags.contains(tag)),
+                (p) => currentTags.any((tag) => p.tags.contains(tag)),
               )
               .toList();
     }
@@ -300,12 +312,12 @@ class PasswordController extends GetxController {
   Future<void> exportPasswords() async {
     try {
       final exportData = await _repository.exportPasswords('export_password');
-      // In a real app, you would save this to a file or share it
       await Clipboard.setData(ClipboardData(text: exportData));
+      HapticFeedback.lightImpact();
       Fluttertoast.showToast(msg: 'Passwords exported to clipboard');
     } catch (e) {
       Fluttertoast.showToast(
-        msg: 'Failed to export passwords: ${e.toString()}',
+        msg: 'Failed to export passwords',
       );
     }
   }

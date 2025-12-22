@@ -5,16 +5,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/bindings/initial_binding.dart';
 import 'package:lockbloom/app/routes/app_pages.dart';
+import 'package:lockbloom/app/services/storage_service.dart';
 import 'package:lockbloom/app/services/theme_service.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart';
-import 'package:upgrader/upgrader.dart';
-import 'package:shorebird_code_push/shorebird_code_push.dart'; // <-- add
+import 'package:shorebird_code_push/shorebird_code_push.dart';
 
-import 'app/services/storage_service.dart';
-import 'app/services/encryption_service.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -27,17 +25,11 @@ void main() async {
     return true;
   };
 
-  // Enable performance monitoring
   FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
 
-  // Initialize services
-  await Get.putAsync(() async => StorageService());
-  await Get.putAsync<EncryptionService>(() async {
-    final encryptionService = EncryptionService();
-    await encryptionService.init();
-    return encryptionService;
-  });
+  await Get.putAsync(() => StorageService().init());
   await Get.putAsync(() => ThemeService().init());
+  
   final shorebirdUpdater = ShorebirdUpdater();
   final status = await shorebirdUpdater.checkForUpdate();
 
@@ -45,13 +37,11 @@ void main() async {
     await shorebirdUpdater.update();
   }
 
-  // Set preferred orientations
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  // Enable edge-to-edge mode
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     systemNavigationBarColor: Colors.transparent,

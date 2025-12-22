@@ -27,7 +27,7 @@ class PasswordEntryCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusLg),
         side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
         ),
       ),
       child: InkWell(
@@ -77,19 +77,6 @@ class PasswordEntryCard extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            if (onToggleFavorite != null)
-                              InkWell(
-                                onTap: onToggleFavorite,
-                                borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-                                child: Padding(
-                                  padding: EdgeInsets.all(AppTheme.spacingXs.w),
-                                  child: Icon(
-                                    entry.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                                    color: entry.isFavorite ? AppTheme.secondaryColor : Theme.of(context).colorScheme.outline,
-                                    size: 20.w,
-                                  ),
-                                ),
-                              ),
                           ],
                         ),
                         if (entry.username.isNotEmpty) ...[
@@ -150,7 +137,7 @@ class PasswordEntryCard extends StatelessWidget {
                 SizedBox(height: AppTheme.spacingMd.h),
               ],
               
-              Divider(height: 1, color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
+              Divider(height: 1, color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2)),
               
               SizedBox(height: AppTheme.spacingSm.h),
 
@@ -159,24 +146,50 @@ class PasswordEntryCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   if (onCopyUsername != null)
-                    TextButton.icon(
-                      onPressed: onCopyUsername!,
-                      icon: Icon(Icons.person_outline_rounded, size: 18.w),
-                      label: const Text('Username'),
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
-                        minimumSize: Size(0, 36.h),
+                    Semantics(
+                      button: true,
+                      label: 'Copy username',
+                      child: TextButton.icon(
+                        onPressed: onCopyUsername!,
+                        icon: Icon(Icons.person_outline_rounded, size: 18.w),
+                        label: const Text('Username'),
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
+                          minimumSize: Size(0, 36.h),
+                        ),
                       ),
                     ),
                   if (onCopyPassword != null) ...[
                     SizedBox(width: AppTheme.spacingSm.w),
-                    TextButton.icon(
-                      onPressed: onCopyPassword!,
-                      icon: Icon(Icons.copy_rounded, size: 18.w),
-                      label: const Text('Password'),
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
-                        minimumSize: Size(0, 36.h),
+                    Semantics(
+                      button: true,
+                      label: 'Copy password',
+                      child: TextButton.icon(
+                        onPressed: onCopyPassword!,
+                        icon: Icon(Icons.copy_rounded, size: 18.w),
+                        label: const Text('Password'),
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
+                          minimumSize: Size(0, 36.h),
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (onToggleFavorite != null) ...[
+                    SizedBox(width: AppTheme.spacingSm.w),
+                    Semantics(
+                      button: true,
+                      label: entry.isFavorite ? 'Remove from favorites' : 'Add to favorites',
+                      child: IconButton(
+                        onPressed: onToggleFavorite,
+                        icon: Icon(
+                          entry.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                          color: entry.isFavorite 
+                              ? AppTheme.secondaryColor 
+                              : Theme.of(context).colorScheme.outline,
+                        ),
+                        tooltip: entry.isFavorite ? 'Remove from favorites' : 'Add to favorites',
+                        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                       ),
                     ),
                   ],

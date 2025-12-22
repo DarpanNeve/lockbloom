@@ -52,7 +52,7 @@ class PasswordFilterSheet extends GetView<PasswordController> {
                     Icon(
                       Icons.label_off_rounded,
                       size: 48.w,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                     ),
                     SizedBox(height: AppTheme.spacingSm.h),
                     Text(

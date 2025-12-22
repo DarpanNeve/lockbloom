@@ -6,6 +6,7 @@ import 'package:lockbloom/app/controllers/password_controller.dart';
 import 'package:lockbloom/app/controllers/auth_controller.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/services/biometric_service.dart';
+import 'package:lockbloom/app/services/encryption_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 
@@ -24,6 +25,8 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
   late PasswordEntry entry;
   bool isPasswordRevealed = false;
   bool isEditing = false;
+  bool _formInitialized = false;
+  Future<void>? _revealTimeout;
 
   @override
   void initState() {
@@ -83,7 +86,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppTheme.radiusLg),
             side: BorderSide(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
             ),
           ),
           child: Padding(
@@ -205,8 +208,10 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
   }
 
   Widget _buildEditForm(BuildContext context) {
-    // Initialize form controllers
-    _passwordController.loadPasswordForEdit(entry);
+    if (!_formInitialized) {
+      _passwordController.loadPasswordForEdit(entry);
+      _formInitialized = true;
+    }
     
     return Column(
       children: [
@@ -327,7 +332,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
         ),
       ),
       child: Padding(
@@ -383,7 +388,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
         ),
       ),
       child: Padding(
@@ -451,7 +456,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
         ),
       ),
       child: Padding(
@@ -508,7 +513,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
         ),
       ),
       child: Padding(
@@ -631,17 +636,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
       );
 
       if (authenticated) {
-        setState(() {
-          isPasswordRevealed = true;
-        });
-
-        Future.delayed(const Duration(seconds: 30), () {
-          if (mounted) {
-            setState(() {
-              isPasswordRevealed = false;
-            });
-          }
-        });
+        _showRevealedPassword();
       }
     } else {
       final pinController = TextEditingController();
@@ -661,6 +656,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                 decoration: const InputDecoration(
                   labelText: 'PIN',
                   prefixIcon: Icon(Icons.lock_outline_rounded),
+                  counterText: '',
                 ),
                 autofocus: true,
               ),
@@ -677,7 +673,6 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                 if (isValid) {
                   Get.back(result: true);
                 } else {
-                  // verifyPin handles toast feedback
                   pinController.clear();
                 }
               },
@@ -686,34 +681,46 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           ],
         ),
       );
+      pinController.dispose();
 
       if (verified == true) {
-        setState(() {
-          isPasswordRevealed = true;
-        });
-
-        Future.delayed(const Duration(seconds: 30), () {
-          if (mounted) {
-            setState(() {
-              isPasswordRevealed = false;
-            });
-          }
-        });
+        _showRevealedPassword();
       }
     }
+  }
+
+  void _showRevealedPassword() {
+    setState(() {
+      isPasswordRevealed = true;
+    });
+
+    _revealTimeout = Future.delayed(const Duration(seconds: 30), () {
+      if (mounted && isPasswordRevealed) {
+        setState(() {
+          isPasswordRevealed = false;
+        });
+      }
+    });
+  }
+  
+  @override
+  void dispose() {
+    _revealTimeout = null;
+    super.dispose();
   }
 
   void _toggleEdit() {
     setState(() {
       isEditing = true;
+      _formInitialized = false;
     });
   }
 
   void _cancelEdit() {
     setState(() {
       isEditing = false;
+      _formInitialized = false;
     });
-    // Clear form controllers
     _passwordController.labelController.clear();
     _passwordController.usernameController.clear();
     _passwordController.passwordController.clear();
@@ -729,27 +736,31 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         .where((e) => e.isNotEmpty)
         .toList();
     
+    final newPassword = _passwordController.passwordController.text;
+    
     _passwordController.savePassword(
       id: entry.id,
       label: _passwordController.labelController.text,
       username: _passwordController.usernameController.text,
-      password: _passwordController.passwordController.text,
+      password: newPassword,
       website: _passwordController.websiteController.text,
       notes: _passwordController.notesController.text,
       tags: tags,
+      originalCreatedAt: entry.createdAt,
     );
     
-    // Update local entry
     setState(() {
       entry = entry.copyWith(
         label: _passwordController.labelController.text,
         username: _passwordController.usernameController.text,
+        encryptedPassword: Get.find<EncryptionService>().encrypt(newPassword),
         website: _passwordController.websiteController.text,
         notes: _passwordController.notesController.text,
         tags: tags,
         updatedAt: DateTime.now(),
       );
       isEditing = false;
+      _formInitialized = false;
     });
   }
 

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/password_controller.dart';
-import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/widgets/password_strength_indicator.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 
@@ -17,7 +18,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusLg),
         side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
         ),
       ),
       child: Padding(
@@ -57,10 +58,10 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
               width: double.infinity,
               padding: EdgeInsets.all(AppTheme.spacingMd.w),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                  color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                 ),
               ),
               child: Column(
@@ -106,16 +107,14 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () async {
-                      await controller.copyPassword(PasswordEntry(
-                        id: '',
-                        label: '',
-                        username: '',
-                        encryptedPassword: controller.generatedPassword.value,
-                        tags: [],
-                        notes: '',
-                        createdAt: DateTime.now(),
-                        updatedAt: DateTime.now(),
-                      ));
+                      final password = controller.generatedPassword.value;
+                      if (password.isEmpty) return;
+                      await Clipboard.setData(ClipboardData(text: password));
+                      HapticFeedback.lightImpact();
+                      Fluttertoast.showToast(msg: 'Password copied to clipboard');
+                      Future.delayed(const Duration(seconds: 30), () {
+                        Clipboard.setData(const ClipboardData(text: ''));
+                      });
                     },
                     icon: const Icon(Icons.copy_rounded, size: 18),
                     label: const Text('Copy'),
@@ -190,9 +189,9 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                   SliderTheme(
                     data: SliderTheme.of(context).copyWith(
                       activeTrackColor: Theme.of(context).colorScheme.primary,
-                      inactiveTrackColor: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                      inactiveTrackColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                       thumbColor: Theme.of(context).colorScheme.primary,
-                      overlayColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                      overlayColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                       trackHeight: 4.0,
                     ),
                     child: Slider(

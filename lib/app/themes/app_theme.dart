@@ -95,7 +95,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         elevation: 0, // Flat design
         color: lightCardColor,
-        shadowColor: Colors.black.withOpacity(0.04),
+        shadowColor: Colors.black.withValues(alpha: 0.04),
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -402,11 +402,11 @@ class AppTheme {
       cardTheme: CardThemeData(
         elevation: 0,
         color: darkSurfaceColor,
-        shadowColor: Colors.black.withOpacity(0.2),
+        shadowColor: Colors.black.withValues(alpha: 0.2),
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: darkOutlineColor.withOpacity(0.5), width: 1),
+          side: BorderSide(color: darkOutlineColor.withValues(alpha: 0.5), width: 1),
         ),
         margin: EdgeInsets.zero,
       ),
