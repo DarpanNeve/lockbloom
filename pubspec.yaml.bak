@@ -1,7 +1,7 @@
 name: lockbloom
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.19+20
+version: 1.0.21+22
 
 environment:
   sdk: ^3.7.0
@@ -35,6 +35,8 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.6
   rename_app: ^1.6.5
+  url_launcher: ^6.2.6
+  purchases_flutter: ^9.10.1
 
 flutter_launcher_icons:
   android: true

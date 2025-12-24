@@ -9,6 +9,7 @@ import 'package:lockbloom/app/routes/app_pages.dart';
 import 'package:lockbloom/app/services/locale_service.dart';
 import 'package:lockbloom/app/services/storage_service.dart';
 import 'package:lockbloom/app/services/theme_service.dart';
+import 'package:lockbloom/app/services/subscription_service.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart';
@@ -31,6 +32,7 @@ void main() async {
   await Get.putAsync(() => StorageService().init());
   await Get.putAsync(() => ThemeService().init());
   await Get.putAsync(() => LocaleService().init());
+  await Get.putAsync(() => SubscriptionService().init());
   
   final shorebirdUpdater = ShorebirdUpdater();
   final status = await shorebirdUpdater.checkForUpdate();

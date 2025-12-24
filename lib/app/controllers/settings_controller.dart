@@ -11,7 +11,9 @@ import 'package:lockbloom/app/core/theme/app_colors.dart';
 import 'package:lockbloom/app/repositories/password_repository.dart';
 import 'package:lockbloom/app/services/locale_service.dart';
 import 'package:lockbloom/app/services/storage_service.dart';
+import 'package:lockbloom/app/services/storage_service.dart';
 import 'package:lockbloom/app/services/theme_service.dart';
+import 'package:lockbloom/app/services/subscription_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -26,8 +28,11 @@ class SettingsController extends GetxController {
   final StorageService _storageService = Get.find();
   final PasswordController _passwordController = Get.find();
   final PasswordRepository _passwordRepository = Get.find();
+  final SubscriptionService _subscriptionService = Get.find();
 
   final autoLockTimeout = 300.obs;
+  
+  RxBool get isPremium => _subscriptionService.isPremium;
   final clipboardClearTime = 30.obs;
   final isPasswordHistoryEnabled = true.obs;
   final isLoading = false.obs;
@@ -60,6 +65,8 @@ class SettingsController extends GetxController {
     super.onInit();
     _loadSettings();
     _loadAppVersion();
+    // Refresh subscription status immediately when controller initializes
+    _subscriptionService.checkSubscriptionStatus();
   }
   
   Future<void> _loadAppVersion() async {
@@ -710,6 +717,25 @@ class SettingsController extends GetxController {
     } else {
       Fluttertoast.showToast(msg: '${'could_not_open'.tr} ${'terms_of_service'.tr}');
     }
+  }
+
+  Future<void> openBMC() async { 
+    const url = 'https://www.buymeacoffee.com/darpanneve';
+    final uri = Uri.parse(url);
+    try {
+      if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+         // Fallback or retry with default mode if specific mode fails (though externalApplication is standard)
+         if (!await launchUrl(uri)) {
+            throw 'Could not launch $url';
+         }
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'Could not open link: $e'); // Show actual error if possible or generic
+    }
+  }
+
+  void manageSubscription() {
+    _subscriptionService.manageSubscription();
   }
 
   void showResetAppDialog() {

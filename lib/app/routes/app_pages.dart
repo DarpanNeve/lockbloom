@@ -11,6 +11,8 @@ import 'package:lockbloom/app/modules/settings/bindings/settings_binding.dart';
 import 'package:lockbloom/app/modules/settings/views/settings_view.dart';
 import 'package:lockbloom/app/modules/splash/bindings/splash_binding.dart';
 import 'package:lockbloom/app/modules/splash/views/splash_view.dart';
+import 'package:lockbloom/app/modules/premium/premium_binding.dart';
+import 'package:lockbloom/app/modules/premium/premium_view.dart';
 
 part 'app_routes.dart';
 
@@ -49,6 +51,11 @@ class AppPages {
       name: _Paths.SETTINGS,
       page: () => const SettingsView(),
       binding: SettingsBinding(),
+    ),
+    GetPage(
+      name: _Paths.PREMIUM,
+      page: () => const PremiumView(),
+      binding: PremiumBinding(),
     ),
   ];
 }

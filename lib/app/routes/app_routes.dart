@@ -9,6 +9,7 @@ abstract class Routes {
   static const SAVED_PASSWORDS = _Paths.SAVED_PASSWORDS;
   static const PASSWORD_DETAIL = _Paths.PASSWORD_DETAIL;
   static const SETTINGS = _Paths.SETTINGS;
+  static const PREMIUM = _Paths.PREMIUM;
 }
 
 abstract class _Paths {
@@ -20,4 +21,5 @@ abstract class _Paths {
   static const SAVED_PASSWORDS = '/saved-passwords';
   static const PASSWORD_DETAIL = '/password-detail';
   static const SETTINGS = '/settings';
+  static const PREMIUM = '/premium';
 }

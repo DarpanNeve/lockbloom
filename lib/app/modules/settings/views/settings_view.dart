@@ -22,6 +22,46 @@ class SettingsView extends GetView<SettingsController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _buildSectionHeader(context, "Support"),
+            _buildSettingsCard(context, [
+              _buildSettingsTile(
+                icon: Icons.coffee_rounded,
+                title: "Buy me a coffee",
+                subtitle: "Support the developer",
+                onTap: controller.openBMC,
+                iconColor: const Color(0xFFFFDD00), // BMC Yellow
+                iconBackgroundColor: const Color(0xFFFFDD00).withOpacity(0.2),
+                trailing: const Text(
+                  "☕",
+                  style: TextStyle(fontSize: 24),
+                ),
+              ),
+            ]),
+            SizedBox(height: AppTheme.spacingLg.h),
+
+            _buildSectionHeader(context, "Premium"),
+            _buildSettingsCard(context, [
+              Obx(() {
+                 if (controller.isPremium.value) {
+                   return _buildSettingsTile(
+                      icon: Icons.star_rounded,
+                      title: "Manage Subscription",
+                      subtitle: "Premium Active",
+                      onTap: controller.manageSubscription,
+                      iconColor: Colors.amber, 
+                      iconBackgroundColor: Colors.amber.withOpacity(0.1),
+                   );
+                 }
+                 return _buildSettingsTile(
+                  icon: Icons.diamond_rounded,
+                  title: "Unlock Premium",
+                  subtitle: "Get access to all features",
+                  onTap: () => Get.toNamed('/premium'),
+                );
+              }),
+            ]),
+            SizedBox(height: AppTheme.spacingLg.h),
+
             _buildSectionHeader(context, 'security'.tr),
             _buildSettingsCard(context, [
               _buildSettingsTile(
@@ -219,6 +259,8 @@ class SettingsView extends GetView<SettingsController> {
               ),
             ]),
 
+
+
             SizedBox(height: AppTheme.spacingXl.h),
 
             _buildSectionHeader(context, 'danger_zone'.tr, isError: true),
@@ -291,6 +333,8 @@ class SettingsView extends GetView<SettingsController> {
     Widget? trailing,
     VoidCallback? onTap,
     bool isDestructive = false,
+    Color? iconColor,
+    Color? iconBackgroundColor,
   }) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(
@@ -300,18 +344,18 @@ class SettingsView extends GetView<SettingsController> {
       leading: Container(
         padding: EdgeInsets.all(AppTheme.spacingSm.w),
         decoration: BoxDecoration(
-          color:
+          color: iconBackgroundColor ?? (
               isDestructive
                   ? Get.theme.colorScheme.errorContainer.withValues(alpha: 0.8)
-                  : Get.theme.colorScheme.primaryContainer,
+                  : Get.theme.colorScheme.primaryContainer),
           borderRadius: BorderRadius.circular(AppTheme.radiusSm),
         ),
         child: Icon(
           icon,
-          color:
+          color: iconColor ?? (
               isDestructive
                   ? Get.theme.colorScheme.error
-                  : Get.theme.colorScheme.primary,
+                  : Get.theme.colorScheme.primary),
           size: 20.w,
         ),
       ),
