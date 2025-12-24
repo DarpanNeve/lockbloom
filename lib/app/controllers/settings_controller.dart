@@ -145,62 +145,148 @@ class SettingsController extends GetxController {
   }
 
   void showAccentColorDialog() {
-    Get.dialog(
-      AlertDialog(
-        title: Text('choose_accent_color'.tr),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: GridView.builder(
-            shrinkWrap: true,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 5,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
-            itemCount: AppColors.accentColors.length,
-            itemBuilder: (context, index) {
-              final color = AppColors.accentColors[index];
-              final isSelected = color.id == _themeService.accentColorId;
-              return GestureDetector(
-                onTap: () {
-                  _themeService.changeAccentColor(color.id);
-                  Fluttertoast.showToast(msg: 'color_updated'.tr);
-                  Get.back();
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  decoration: BoxDecoration(
-                    color: color.primary,
-                    shape: BoxShape.circle,
-                    border: isSelected
-                        ? Border.all(
-                            color: Get.theme.colorScheme.onSurface,
-                            width: 3,
-                          )
-                        : null,
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: color.primary.withValues(alpha: 0.4),
-                              blurRadius: 8,
-                              spreadRadius: 2,
-                            )
-                          ]
-                        : null,
-                  ),
-                  child: isSelected
-                      ? Icon(
-                          Icons.check_rounded,
-                          color: Colors.white,
-                          size: 20.w,
-                        )
-                      : null,
+    final categories = AppColors.categorizedColors;
+    final categoryKeys = categories.keys.toList();
+
+    Get.bottomSheet(
+      Container(
+        decoration: BoxDecoration(
+          color: Get.theme.scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: DefaultTabController(
+          length: categoryKeys.length,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle Bar
+              SizedBox(height: 12.h),
+              Container(
+                width: 40.w,
+                height: 4.h,
+                decoration: BoxDecoration(
+                  color: Get.theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(2),
                 ),
-              );
-            },
+              ),
+              
+              // Title Row
+              Padding(
+                padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 8.h),
+                child: Row(
+                  children: [
+                    Text(
+                      'choose_accent_color'.tr,
+                      style: Get.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () => Get.back(),
+                      icon: const Icon(Icons.close_rounded),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Tab Bar
+              TabBar(
+                isScrollable: true,
+                tabAlignment: TabAlignment.start,
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                dividerColor: Colors.transparent,
+                labelColor: Get.theme.colorScheme.primary,
+                unselectedLabelColor: Get.theme.colorScheme.onSurfaceVariant,
+                indicatorSize: TabBarIndicatorSize.label,
+                indicatorWeight: 3,
+                labelStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp,
+                ),
+                unselectedLabelStyle: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14.sp,
+                ),
+                tabs: categoryKeys.map((key) => Tab(text: key)).toList(),
+              ),
+              
+              Divider(height: 1, color: Get.theme.dividerColor.withValues(alpha: 0.1)),
+
+              // Content
+              SizedBox(
+                height: 350.h,
+                child: TabBarView(
+                  children: categoryKeys.map((key) {
+                    final colors = categories[key]!;
+                    return GridView.builder(
+                      padding: EdgeInsets.all(24.w),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 5,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                      ),
+                      itemCount: colors.length,
+                      itemBuilder: (context, colorIndex) {
+                        final color = colors[colorIndex];
+                        
+                        return Obx(() {
+                           final isSelected = color.id == _themeService.accentColorId;
+                           return GestureDetector(
+                            onTap: () {
+                              _themeService.changeAccentColor(color.id);
+                              HapticFeedback.selectionClick();
+                              Fluttertoast.showToast(msg: 'color_updated'.tr);
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              decoration: BoxDecoration(
+                                color: color.primary,
+                                shape: BoxShape.circle,
+                                border: isSelected
+                                    ? Border.all(
+                                        color: Get.theme.colorScheme.onSurface,
+                                        width: 2.5,
+                                      )
+                                    : Border.all(
+                                        color: Get.theme.colorScheme.outline.withValues(alpha: 0.1),
+                                        width: 1,
+                                      ),
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: color.primary.withValues(alpha: 0.4),
+                                          blurRadius: 8,
+                                          spreadRadius: 2,
+                                        )
+                                      ]
+                                    : null,
+                              ),
+                              child: isSelected
+                                  ? Icon(
+                                      Icons.check_rounded,
+                                      color: Colors.white,
+                                      size: 20.w,
+                                    )
+                                  : null,
+                            ),
+                          );
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+              SizedBox(height: 16.h),
+            ],
           ),
         ),
       ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
     );
   }
 
