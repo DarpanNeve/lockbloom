@@ -23,7 +23,7 @@ class PremiumView extends GetView<PremiumController> {
           TextButton(
             onPressed: controller.restorePurchases,
             child: Text(
-              "Restore",
+              "restore".tr,
               style: TextStyle(
                 color: context.theme.primaryColor,
                 fontWeight: FontWeight.w600,
@@ -43,11 +43,11 @@ class PremiumView extends GetView<PremiumController> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Premium features unavailable offline."),
+                Text("premium_unavailable_offline".tr),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: controller.fetchOfferings,
-                  child: const Text("Retry"),
+                  child: Text("retry".tr),
                 ),
                 const SizedBox(height: 20),
                 // _buildBMCButton(context) - Moved to Settings
@@ -73,7 +73,7 @@ class PremiumView extends GetView<PremiumController> {
               ),
               SizedBox(height: 16.h),
               Text(
-                "Unlock Unlimited",
+                "unlock_unlimited".tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28.sp,
@@ -82,7 +82,7 @@ class PremiumView extends GetView<PremiumController> {
                 ),
               ),
               Text(
-                "Access all premium features forever",
+                "access_premium_forever".tr,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16.sp,
@@ -93,10 +93,10 @@ class PremiumView extends GetView<PremiumController> {
               SizedBox(height: 32.h),
 
               // Benefits List
-              _buildBenefitItem(context, Icons.cloud_off, "Offline Backup & Sync"),
-              _buildBenefitItem(context, Icons.analytics_outlined, "Advanced Analytics"),
-              _buildBenefitItem(context, Icons.color_lens_outlined, "Premium Themes"),
-              _buildBenefitItem(context, Icons.security, "Biometric Security"),
+              _buildBenefitItem(context, Icons.cloud_off, "offline_backup_sync".tr),
+              _buildBenefitItem(context, Icons.analytics_outlined, "advanced_analytics".tr),
+              _buildBenefitItem(context, Icons.color_lens_outlined, "premium_themes".tr),
+              _buildBenefitItem(context, Icons.security, "biometric_security".tr),
               
               SizedBox(height: 32.h),
 
@@ -106,7 +106,7 @@ class PremiumView extends GetView<PremiumController> {
                   context,
                   package: annual,
                   isYearly: true,
-                  savings: "Save 20%",
+                  savings: "save_20_percent".tr,
                 ),
               SizedBox(height: 16.h),
               if (monthly != null)
@@ -134,7 +134,7 @@ class PremiumView extends GetView<PremiumController> {
                         const Icon(Icons.check_circle, color: Colors.green),
                         SizedBox(width: 8.w),
                         Text(
-                          "Premium Active",
+                          "premium_active".tr,
                           style: TextStyle(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
@@ -157,7 +157,7 @@ class PremiumView extends GetView<PremiumController> {
                     shadowColor: context.theme.primaryColor.withOpacity(0.4),
                   ),
                   child: Text(
-                    "Start Premium",
+                    "start_premium".tr,
                     style: TextStyle(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
@@ -174,7 +174,7 @@ class PremiumView extends GetView<PremiumController> {
               
               // Footer
               Text(
-                "Subscriptions automatically renew unless auto-renew is turned off at least 24-hours before the end of the current period. You can manage subscriptions in your account settings.",
+                "subscription_disclaimer".tr,
                 textAlign: TextAlign.center,
                  style: TextStyle(
                   fontSize: 10.sp,
@@ -247,7 +247,7 @@ class PremiumView extends GetView<PremiumController> {
                     Row(
                       children: [
                         Text(
-                          isYearly ? "Annual Plan" : "Monthly Plan",
+                          isYearly ? "annual_plan".tr : "monthly_plan".tr,
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,

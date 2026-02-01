@@ -181,6 +181,31 @@ class AppTranslations extends Translations {
     'authenticate_to_reveal': 'Authenticate to reveal password',
     'enter_pin_to_reveal': 'Enter your PIN to reveal the password',
     'tags': 'Tags',
+    'hint_example': 'e.g., Gmail, Facebook',
+    // Filters & Sheets
+    'filter_by_tags': 'Filter by Tags',
+    'clear_all': 'Clear All',
+    'no_tags_available': 'No tags available',
+    'apply_filters': 'Apply Filters',
+    'fill_required_fields': 'Please fill in all required fields',
+    'error': 'Error',
+    // Premium
+    'restore': 'Restore',
+    'premium_unavailable_offline': 'Premium features unavailable offline.',
+    'retry': 'Retry',
+    'unlock_unlimited': 'Unlock Unlimited',
+    'access_premium_forever': 'Access all premium features forever',
+    'offline_backup_sync': 'Offline Backup & Sync',
+    'advanced_analytics': 'Advanced Analytics',
+    'premium_themes': 'Premium Themes',
+    'biometric_security': 'Biometric Security',
+    'annual_plan': 'Annual Plan',
+    'monthly_plan': 'Monthly Plan',
+    'save_20_percent': 'Save 20%',
+    'premium_active': 'Premium Active',
+    'start_premium': 'Start Premium',
+    'subscription_disclaimer': 'Subscriptions automatically renew unless auto-renew is turned off at least 24-hours before the end of the current period. You can manage subscriptions in your account settings.',
+
   };
 
   static const Map<String, String> _hiIN = {
@@ -357,5 +382,30 @@ class AppTranslations extends Translations {
     'authenticate_to_reveal': 'पासवर्ड देखने के लिए प्रमाणित करें',
     'enter_pin_to_reveal': 'पासवर्ड देखने के लिए अपना पिन दर्ज करें',
     'tags': 'टैग',
+    'hint_example': 'उदाहरण: Gmail, Facebook',
+    // Filters & Sheets
+    'filter_by_tags': 'टैग द्वारा फ़िल्टर करें',
+    'clear_all': 'सभी साफ करें',
+    'no_tags_available': 'कोई टैग उपलब्ध नहीं',
+    'apply_filters': 'फ़िल्टर लागू करें',
+    'fill_required_fields': 'कृपया सभी आवश्यक क्षेत्र भरें',
+    'error': 'त्रुटि',
+    // Premium
+    'restore': 'पुनर्स्थापित करें',
+    'premium_unavailable_offline': 'प्रीमियम सुविधाएं ऑफ़लाइन उपलब्ध नहीं हैं।',
+    'retry': 'पुनः प्रयास करें',
+    'unlock_unlimited': 'असीमित अनलॉक करें',
+    'access_premium_forever': 'हमेशा के लिए सभी प्रीमियम सुविधाओं का उपयोग करें',
+    'offline_backup_sync': 'ऑफ़लाइन बैकअप और सिंक',
+    'advanced_analytics': 'उन्नत विश्लेषण',
+    'premium_themes': 'प्रीमियम थीम्स',
+    'biometric_security': 'बायोमेट्रिक सुरक्षा',
+    'annual_plan': 'वार्षिक योजना',
+    'monthly_plan': 'मासिक योजना',
+    'save_20_percent': '20% बचाएं',
+    'premium_active': 'प्रीमियम सक्रिय',
+    'start_premium': 'प्रीमियम शुरू करें',
+    'subscription_disclaimer': 'सदस्यता स्वचालित रूप से नवीनीकृत हो जाती है जब तक कि वर्तमान अवधि के अंत से कम से कम 24 घंटे पहले ऑटो-नवीनीकरण बंद न हो जाए। आप अपनी खाता सेटिंग्स में सदस्यता का प्रबंधन कर सकते हैं।',
+
   };
 }

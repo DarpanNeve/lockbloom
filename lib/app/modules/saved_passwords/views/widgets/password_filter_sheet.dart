@@ -26,7 +26,7 @@ class PasswordFilterSheet extends GetView<PasswordController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Filter by Tags',
+                'filter_by_tags'.tr,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -36,7 +36,7 @@ class PasswordFilterSheet extends GetView<PasswordController> {
                   controller.filterByTags([]);
                   Get.back();
                 },
-                child: const Text('Clear All'),
+                child: Text('clear_all'.tr),
               ),
             ],
           ),
@@ -56,7 +56,7 @@ class PasswordFilterSheet extends GetView<PasswordController> {
                     ),
                     SizedBox(height: AppTheme.spacingSm.h),
                     Text(
-                      'No tags available',
+                      'no_tags_available'.tr,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
@@ -110,9 +110,10 @@ class PasswordFilterSheet extends GetView<PasswordController> {
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: 16.h),
               ),
-              child: const Text('Apply Filters'),
+              child: Text('apply_filters'.tr),
             ),
           ),
+          SizedBox(height: MediaQuery.of(context).padding.bottom),
         ],
       ),
     );

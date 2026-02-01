@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:lockbloom/app/controllers/auth_controller.dart';
 
 class AuthBinding extends Bindings {
   @override

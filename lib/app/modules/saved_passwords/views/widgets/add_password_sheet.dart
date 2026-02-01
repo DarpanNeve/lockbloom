@@ -49,7 +49,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
                   _buildTextField(
                     controller: controller.labelController,
                     label: '${'title'.tr} *',
-                    hint: 'e.g., Gmail, Facebook',
+                    hint: 'hint_example'.tr,
                     icon: Icons.label_outline_rounded,
                   ),
 
@@ -128,7 +128,9 @@ class AddPasswordSheet extends GetView<PasswordController> {
 
           Padding(
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom > 0 ? 0 : AppTheme.spacingSm.h,
+              bottom: MediaQuery.of(context).viewInsets.bottom > 0 
+                  ? 0 
+                  : (AppTheme.spacingSm.h + MediaQuery.of(context).padding.bottom),
             ),
             child: SizedBox(
               width: double.infinity,
@@ -178,8 +180,8 @@ class AddPasswordSheet extends GetView<PasswordController> {
         controller.usernameController.text.isEmpty ||
         controller.passwordController.text.isEmpty) {
       Get.snackbar(
-        'Error',
-        'Please fill in all required fields',
+        'error'.tr,
+        'fill_required_fields'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.errorColor,
         colorText: Colors.white,
