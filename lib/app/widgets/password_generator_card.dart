@@ -15,12 +15,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
-        ),
-      ),
+      // Use default CardTheme shape
       child: Padding(
         padding: EdgeInsets.all(AppTheme.spacingLg.w),
         child: Column(

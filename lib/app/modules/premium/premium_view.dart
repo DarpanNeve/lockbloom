@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:lockbloom/app/core/theme/app_colors.dart';
 import 'package:lockbloom/app/modules/premium/premium_controller.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:lockbloom/app/themes/app_theme.dart';
 
 class PremiumView extends GetView<PremiumController> {
   const PremiumView({super.key});
@@ -11,24 +11,12 @@ class PremiumView extends GetView<PremiumController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.close, color: context.theme.iconTheme.color),
-          onPressed: () => Get.back(),
-        ),
+        title: Text('premium'.tr),
         actions: [
           TextButton(
             onPressed: controller.restorePurchases,
-            child: Text(
-              "restore".tr,
-              style: TextStyle(
-                color: context.theme.primaryColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            child: Text("restore".tr),
           )
         ],
       ),
@@ -37,21 +25,29 @@ class PremiumView extends GetView<PremiumController> {
           return const Center(child: CircularProgressIndicator());
         }
         
-        // If no offerings are available (e.g. network error or no setup), show error or generic state
+        // Error or Offline State
         if (controller.offerings.value == null || controller.offerings.value!.current == null) {
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("premium_unavailable_offline".tr),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: controller.fetchOfferings,
-                  child: Text("retry".tr),
-                ),
-                const SizedBox(height: 20),
-                // _buildBMCButton(context) - Moved to Settings
-              ],
+            child: Padding(
+              padding: EdgeInsets.all(AppTheme.spacingLg.w),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.wifi_off_rounded, size: 64.w, color: Theme.of(context).colorScheme.outline),
+                  SizedBox(height: 16.h),
+                  Text(
+                    "premium_unavailable_offline".tr,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  SizedBox(height: 24.h),
+                  FilledButton.icon(
+                    onPressed: controller.fetchOfferings,
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: Text("retry".tr),
+                  ),
+                ],
+              ),
             ),
           );
         }
@@ -60,130 +56,163 @@ class PremiumView extends GetView<PremiumController> {
         final monthly = currentOffering.monthly;
         final annual = currentOffering.annual;
 
-        return SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Header
-              Icon(
-                Icons.diamond_outlined,
-                size: 80.w,
-                color: context.theme.primaryColor,
-              ),
-              SizedBox(height: 16.h),
-              Text(
-                "unlock_unlimited".tr,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 28.sp,
-                  fontWeight: FontWeight.bold,
-                  color: context.theme.textTheme.bodyLarge?.color,
-                ),
-              ),
-              Text(
-                "access_premium_forever".tr,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  color: context.theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
-                ),
-              ),
-              
-              SizedBox(height: 32.h),
-
-              // Benefits List
-              _buildBenefitItem(context, Icons.cloud_off, "offline_backup_sync".tr),
-              _buildBenefitItem(context, Icons.analytics_outlined, "advanced_analytics".tr),
-              _buildBenefitItem(context, Icons.color_lens_outlined, "premium_themes".tr),
-              _buildBenefitItem(context, Icons.security, "biometric_security".tr),
-              
-              SizedBox(height: 32.h),
-
-              // Plans
-              if (annual != null)
-                _buildPlanCard(
-                  context,
-                  package: annual,
-                  isYearly: true,
-                  savings: "save_20_percent".tr,
-                ),
-              SizedBox(height: 16.h),
-              if (monthly != null)
-                _buildPlanCard(
-                  context,
-                  package: monthly,
-                  isYearly: false,
-                ),
-
-              SizedBox(height: 32.h),
-
-              // Subscribe Button
-              if (controller.isPremium.value) ...[
-                  SizedBox(height: 16.h),
-                   Container(
-                    padding: EdgeInsets.all(16.r),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(color: Colors.green.withOpacity(0.3)),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.check_circle, color: Colors.green),
-                        SizedBox(width: 8.w),
-                        Text(
-                          "premium_active".tr,
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green,
+        return Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingLg.w),
+                child: Column(
+                  children: [
+                    SizedBox(height: 16.h),
+                    // Header Icon
+                    Container(
+                      width: 100.w,
+                      height: 100.w,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+                            blurRadius: 30,
+                            offset: const Offset(0, 10),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.diamond_rounded,
+                        size: 48.w,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
-                  ),
-              ] else ...[
-                 ElevatedButton(
-                  onPressed: controller.makePurchase,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: context.theme.primaryColor,
-                    padding: EdgeInsets.symmetric(vertical: 16.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.r),
+                    SizedBox(height: 24.h),
+                    
+                    // Value Proposition
+                    Text(
+                      "unlock_unlimited".tr,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                    elevation: 5,
-                    shadowColor: context.theme.primaryColor.withOpacity(0.4),
-                  ),
-                  child: Text(
-                    "start_premium".tr,
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    SizedBox(height: 8.h),
+                    Text(
+                      "access_premium_forever".tr,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
-                ),
-              ],
+                    
+                    SizedBox(height: 40.h),
 
-              SizedBox(height: 24.h),
-              // _buildBMCButton(context) - Moved to Settings
-              
-              SizedBox(height: 40.h),
-              
-              // Footer
-              Text(
-                "subscription_disclaimer".tr,
-                textAlign: TextAlign.center,
-                 style: TextStyle(
-                  fontSize: 10.sp,
-                  color: context.theme.textTheme.bodySmall?.color?.withOpacity(0.5),
+                    // Benefits List
+                    _buildBenefitItem(context, Icons.cloud_sync_rounded, "offline_backup_sync".tr),
+                    _buildBenefitItem(context, Icons.analytics_rounded, "advanced_analytics".tr),
+                    _buildBenefitItem(context, Icons.palette_rounded, "premium_themes".tr),
+                    _buildBenefitItem(context, Icons.fingerprint_rounded, "biometric_security".tr),
+                    
+                    SizedBox(height: 40.h),
+
+                    // Plans
+                    if (annual != null)
+                      _buildPlanCard(
+                        context,
+                        package: annual,
+                        isYearly: true,
+                        savings: "save_20_percent".tr,
+                      ),
+                    if (annual != null && monthly != null) SizedBox(height: 16.h),
+                    if (monthly != null)
+                      _buildPlanCard(
+                        context,
+                        package: monthly,
+                        isYearly: false,
+                      ),
+
+                    SizedBox(height: 32.h),
+                    
+                     Text(
+                      "subscription_disclaimer".tr,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                        fontSize: 11.sp,
+                      ),
+                    ),
+                    SizedBox(height: 100.h), // Bottom padding for scroll
+                  ],
                 ),
               ),
-               SizedBox(height: 20.h),
-            ],
-          ),
+            ),
+            
+            // Sticky Bottom Button
+            Container(
+              padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 32.h),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                border: Border(
+                  top: BorderSide(
+                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
+                  ),
+                ),
+              ),
+              child: SafeArea(
+                top: false,
+                child: Obx(() {
+                  if (controller.isPremium.value) {
+                    return Container(
+                      padding: EdgeInsets.symmetric(vertical: 16.h),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.check_circle_rounded, color: Colors.green, size: 24.w),
+                          SizedBox(width: 12.w),
+                          Text(
+                            "premium_active".tr,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  
+                  return SizedBox(
+                    width: double.infinity,
+                    height: 56.h,
+                    child: ElevatedButton(
+                      onPressed: controller.selectedPackage.value != null 
+                          ? controller.makePurchase 
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: Text(
+                        "start_premium".tr,
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
         );
       }),
     );
@@ -191,115 +220,147 @@ class PremiumView extends GetView<PremiumController> {
 
   Widget _buildBenefitItem(BuildContext context, IconData icon, String text) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.h),
+      padding: EdgeInsets.only(bottom: 16.h),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(8.r),
+            padding: EdgeInsets.all(10.w),
             decoration: BoxDecoration(
-              color: context.theme.primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8.r),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: context.theme.primaryColor, size: 20.w),
+            child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 24.w),
           ),
           SizedBox(width: 16.w),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                fontSize: 16.sp,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w500,
               ),
             ),
           ),
+          Icon(Icons.check_rounded, color: Colors.green, size: 24.w),
         ],
       ),
     );
   }
 
   Widget _buildPlanCard(BuildContext context, {required Package package, required bool isYearly, String? savings}) {
-    return Obx(() {
+      return Obx(() {
       final isSelected = controller.selectedPackage.value == package;
-      final borderColor = isSelected ? context.theme.primaryColor : context.theme.dividerColor;
-      final backgroundColor = isSelected ? context.theme.primaryColor.withOpacity(0.05) : Colors.transparent;
+      final borderColor = isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3);
+      final backgroundColor = isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.05) : Theme.of(context).cardTheme.color;
+      final textColor = isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface;
 
       return GestureDetector(
         onTap: () => controller.selectPackage(package),
-        child: Container(
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
-            borderRadius: BorderRadius.circular(16.r),
-          ),
-          padding: EdgeInsets.all(16.r),
-          child: Row(
-            children: [
-              Radio<Package>(
-                value: package,
-                groupValue: controller.selectedPackage.value,
-                onChanged: (val) => controller.selectPackage(val!),
-                activeColor: context.theme.primaryColor,
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
               ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+              padding: EdgeInsets.all(20.w),
+              child: Row(
+                children: [
+                   Container(
+                    width: 24.w, 
+                    height: 24.w,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
+                        width: 2,
+                      ),
+                      color: isSelected ? Theme.of(context).colorScheme.primary : null,
+                    ),
+                    child: isSelected 
+                        ? Icon(Icons.check, size: 16.w, color: Theme.of(context).colorScheme.onPrimary)
+                        : null,
+                  ),
+                  SizedBox(width: 16.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           isYearly ? "annual_plan".tr : "monthly_plan".tr,
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
+                            color: textColor,
                           ),
                         ),
-                        if (savings != null) ...[
-                          SizedBox(width: 8.w),
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(10.r),
-                            ),
-                            child: Text(
-                              savings,
-                              style: TextStyle(
-                                fontSize: 10.sp,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          package.storeProduct.description, // Often just the duration
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                             color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
-                        ]
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ],
                     ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      package.storeProduct.description,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: context.theme.textTheme.bodySmall?.color,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        package.storeProduct.priceString,
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.w800,
+                          color: textColor,
+                        ),
                       ),
+                      if (isYearly) ...[
+                        SizedBox(height: 4.h),
+                        Text(
+                          '/ ${'year'.tr}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ] else ...[
+                         SizedBox(height: 4.h),
+                        Text(
+                           '/ ${'month'.tr}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ]
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            if (savings != null)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(18),
+                      bottomLeft: Radius.circular(12),
                     ),
-                  ],
+                  ),
+                  child: Text(
+                    savings,
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
                 ),
               ),
-              Text(
-                package.storeProduct.priceString,
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                  color: context.theme.primaryColor,
-                ),
-              ),
-            ],
-          ),
+          ],
         ),
       );
     });
   }
-  
-
 }

@@ -105,7 +105,7 @@ class ThemeService extends GetxService {
             onError: Colors.white,
             surface: AppColors.darkSurfaceColor,
             onSurface: AppColors.darkOnSurfaceColor,
-            surfaceContainerHighest: AppColors.darkOutlineVariantColor,
+            surfaceContainerHighest: AppColors.darkOutlineVariantColor.withValues(alpha: 0.5),
             onSurfaceVariant: AppColors.darkOnSurfaceVariantColor,
             outline: AppColors.darkOutlineColor,
             outlineVariant: AppColors.darkOutlineVariantColor,
@@ -128,7 +128,7 @@ class ThemeService extends GetxService {
             onError: Colors.white,
             surface: AppColors.lightSurfaceColor,
             onSurface: AppColors.lightOnSurfaceColor,
-            surfaceContainerHighest: AppColors.lightOutlineVariantColor,
+            surfaceContainerHighest: AppColors.lightOutlineVariantColor.withValues(alpha: 0.5),
             onSurfaceVariant: AppColors.lightOnSurfaceVariantColor,
             outline: AppColors.lightOutlineColor,
             outlineVariant: AppColors.lightOutlineVariantColor,
@@ -160,6 +160,11 @@ class ThemeService extends GetxService {
       colorScheme: colorScheme,
       fontFamily: 'Inter',
       scaffoldBackgroundColor: backgroundColor,
+      dividerTheme: DividerThemeData(
+        color: outlineColor.withValues(alpha: 0.2),
+        thickness: 1,
+        space: 1,
+      ),
       appBarTheme: AppBarTheme(
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -179,12 +184,12 @@ class ThemeService extends GetxService {
       cardTheme: CardThemeData(
         elevation: 0,
         color: surfaceColor,
-        shadowColor: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+        shadowColor: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20), // Premium rounding
           side: BorderSide(
-            color: isDark ? outlineColor.withValues(alpha: 0.5) : outlineColor,
+            color: outlineColor.withValues(alpha: isDark ? 0.1 : 0.3),
             width: 1,
           ),
         ),
@@ -194,15 +199,16 @@ class ThemeService extends GetxService {
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
           foregroundColor: isDark ? backgroundColor : Colors.white,
-          disabledBackgroundColor: outlineColor,
+          disabledBackgroundColor: outlineColor.withValues(alpha: 0.3),
           disabledForegroundColor: onSurfaceVariantColor,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           textStyle: const TextStyle(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
             fontSize: 16,
             fontFamily: 'Inter',
+            letterSpacing: 0.5,
           ),
         ),
       ),
@@ -210,13 +216,14 @@ class ThemeService extends GetxService {
         style: OutlinedButton.styleFrom(
           foregroundColor: primaryColor,
           disabledForegroundColor: onSurfaceVariantColor,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          side: BorderSide(color: outlineColor, width: 1),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          side: BorderSide(color: outlineColor, width: 1.5),
           textStyle: const TextStyle(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
             fontSize: 16,
             fontFamily: 'Inter',
+            letterSpacing: 0.5,
           ),
         ),
       ),
@@ -225,7 +232,7 @@ class ThemeService extends GetxService {
           foregroundColor: primaryColor,
           disabledForegroundColor: onSurfaceVariantColor,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           textStyle: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
@@ -235,43 +242,66 @@ class ThemeService extends GetxService {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceColor,
+        fillColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.withValues(alpha: 0.05),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: outlineColor),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: outlineColor),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.transparent),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: primaryColor, width: 1.5),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: primaryColor.withValues(alpha: 0.5), width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.errorColor),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.errorColor, width: 1),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AppColors.errorColor, width: 1.5),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         hintStyle: TextStyle(
-          color: onSurfaceVariantColor,
+          color: onSurfaceVariantColor.withValues(alpha: 0.7),
           fontFamily: 'Inter',
-          fontSize: 14,
+          fontSize: 15,
         ),
         labelStyle: TextStyle(
           color: onSurfaceVariantColor,
           fontFamily: 'Inter',
-          fontSize: 14,
+          fontSize: 15,
         ),
-        floatingLabelStyle: TextStyle(
-          color: primaryColor,
-          fontFamily: 'Inter',
-          fontWeight: FontWeight.w600,
-        ),
+        floatingLabelBehavior: FloatingLabelBehavior.auto,
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: isDark ? backgroundColor : surfaceColor,
+        indicatorColor: primaryColor.withValues(alpha: 0.15),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+              fontFamily: 'Inter',
+              color: primaryColor,
+            );
+          }
+          return TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+            fontFamily: 'Inter',
+            color: onSurfaceVariantColor,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+           if (states.contains(WidgetState.selected)) {
+            return IconThemeData(color: primaryColor, size: 26);
+          }
+          return IconThemeData(color: onSurfaceVariantColor, size: 24);
+        }),
+        elevation: 0,
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: isDark ? backgroundColor : surfaceColor,
@@ -292,26 +322,26 @@ class ThemeService extends GetxService {
         showUnselectedLabels: true,
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: isDark ? outlineColor : AppColors.lightOutlineVariantColor,
+        backgroundColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03),
         labelStyle: TextStyle(
           color: onSurfaceColor,
-          fontWeight: FontWeight.w500,
-          fontFamily: 'Inter',
-          fontSize: 13,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: const BorderSide(color: Colors.transparent),
-        ),
-        selectedColor: isDark ? accent.primaryDark : accent.primaryContainer,
-        secondaryLabelStyle: TextStyle(
-          color: isDark ? accent.primaryLight : accent.onPrimaryContainer,
           fontWeight: FontWeight.w600,
           fontFamily: 'Inter',
           fontSize: 13,
         ),
-        checkmarkColor: isDark ? accent.primaryLight : accent.onPrimaryContainer,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide.none,
+        ),
+        selectedColor: primaryColor.withValues(alpha: 0.15),
+        secondaryLabelStyle: TextStyle(
+          color: primaryColor,
+          fontWeight: FontWeight.w700,
+          fontFamily: 'Inter',
+          fontSize: 13,
+        ),
+        checkmarkColor: primaryColor,
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
@@ -324,91 +354,94 @@ class ThemeService extends GetxService {
           if (states.contains(WidgetState.selected)) {
             return primaryColor;
           }
-          return outlineColor;
+          return outlineColor.withValues(alpha: 0.5);
         }),
         trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
       ),
       textTheme: TextTheme(
         displayLarge: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.w700,
+          fontSize: 34,
+          fontWeight: FontWeight.w800,
+          color: onSurfaceColor,
+          height: 1.1,
+          fontFamily: 'Inter',
+          letterSpacing: -1.5,
+        ),
+        displayMedium: TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.w800,
           color: onSurfaceColor,
           height: 1.2,
           fontFamily: 'Inter',
           letterSpacing: -1.0,
         ),
-        displayMedium: TextStyle(
-          fontSize: 28,
+        displaySmall: TextStyle(
+          fontSize: 24,
           fontWeight: FontWeight.w700,
           color: onSurfaceColor,
           height: 1.2,
           fontFamily: 'Inter',
           letterSpacing: -0.5,
         ),
-        displaySmall: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
-          color: onSurfaceColor,
-          height: 1.2,
-          fontFamily: 'Inter',
-        ),
         headlineLarge: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
+          fontSize: 22,
+          fontWeight: FontWeight.w700,
           color: onSurfaceColor,
           height: 1.3,
           fontFamily: 'Inter',
+          letterSpacing: -0.5,
         ),
         headlineMedium: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
           color: onSurfaceColor,
           height: 1.3,
           fontFamily: 'Inter',
         ),
         headlineSmall: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
           color: onSurfaceColor,
           height: 1.4,
           fontFamily: 'Inter',
         ),
         bodyLarge: TextStyle(
           fontSize: 16,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w500,
           color: onSurfaceColor,
           height: 1.5,
           fontFamily: 'Inter',
         ),
         bodyMedium: TextStyle(
           fontSize: 14,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w500,
           color: onSurfaceVariantColor,
           height: 1.5,
           fontFamily: 'Inter',
         ),
         bodySmall: TextStyle(
           fontSize: 12,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w500,
           color: onSurfaceVariantColor,
-          height: 1.4,
+          height: 1.5,
           fontFamily: 'Inter',
         ),
         labelLarge: TextStyle(
           fontSize: 14,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: onSurfaceColor,
           fontFamily: 'Inter',
         ),
         labelMedium: TextStyle(
           fontSize: 12,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: onSurfaceVariantColor,
           fontFamily: 'Inter',
+          letterSpacing: 0.5,
         ),
         labelSmall: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w600,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
           color: onSurfaceVariantColor,
           fontFamily: 'Inter',
           letterSpacing: 0.5,

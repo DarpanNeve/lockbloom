@@ -28,286 +28,226 @@ class AuthView extends GetView<AuthController> {
             ),
           ),
           child: SafeArea(
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.all(AppTheme.spacingLg.w),
-                child: Obx(() {
-                  if (!controller.isSetupComplete.value) {
-                    return _buildSetupView(context);
-                  } else {
-                    return _buildLoginView(context);
-                  }
-                }),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLogo(BuildContext context) {
-    return Container(
-      width: 120.w,
-      height: 120.w,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      padding: EdgeInsets.all(AppTheme.spacingMd.w),
-      child: ClipOval(
-        child: Image.asset(
-          'assets/images/icon.png',
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSetupView(BuildContext context) {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _buildLogo(context),
-          SizedBox(height: AppTheme.spacingLg.h),
-          Text(
-            '${'welcome_back'.tr.split('!')[0]} ${'app_name'.tr}',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: AppTheme.spacingSm.h),
-          Text(
-            'secure_vault'.tr,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
-          ),
-
-          SizedBox(height: AppTheme.spacingXl.h),
-          
-          Column(
-            children: [
-              TextField(
-                controller: controller.pinController,
-                decoration: InputDecoration(
-                  labelText: 'create_pin'.tr,
-                  hintText: '4-8 digits',
-                  prefixIcon: const Icon(Icons.lock_outline_rounded),
-                  counterText: '',
-                ),
-                keyboardType: TextInputType.number,
-                obscureText: true,
-                maxLength: 8,
-              ),
-
-              SizedBox(height: AppTheme.spacingMd.h),
-
-              TextField(
-                controller: controller.confirmPinController,
-                decoration: InputDecoration(
-                  labelText: 'confirm_pin'.tr,
-                  hintText: 'confirm_pin'.tr,
-                  prefixIcon: const Icon(Icons.lock_rounded),
-                  counterText: '',
-                ),
-                keyboardType: TextInputType.number,
-                obscureText: true,
-                maxLength: 8,
-              ),
-
-              SizedBox(height: AppTheme.spacingXl.h),
-
-              Obx(
-                () => SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed:
-                        controller.isLoading.value
-                            ? null
-                            : () {
-                                final pin = controller.pinController.text;
-                                final confirmPin = controller.confirmPinController.text;
-                                
-                                if (pin.length < 4) {
-                                  Fluttertoast.showToast(
-                                    msg: 'PIN must be at least 4 digits',
-                                  );
-                                  return;
-                                }
-                                
-                                if (pin != confirmPin) {
-                                  Fluttertoast.showToast(
-                                    msg: 'pin_not_match'.tr,
-                                  );
-                                  return;
-                                }
-                                controller.setupPin(pin);
-                              },
-                    child:
-                        controller.isLoading.value
-                            ? SizedBox(
-                                height: 20.h,
-                                width: 20.w,
-                                child: const CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : Text('create_pin'.tr),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          SizedBox(height: AppTheme.spacingXl.h),
-          
-          Container(
-            padding: EdgeInsets.all(AppTheme.spacingMd.w),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-              border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.security_rounded,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 24.w,
-                ),
-                SizedBox(width: AppTheme.spacingMd.w),
-                Expanded(
-                  child: Text(
-                    'vault_description'.tr,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Obx(() => SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLoginView(BuildContext context) {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _buildLogo(context),
-          SizedBox(height: AppTheme.spacingLg.h),
-          Text(
-            'app_name'.tr,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: AppTheme.spacingSm.h),
-          Text(
-            'enter_pin'.tr,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ),
-
-          SizedBox(height: AppTheme.spacingXl.h),
-
-          Column(
-            children: [
-              TextField(
-                controller: controller.pinController,
-                decoration: InputDecoration(
-                  labelText: 'enter_pin'.tr,
-                  prefixIcon: const Icon(Icons.lock_outline_rounded),
-                  counterText: '',
-                ),
-                keyboardType: TextInputType.number,
-                obscureText: true,
-                maxLength: 8,
-                onSubmitted: (value) => controller.authenticateWithPin(value),
-              ),
-
-              SizedBox(height: AppTheme.spacingXl.h),
-
-              Obx(
-                () => SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed:
-                        controller.isLoading.value
-                            ? null
-                            : () => controller.authenticateWithPin(
-                                  controller.pinController.text,
-                                ),
-                    child:
-                        controller.isLoading.value
-                            ? SizedBox(
-                                height: 20.h,
-                                width: 20.w,
-                                child: const CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : Text('confirm'.tr),
-                  ),
-                ),
-              ),
-
-              Obx(() {
-                if (controller.isBiometricAvailable.value &&
-                    controller.isBiometricEnabled.value) {
-                  return Column(
-                    children: [
-                      SizedBox(height: AppTheme.spacingMd.h),
-                      Semantics(
-                        button: true,
-                        label: 'use_biometric'.tr,
-                        child: OutlinedButton.icon(
-                          onPressed: controller.authenticateWithBiometric,
-                          icon: const Icon(Icons.fingerprint_rounded),
-                          label: Text('use_biometric'.tr),
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: Size(double.infinity, 48.h),
-                          ),
+                    child: IntrinsicHeight(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingLg.w),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const Spacer(),
+                            _buildHeader(context),
+                            SizedBox(height: 48.h),
+                            if (!controller.isSetupComplete.value)
+                              _buildSetupForm(context)
+                            else
+                              _buildLoginForm(context),
+                            const Spacer(),
+                            if (!controller.isSetupComplete.value)
+                              _buildVaultInfo(context),
+                            SizedBox(height: 24.h),
+                          ],
                         ),
                       ),
-                    ],
-                  );
-                }
-                return const SizedBox.shrink();
-              }),
+                    ),
+                  ),
+                ));
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: 80.w,
+          height: 80.w,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
             ],
           ),
-          
-          SizedBox(height: AppTheme.spacingXl.h),
-          
-          TextButton(
-            onPressed: controller.resetApp,
-            child: Text(
-              'forgot_pin'.tr,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.error,
+          padding: EdgeInsets.all(AppTheme.spacingSm.w),
+          child: ClipOval(
+            child: Image.asset('assets/images/icon.png', fit: BoxFit.cover),
+          ),
+        ),
+        SizedBox(height: AppTheme.spacingLg.h),
+        Text(
+          'app_name'.tr,
+          style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
               ),
+        ),
+        SizedBox(height: AppTheme.spacingSm.h),
+        Text(
+          controller.isSetupComplete.value ? 'welcome_back'.tr : 'secure_vault'.tr,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSetupForm(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildPinInput(
+          context,
+          controller: controller.pinController,
+          label: 'create_pin'.tr,
+          icon: Icons.lock_outline_rounded,
+        ),
+        SizedBox(height: AppTheme.spacingMd.h),
+        _buildPinInput(
+          context,
+          controller: controller.confirmPinController,
+          label: 'confirm_pin'.tr,
+          icon: Icons.lock_rounded,
+        ),
+        SizedBox(height: AppTheme.spacingXl.h),
+        SizedBox(
+          height: 56.h,
+          child: ElevatedButton(
+            onPressed: controller.isLoading.value
+                ? null
+                : () {
+                    final pin = controller.pinController.text;
+                    final confirmPin = controller.confirmPinController.text;
+                    if (pin.length < 4) {
+                      Fluttertoast.showToast(msg: 'PIN must be at least 4 digits');
+                      return;
+                    }
+                    if (pin != confirmPin) {
+                      Fluttertoast.showToast(msg: 'pin_not_match'.tr);
+                      return;
+                    }
+                    controller.setupPin(pin);
+                  },
+            child: controller.isLoading.value
+                ? const SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                  )
+                : Text('create_pin'.tr),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoginForm(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildPinInput(
+          context,
+          controller: controller.pinController,
+          label: 'enter_pin'.tr,
+          icon: Icons.lock_open_rounded,
+          onSubmitted: (_) => controller.authenticateWithPin(controller.pinController.text),
+        ),
+        SizedBox(height: AppTheme.spacingXl.h),
+        SizedBox(
+           height: 56.h,
+           child: ElevatedButton(
+            onPressed: controller.isLoading.value
+                ? null
+                : () => controller.authenticateWithPin(controller.pinController.text),
+            child: controller.isLoading.value
+                ? const SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                  )
+                : Text('confirm'.tr),
+          ),
+        ),
+        if (controller.isBiometricAvailable.value && controller.isBiometricEnabled.value) ...[
+          SizedBox(height: AppTheme.spacingMd.h),
+          SizedBox(
+             height: 56.h,
+            child: OutlinedButton.icon(
+              onPressed: controller.authenticateWithBiometric,
+              icon: const Icon(Icons.fingerprint_rounded),
+              label: Text('use_biometric'.tr),
+            ),
+          ),
+        ],
+        SizedBox(height: AppTheme.spacingXl.h),
+        TextButton(
+          onPressed: controller.resetApp,
+          child: Text(
+            'forgot_pin'.tr,
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPinInput(
+    BuildContext context, {
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    Function(String)? onSubmitted,
+  }) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        counterText: '',
+      ),
+      keyboardType: TextInputType.number,
+      obscureText: true,
+      maxLength: 8,
+      textAlign: TextAlign.center,
+      style: Theme.of(context).textTheme.headlineSmall?.copyWith(letterSpacing: 4),
+      onSubmitted: onSubmitted,
+    );
+  }
+  
+  Widget _buildVaultInfo(BuildContext context) {
+     return Container(
+      padding: EdgeInsets.all(AppTheme.spacingMd.w),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.security_rounded, color: Theme.of(context).colorScheme.primary),
+             SizedBox(width: AppTheme.spacingMd.w),
+          Expanded(
+            child: Text(
+              'vault_description'.tr,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
           ),
         ],

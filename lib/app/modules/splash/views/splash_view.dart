@@ -11,105 +11,91 @@ class SplashView extends GetView<SplashController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Theme.of(context).colorScheme.primary,
-              Get.find<ThemeService>().accentColor.primaryDark,
-            ],
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: Stack(
+        children: [
+          // Background subtle pattern or gradient could go here
+          Container(
+            decoration: BoxDecoration(
+               gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                      Theme.of(context).colorScheme.surface,
+                    ],
+               ),
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: Stack(
-            children: [
-              Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 120.w,
-                      height: 120.w,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(AppTheme.radiusXxl),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
+          
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 140.w,
+                  height: 140.w,
+                  padding: EdgeInsets.all(AppTheme.spacingMd.w),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+                        blurRadius: 40,
+                        offset: const Offset(0, 10),
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.all(AppTheme.spacingMd.w),
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/images/icon.png',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/images/icon.png',
+                      fit: BoxFit.cover,
                     ),
-
-                    SizedBox(height: AppTheme.spacingXl.h),
-
-                    Text(
-                      'LockBloom',
-                      style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-
-                    SizedBox(height: AppTheme.spacingSm.h),
-
-                    Text(
-                      'Secure Password Manager',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.9),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-
-              Positioned(
-                bottom: AppTheme.spacingXxl.h,
-                left: 0,
-                right: 0,
-                child: Obx(
-                  () => controller.isLoading.value
-                      ? Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(
-                              width: 32.w,
-                              height: 32.w,
-                              child: const CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                strokeWidth: 3,
-                              ),
-                            ),
-                            SizedBox(height: AppTheme.spacingMd.h),
-                            Text(
-                              'Initializing...',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.white.withValues(alpha: 0.8),
-                              ),
-                            ),
-                          ],
-                        )
-                      : const SizedBox.shrink(),
+                SizedBox(height: 32.h),
+                Text(
+                  'app_name'.tr,
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                 ),
-              ),
-            ],
+                SizedBox(height: 8.h),
+                Text(
+                  'secure_vault'.tr, 
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        letterSpacing: 0.5,
+                      ),
+                ),
+              ],
+            ),
           ),
-        ),
+          
+          Positioned(
+            bottom: 60.h,
+            left: 0,
+            right: 0,
+            child: Obx(() {
+               if (!controller.isLoading.value) return const SizedBox.shrink();
+               return Column(
+                 children: [
+                   SizedBox(
+                     width: 24.w,
+                     height: 24.w,
+                     child: CircularProgressIndicator(
+                       strokeWidth: 2.5,
+                       color: Theme.of(context).colorScheme.primary,
+                     ),
+                   ),
+                 ],
+               );
+            }),
+          ),
+        ],
       ),
     );
   }

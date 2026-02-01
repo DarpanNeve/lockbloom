@@ -16,198 +16,155 @@ class SavedPasswordsView extends GetView<PasswordController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('vault'.tr),
-        actions: [
-          IconButton(
-            onPressed: () => Get.bottomSheet(
-              const AddPasswordSheet(),
-              isScrollControlled: true,
-              isDismissible: false,
-              enableDrag: false,
-            ),
-            icon: const Icon(Icons.add_rounded),
-            tooltip: 'add_password'.tr,
-          ),
-        ],
-      ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(AppTheme.spacingMd.w),
-              child: TextField(
-                onChanged: controller.searchPasswords,
-                decoration: InputDecoration(
-                  hintText: '${'search'.tr}...',
-                  prefixIcon: const Icon(Icons.search_rounded),
-                  suffixIcon: Obx(() {
-                    if (controller.searchQuery.value.isNotEmpty) {
-                      return Semantics(
-                        button: true,
-                        label: 'close'.tr,
-                        child: IconButton(
-                          onPressed: () {
-                            controller.searchPasswords('');
-                          },
-                          icon: const Icon(Icons.clear_rounded),
-                        ),
-                      );
-                    }
-                    return Semantics(
-                      button: true,
-                      label: 'Filter',
-                      child: IconButton(
-                        onPressed: () => Get.bottomSheet(
-                          const PasswordFilterSheet(),
-                          isScrollControlled: true,
-                        ),
-                        icon: const Icon(Icons.filter_list_rounded),
-                        tooltip: 'Filter',
-                      ),
-                    );
-                  }),
-                ),
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverAppBar(
+            title: Text(
+              'vault'.tr, 
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize: 20.sp,
+                fontFamily: 'Inter',
               ),
             ),
-
-            Obx(() {
-              if (controller.selectedTags.isNotEmpty) {
-                return Container(
-                  height: 40.h,
-                  margin: EdgeInsets.only(
-                    left: AppTheme.spacingMd.w,
-                    right: AppTheme.spacingMd.w,
-                    bottom: AppTheme.spacingSm.h,
+            centerTitle: true,
+            pinned: true,
+            floating: true,
+            snap: true,
+            surfaceTintColor: Colors.transparent,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            actions: [
+               IconButton(
+                onPressed: () => Get.bottomSheet(
+                  const AddPasswordSheet(),
+                  isScrollControlled: true,
+                  isDismissible: false,
+                  enableDrag: false,
+                ),
+                icon: const Icon(Icons.add_circle_rounded),
+                iconSize: 28.w,
+                tooltip: 'add_password'.tr,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              SizedBox(width: 8.w),
+            ],
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
+              child: Column(
+                children: [
+                  TextField(
+                    onChanged: controller.searchPasswords,
+                    decoration: InputDecoration(
+                        hintText: '${'search'.tr}...',
+                        prefixIcon: const Icon(Icons.search_rounded),
+                        suffixIcon: Obx(() {
+                          if (controller.searchQuery.value.isNotEmpty) {
+                            return IconButton(
+                              onPressed: () => controller.searchPasswords(''),
+                              icon: const Icon(Icons.clear_rounded),
+                            );
+                          }
+                          return IconButton(
+                            onPressed: () => Get.bottomSheet(
+                              const PasswordFilterSheet(),
+                              isScrollControlled: true,
+                            ),
+                            icon: const Icon(Icons.filter_list_rounded),
+                          );
+                        }),
+                      ),
                   ),
-                  child: ListView.builder(
+                  SizedBox(height: 16.h),
+                ],
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+             child: Obx(() {
+               if (controller.selectedTags.isEmpty) return const SizedBox.shrink();
+               return Container(
+                  height: 48.h,
+                  margin: EdgeInsets.only(bottom: 16.h),
+                  child: ListView.separated(
+                    padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
                     scrollDirection: Axis.horizontal,
                     itemCount: controller.selectedTags.length,
+                    separatorBuilder: (_, __) => SizedBox(width: 8.w),
                     itemBuilder: (context, index) {
                       final tag = controller.selectedTags[index];
-                      return Padding(
-                        padding: EdgeInsets.only(right: AppTheme.spacingSm.w),
-                        child: Chip(
-                          label: Text(tag),
-                          onDeleted: () {
-                            final tags = List<String>.from(controller.selectedTags);
-                            tags.remove(tag);
-                            controller.filterByTags(tags);
-                          },
-                          deleteIcon: const Icon(Icons.close_rounded, size: 16),
-                          visualDensity: VisualDensity.compact,
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
+                      return Chip(
+                        label: Text(tag),
+                        onDeleted: () {
+                           var newTags = List<String>.from(controller.selectedTags)..remove(tag);
+                           controller.filterByTags(newTags);
+                        },
                       );
                     },
                   ),
+               );
+             }),
+          ),
+        ],
+        body: Obx(() {
+          if (controller.isLoading.value) {
+            return ListView.separated(
+              padding: EdgeInsets.all(AppTheme.spacingMd.w),
+              itemCount: 6,
+              separatorBuilder: (_, __) => SizedBox(height: 12.h),
+              itemBuilder: (_, __) => const SkeletonPasswordCard(),
+            );
+          }
+
+          if (controller.filteredPasswords.isEmpty) {
+             return _buildEmptyState(context);
+          }
+
+          return RefreshIndicator(
+            onRefresh: controller.loadPasswords,
+            child: ListView.separated(
+              padding: EdgeInsets.only(
+                left: AppTheme.spacingMd.w,
+                right: AppTheme.spacingMd.w,
+                bottom: 100.h,
+              ),
+              itemCount: controller.filteredPasswords.length,
+              separatorBuilder: (_, __) => SizedBox(height: 12.h),
+              itemBuilder: (context, index) {
+                final password = controller.filteredPasswords[index];
+                return PasswordEntryCard(
+                  entry: password,
+                  onTap: () => Get.toNamed(Routes.PASSWORD_DETAIL, arguments: password),
+                   onCopyPassword: () => controller.copyPassword(password),
+                   onCopyUsername: () => controller.copyUsername(password),
+                   onToggleFavorite: () => controller.toggleFavorite(password),
                 );
-              }
-              return const SizedBox.shrink();
-            }),
-
-            Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value) {
-                  return ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
-                    itemCount: 6,
-                    itemBuilder: (context, index) => const SkeletonPasswordCard(),
-                  );
-                }
-
-                if (controller.filteredPasswords.isEmpty) {
-                  return _buildEmptyState(context);
-                }
-
-                return RefreshIndicator(
-                  onRefresh: controller.loadPasswords,
-                  child: ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
-                    physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                    itemCount: controller.filteredPasswords.length,
-                    itemBuilder: (context, index) {
-                      final password = controller.filteredPasswords[index];
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: AppTheme.spacingMd.h),
-                        child: PasswordEntryCard(
-                          entry: password,
-                          onTap: () => Get.toNamed(
-                            Routes.PASSWORD_DETAIL,
-                            arguments: password,
-                          ),
-                          onCopyPassword: () => controller.copyPassword(password),
-                          onCopyUsername: () => controller.copyUsername(password),
-                          onToggleFavorite: () => controller.toggleFavorite(password),
-                        ),
-                      );
-                    },
-                  ),
-                );
-              }),
+              },
             ),
-          ],
-        ),
+          );
+        }),
       ),
     );
   }
-
+  
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 100.w,
-              height: 100.w,
-              padding: EdgeInsets.all(AppTheme.spacingLg.w),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.lock_outline_rounded,
-                size: 48.w,
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
-              ),
-            ),
-            SizedBox(height: AppTheme.spacingLg.h),
-            Text(
-              'empty_vault'.tr,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            SizedBox(height: AppTheme.spacingSm.h),
-            Text(
-              'add_first_password'.tr,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: AppTheme.spacingLg.h),
-            ElevatedButton.icon(
-              onPressed: () => Get.bottomSheet(
-                const AddPasswordSheet(),
-                isScrollControlled: true,
-                isDismissible: false,
-                enableDrag: false,
-              ),
-              icon: const Icon(Icons.add_rounded),
-              label: Text('add_password'.tr),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppTheme.spacingXl.w,
-                  vertical: AppTheme.spacingMd.h,
-                ),
-              ),
-            ),
-          ],
-        ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.lock_clock_outlined, size: 64.w, color: Theme.of(context).colorScheme.outline),
+          SizedBox(height: 16.h),
+          Text(
+            'empty_vault'.tr,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          SizedBox(height: 8.h),
+          Text(
+             'add_first_password'.tr,
+             style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ],
       ),
     );
   }

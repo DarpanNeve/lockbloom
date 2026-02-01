@@ -39,34 +39,42 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(entry.label),
+        title: Text(isEditing ? 'edit_password'.tr : 'details'.tr),
+        centerTitle: true,
         actions: [
           if (!isEditing)
             IconButton(
               onPressed: _toggleEdit,
               icon: const Icon(Icons.edit_rounded),
+              tooltip: 'edit'.tr,
             ),
           PopupMenuButton<String>(
             onSelected: _handleMenuSelection,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: 'duplicate',
-                child: ListTile(
-                  leading: const Icon(Icons.copy_rounded),
-                  title: Text('duplicate'.tr),
-                  contentPadding: EdgeInsets.zero,
+                child: Row(
+                  children: [
+                    Icon(Icons.copy_rounded, color: Theme.of(context).colorScheme.onSurface, size: 20),
+                    SizedBox(width: 12.w),
+                    Text('duplicate'.tr),
+                  ],
                 ),
               ),
               PopupMenuItem(
                 value: 'delete',
-                child: ListTile(
-                  leading: const Icon(Icons.delete_rounded, color: Colors.red),
-                  title: Text('delete'.tr, style: const TextStyle(color: Colors.red)),
-                  contentPadding: EdgeInsets.zero,
+                child: Row(
+                  children: [
+                    Icon(Icons.delete_rounded, color: Theme.of(context).colorScheme.error, size: 20),
+                    SizedBox(width: 12.w),
+                    Text('delete'.tr, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                  ],
                 ),
               ),
             ],
           ),
+          SizedBox(width: 8.w),
         ],
       ),
       body: SingleChildScrollView(
@@ -80,100 +88,21 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header Card with Favorite
-        Card(
-          margin: EdgeInsets.zero,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-            side: BorderSide(
-              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
-            ),
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(AppTheme.spacingLg.w),
-            child: Row(
-              children: [
-                // Icon or Avatar
-                Container(
-                  width: 60.w,
-                  height: 60.w,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                  ),
-                  child: Icon(
-                    _getEntryIcon(),
-                    size: 30.w,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                
-                SizedBox(width: AppTheme.spacingMd.w),
-                
-                // Title and Website
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        entry.label,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      if (entry.website?.isNotEmpty == true) ...[
-                        SizedBox(height: AppTheme.spacingXs.h),
-                        Text(
-                          entry.website!,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                
-                // Favorite Button
-                IconButton(
-                  onPressed: () {
-                    _passwordController.toggleFavorite(entry);
-                    setState(() {
-                      entry = entry.copyWith(isFavorite: !entry.isFavorite);
-                    });
-                  },
-                  icon: Icon(
-                    entry.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                    color: entry.isFavorite ? AppColors.secondaryColor : Theme.of(context).colorScheme.outline,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        
-        SizedBox(height: AppTheme.spacingMd.h),
-        
-        // Username Field
+        _buildHeaderCard(context),
+        SizedBox(height: 24.h),
+        _buildSectionHeader(context, 'credentials'.tr),
         _buildDetailField(
           context,
           label: 'username'.tr,
           value: entry.username,
-          icon: Icons.person_outline_rounded,
+          icon: Icons.person_rounded,
           canCopy: true,
           onCopy: () => _passwordController.copyUsername(entry),
         ),
-        
-        SizedBox(height: AppTheme.spacingMd.h),
-        
-        // Password Field
+        SizedBox(height: 12.h),
         _buildPasswordField(context),
-        
-        SizedBox(height: AppTheme.spacingMd.h),
-        
-        // Website Field
         if (entry.website?.isNotEmpty == true) ...[
+          SizedBox(height: 12.h),
           _buildDetailField(
             context,
             label: 'website'.tr,
@@ -181,30 +110,124 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
             icon: Icons.language_rounded,
             canCopy: true,
           ),
-          SizedBox(height: AppTheme.spacingMd.h),
         ],
-        
-        // Tags
+        SizedBox(height: 24.h),
         if (entry.tags.isNotEmpty) ...[
+          _buildSectionHeader(context, 'tags'.tr),
           _buildTagsField(context),
-          SizedBox(height: AppTheme.spacingMd.h),
+          SizedBox(height: 24.h),
         ],
-        
-        // Notes Field
         if (entry.notes.isNotEmpty) ...[
+          _buildSectionHeader(context, 'notes'.tr),
           _buildDetailField(
             context,
             label: 'notes'.tr,
             value: entry.notes,
-            icon: Icons.note_outlined,
+            icon: Icons.notes_rounded,
             maxLines: null,
           ),
-          SizedBox(height: AppTheme.spacingMd.h),
+          SizedBox(height: 24.h),
         ],
-        
-        // Timestamps
+        _buildSectionHeader(context, 'history'.tr),
         _buildTimestampsCard(context),
+        SizedBox(height: 48.h),
       ],
+    );
+  }
+
+  Widget _buildHeaderCard(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(20.w),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 64.w,
+            height: 64.w,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(
+              _getEntryIcon(),
+              size: 32.w,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          SizedBox(width: 20.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  entry.label,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (entry.website?.isNotEmpty == true) ...[
+                  SizedBox(height: 4.h),
+                  Text(
+                    entry.website!,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              _passwordController.toggleFavorite(entry);
+              setState(() {
+                entry = entry.copyWith(isFavorite: !entry.isFavorite);
+              });
+            },
+            style: IconButton.styleFrom(
+              backgroundColor: entry.isFavorite 
+                  ? AppColors.errorColor.withValues(alpha: 0.1) 
+                  : Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+            ),
+            icon: Icon(
+              entry.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+              color: entry.isFavorite ? AppColors.errorColor : Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.h, left: 4.w),
+      child: Text(
+        title.toUpperCase(),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          letterSpacing: 1.2,
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ),
     );
   }
 
@@ -215,6 +238,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
     }
     
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         TextField(
           controller: _passwordController.labelController,
@@ -222,10 +246,9 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
             labelText: '${'title'.tr} *',
             prefixIcon: const Icon(Icons.label_outline_rounded),
           ),
+          textCapitalization: TextCapitalization.sentences,
         ),
-        
-        SizedBox(height: AppTheme.spacingMd.h),
-        
+        SizedBox(height: 16.h),
         TextField(
           controller: _passwordController.usernameController,
           decoration: InputDecoration(
@@ -233,9 +256,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
             prefixIcon: const Icon(Icons.person_outline_rounded),
           ),
         ),
-        
-        SizedBox(height: AppTheme.spacingMd.h),
-        
+        SizedBox(height: 16.h),
         TextField(
           controller: _passwordController.passwordController,
           decoration: InputDecoration(
@@ -262,19 +283,16 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
           ),
           obscureText: !_passwordController.showPassword.value,
         ),
-        
-        SizedBox(height: AppTheme.spacingMd.h),
-        
+        SizedBox(height: 16.h),
         TextField(
           controller: _passwordController.websiteController,
           decoration: InputDecoration(
             labelText: 'website'.tr,
             prefixIcon: const Icon(Icons.language_rounded),
           ),
+          keyboardType: TextInputType.url,
         ),
-        
-        SizedBox(height: AppTheme.spacingMd.h),
-        
+        SizedBox(height: 16.h),
         TextField(
           controller: _passwordController.tagsController,
           decoration: InputDecoration(
@@ -282,21 +300,17 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
             prefixIcon: const Icon(Icons.tag_rounded),
           ),
         ),
-        
-        SizedBox(height: AppTheme.spacingMd.h),
-        
+        SizedBox(height: 16.h),
         TextField(
           controller: _passwordController.notesController,
           decoration: InputDecoration(
             labelText: 'notes'.tr,
             prefixIcon: const Icon(Icons.note_outlined),
+            alignLabelWithHint: true,
           ),
-          maxLines: 3,
+          maxLines: 4,
         ),
-        
-        SizedBox(height: AppTheme.spacingXl.h),
-        
-        // Action Buttons
+        SizedBox(height: 32.h),
         Row(
           children: [
             Expanded(
@@ -305,7 +319,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                 child: Text('cancel'.tr),
               ),
             ),
-            SizedBox(width: AppTheme.spacingMd.w),
+            SizedBox(width: 16.w),
             Expanded(
               child: ElevatedButton(
                 onPressed: _saveChanges,
@@ -314,6 +328,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
             ),
           ],
         ),
+        SizedBox(height: 32.h),
       ],
     );
   }
@@ -327,266 +342,186 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
     VoidCallback? onCopy,
     int? maxLines = 1,
   }) {
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+           color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
         ),
       ),
-      child: Padding(
-        padding: EdgeInsets.all(AppTheme.spacingMd.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      child: Row(
+        crossAxisAlignment: maxLines == null ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+        children: [
+          Icon(icon, size: 22.w, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          SizedBox(width: 16.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  icon,
-                  size: 20.w,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                SizedBox(width: AppTheme.spacingSm.w),
+                if (maxLines == null) ...[
+                   Text(
+                    label,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                ],
                 Text(
-                  label,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.primary,
+                  value,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
                   ),
+                  maxLines: maxLines,
+                  overflow: maxLines != null ? TextOverflow.ellipsis : null,
                 ),
-                const Spacer(),
-                if (canCopy)
-                  IconButton(
-                    onPressed: onCopy,
-                    icon: const Icon(Icons.copy_rounded),
-                    iconSize: 18.w,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
               ],
             ),
-            SizedBox(height: AppTheme.spacingSm.h),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
+          ),
+          if (canCopy)
+            IconButton(
+              onPressed: onCopy,
+              icon: Icon(Icons.copy_rounded, size: 20.w),
+              style: IconButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                padding: EdgeInsets.all(8.w),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              maxLines: maxLines,
-              overflow: maxLines != null ? TextOverflow.ellipsis : null,
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
 
   Widget _buildPasswordField(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
         ),
       ),
-      child: Padding(
-        padding: EdgeInsets.all(AppTheme.spacingMd.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.lock_outline_rounded,
-                  size: 20.w,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                SizedBox(width: AppTheme.spacingSm.w),
-                Text(
-                  'password'.tr,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.lock_rounded, size: 22.w, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              SizedBox(width: 16.w),
+               Expanded(
+                child: Text(
+                  isPasswordRevealed
+                      ? _passwordController.getDecryptedPassword(entry)
+                      : '••••••••••••',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontFamily: isPasswordRevealed ? 'Inter' : 'monospace',
+                    letterSpacing: isPasswordRevealed ? 0 : 4,
                     fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
-                const Spacer(),
-                IconButton(
-                  onPressed: _revealPassword,
-                  icon: Icon(
-                    isPasswordRevealed ? Icons.visibility_off_rounded : Icons.visibility_rounded,
-                  ),
-                  iconSize: 20.w,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
-                SizedBox(width: AppTheme.spacingMd.w),
-                IconButton(
-                  onPressed: () => _passwordController.copyPassword(entry),
-                  icon: const Icon(Icons.copy_rounded),
-                  iconSize: 18.w,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
-              ],
-            ),
-            SizedBox(height: AppTheme.spacingSm.h),
-            Text(
-              isPasswordRevealed
-                  ? _passwordController.getDecryptedPassword(entry)
-                  : '••••••••••••',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontFamily: 'monospace',
-                letterSpacing: isPasswordRevealed ? 0 : 4,
-                color: Theme.of(context).colorScheme.onSurface,
-                fontSize: 16.sp,
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+          SizedBox(height: 16.h),
+          Row(
+             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+               TextButton.icon(
+                onPressed: _revealPassword, 
+                icon: Icon(isPasswordRevealed ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 18),
+                label: Text(isPasswordRevealed ? 'hide'.tr : 'reveal'.tr),
+                style: TextButton.styleFrom(
+                   padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                   backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                   foregroundColor: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => _passwordController.copyPassword(entry),
+                icon: const Icon(Icons.copy_rounded, size: 18),
+                label: Text('copy'.tr),
+                 style: TextButton.styleFrom(
+                   padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                   backgroundColor: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildTagsField(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
-        ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(AppTheme.spacingMd.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.tag_rounded,
-                  size: 20.w,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                SizedBox(width: AppTheme.spacingSm.w),
-                Text(
-                  'tags'.tr,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ],
+    return Wrap(
+      spacing: 8.w,
+      runSpacing: 8.h,
+      children: entry.tags.map((tag) {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.4),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2),
             ),
-            SizedBox(height: AppTheme.spacingMd.h),
-            Wrap(
-              spacing: AppTheme.spacingSm.w,
-              runSpacing: AppTheme.spacingSm.h,
-              children: entry.tags.map((tag) {
-                return Chip(
-                  label: Text(tag),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  labelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontSize: 12.sp,
-                  ),
-                  side: BorderSide.none,
-                );
-              }).toList(),
+          ),
+          child: Text(
+            tag,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.secondary,
+              fontWeight: FontWeight.w600,
+              fontSize: 12.sp,
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      }).toList(),
     );
   }
 
   Widget _buildTimestampsCard(BuildContext context) {
-    final dateFormat = DateFormat('MMM d, y \'at\' h:mm a');
+    final dateFormat = DateFormat('MMM d, y • h:mm a');
     
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
-        ),
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: Padding(
-        padding: EdgeInsets.all(AppTheme.spacingMd.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.history_rounded,
-                  size: 20.w,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                SizedBox(width: AppTheme.spacingSm.w),
-                Text(
-                  'history'.tr,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: AppTheme.spacingMd.h),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'created'.tr,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      SizedBox(height: AppTheme.spacingXs.h),
-                      Text(
-                        dateFormat.format(entry.createdAt),
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'last_modified'.tr,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      SizedBox(height: AppTheme.spacingXs.h),
-                      Text(
-                        dateFormat.format(entry.updatedAt),
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+      child: Column(
+        children: [
+           _buildTimestampRow(context, 'created'.tr, dateFormat.format(entry.createdAt)),
+           Divider(height: 24.h, thickness: 1, color: Theme.of(context).dividerTheme.color),
+           _buildTimestampRow(context, 'last_modified'.tr, dateFormat.format(entry.updatedAt)),
+        ],
       ),
+    );
+  }
+  
+  Widget _buildTimestampRow(BuildContext context, String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+      ],
     );
   }
 
@@ -594,37 +529,16 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
     final website = entry.website?.toLowerCase() ?? '';
     final label = entry.label.toLowerCase();
     
-    if (website.contains('google') || 
-        website.contains('gmail') || 
-        label.contains('google') || 
-        label.contains('gmail')) {
-      return Icons.mail_outline_rounded;
-    } else if (website.contains('facebook') || label.contains('facebook')) {
-      return Icons.facebook_rounded;
-    } else if (website.contains('twitter') || label.contains('twitter') || label.contains('x.com')) {
-      return Icons.alternate_email_rounded;
-    } else if (website.contains('github') || label.contains('github')) {
-      return Icons.code_rounded;
-    } else if (website.contains('linkedin') || label.contains('linkedin')) {
-      return Icons.work_outline_rounded;
-    } else if (website.contains('netflix') || label.contains('netflix')) {
-      return Icons.movie_outlined;
-    } else if (website.contains('spotify') || label.contains('spotify')) {
-      return Icons.music_note_rounded;
-    } else if (website.contains('amazon') || label.contains('amazon')) {
-      return Icons.shopping_cart_outlined;
-    } else if (website.isNotEmpty) {
-      return Icons.language_rounded;
-    } else {
-      return Icons.lock_outline_rounded;
-    }
+    if (website.contains('google') || label.contains('google')) return Icons.alternate_email_rounded; // Specific icon if available
+    if (website.contains('mail') || label.contains('mail')) return Icons.mail_rounded;
+    if (website.contains('github') || label.contains('github')) return Icons.code_rounded;
+    if (website.contains('linkedin') || label.contains('linkedin')) return Icons.work_rounded;
+    return Icons.lock_outline_rounded;
   }
 
   Future<void> _revealPassword() async {
     if (isPasswordRevealed) {
-      setState(() {
-        isPasswordRevealed = false;
-      });
+      setState(() => isPasswordRevealed = false);
       return;
     }
 
@@ -636,9 +550,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         localizedReason: 'authenticate_to_reveal'.tr,
       );
 
-      if (authenticated) {
-        _showRevealedPassword();
-      }
+      if (authenticated) _showRevealedPassword();
     } else {
       final pinController = TextEditingController();
       final verified = await Get.dialog<bool>(
@@ -656,7 +568,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
                 maxLength: 8,
                 decoration: InputDecoration(
                   labelText: 'enter_pin'.tr,
-                  prefixIcon: const Icon(Icons.lock_outline_rounded),
+                  prefixIcon: const Icon(Icons.lock_rounded),
                   counterText: '',
                 ),
                 autofocus: true,
@@ -684,22 +596,15 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
       );
       pinController.dispose();
 
-      if (verified == true) {
-        _showRevealedPassword();
-      }
+      if (verified == true) _showRevealedPassword();
     }
   }
 
   void _showRevealedPassword() {
-    setState(() {
-      isPasswordRevealed = true;
-    });
-
+    setState(() => isPasswordRevealed = true);
     _revealTimeout = Future.delayed(const Duration(seconds: 30), () {
       if (mounted && isPasswordRevealed) {
-        setState(() {
-          isPasswordRevealed = false;
-        });
+        setState(() => isPasswordRevealed = false);
       }
     });
   }
@@ -722,12 +627,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
       isEditing = false;
       _formInitialized = false;
     });
-    _passwordController.labelController.clear();
-    _passwordController.usernameController.clear();
-    _passwordController.passwordController.clear();
-    _passwordController.websiteController.clear();
-    _passwordController.notesController.clear();
-    _passwordController.tagsController.clear();
+    // Clear controllers? No, better to let them be reset on next edit.
   }
 
   void _saveChanges() {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/core/theme/app_colors.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
@@ -25,12 +26,7 @@ class PasswordEntryCard extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
-        ),
-      ),
+      // Use default CardTheme shape
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppTheme.radiusLg),
@@ -143,57 +139,36 @@ class PasswordEntryCard extends StatelessWidget {
               SizedBox(height: AppTheme.spacingSm.h),
 
               // Action Buttons
+              // Action Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  if (onCopyUsername != null)
-                    Semantics(
-                      button: true,
-                      label: 'Copy username',
-                      child: TextButton.icon(
-                        onPressed: onCopyUsername!,
-                        icon: Icon(Icons.person_outline_rounded, size: 18.w),
-                        label: const Text('Username'),
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
-                          minimumSize: Size(0, 36.h),
-                        ),
-                      ),
+                   IconButton(
+                    onPressed: onCopyUsername,
+                    icon: Icon(Icons.person_rounded, size: 20.w),
+                    tooltip: 'copy_username'.tr,
+                    style: IconButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
-                  if (onCopyPassword != null) ...[
-                    SizedBox(width: AppTheme.spacingSm.w),
-                    Semantics(
-                      button: true,
-                      label: 'Copy password',
-                      child: TextButton.icon(
-                        onPressed: onCopyPassword!,
-                        icon: Icon(Icons.copy_rounded, size: 18.w),
-                        label: const Text('Password'),
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
-                          minimumSize: Size(0, 36.h),
-                        ),
-                      ),
+                  ),
+                  IconButton(
+                    onPressed: onCopyPassword,
+                    icon: Icon(Icons.copy_rounded, size: 20.w),
+                    tooltip: 'copy_password'.tr,
+                     style: IconButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.primary,
                     ),
-                  ],
-                  if (onToggleFavorite != null) ...[
-                    SizedBox(width: AppTheme.spacingSm.w),
-                    Semantics(
-                      button: true,
-                      label: entry.isFavorite ? 'Remove from favorites' : 'Add to favorites',
-                      child: IconButton(
-                        onPressed: onToggleFavorite,
-                        icon: Icon(
-                          entry.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                          color: entry.isFavorite 
-                              ? AppColors.secondaryColor 
-                              : Theme.of(context).colorScheme.outline,
-                        ),
-                        tooltip: entry.isFavorite ? 'Remove from favorites' : 'Add to favorites',
-                        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-                      ),
+                  ),
+                   IconButton(
+                    onPressed: onToggleFavorite,
+                    icon: Icon(
+                      entry.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                      color: entry.isFavorite 
+                          ? AppColors.errorColor 
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
-                  ],
+                    tooltip: entry.isFavorite ? 'remove_favorite'.tr : 'add_favorite'.tr,
+                  ),
                 ],
               ),
             ],
