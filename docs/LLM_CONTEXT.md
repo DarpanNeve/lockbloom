@@ -37,6 +37,8 @@ LockBloom is a secure password management application built with Flutter. It foc
   - Finalized localization for all buttons, labels, and action sheets.
 - **NDK**: Updated to version `29.0.14206865`.
 - **Tooling**: Detected `fvm` usage in the environment.
+- **iOS Deployment Target**: Increased to `15.0` to support latest Firebase Analytics dependencies.
+- **Face ID Permission**: Added `NSFaceIDUsageDescription` to `Info.plist` to enable Face ID and prevent fallback to device passcode.
 
 ## Current Task Context
 
