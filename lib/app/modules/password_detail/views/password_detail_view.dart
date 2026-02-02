@@ -91,26 +91,26 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         _buildHeaderCard(context),
         SizedBox(height: 24.h),
         _buildSectionHeader(context, 'credentials'.tr),
-        _buildDetailField(
-          context,
-          label: 'username'.tr,
-          value: entry.username,
-          icon: Icons.person_rounded,
-          canCopy: true,
-          onCopy: () => _passwordController.copyUsername(entry),
-        ),
-        SizedBox(height: 12.h),
-        _buildPasswordField(context),
-        if (entry.website?.isNotEmpty == true) ...[
-          SizedBox(height: 12.h),
-          _buildDetailField(
+        _buildInfoGroup(context, [
+          _buildDetailRow(
             context,
-            label: 'website'.tr,
-            value: entry.website!,
-            icon: Icons.language_rounded,
+            label: 'username'.tr,
+            value: entry.username,
+            icon: Icons.person_rounded,
             canCopy: true,
+            onCopy: () => _passwordController.copyUsername(entry),
           ),
-        ],
+          _buildPasswordRow(context),
+          if (entry.website?.isNotEmpty == true)
+            _buildDetailRow(
+              context,
+              label: 'website'.tr,
+              value: entry.website!,
+              icon: Icons.language_rounded,
+              canCopy: true,
+              isLast: true,
+            ),
+        ]),
         SizedBox(height: 24.h),
         if (entry.tags.isNotEmpty) ...[
           _buildSectionHeader(context, 'tags'.tr),
@@ -119,13 +119,16 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
         ],
         if (entry.notes.isNotEmpty) ...[
           _buildSectionHeader(context, 'notes'.tr),
-          _buildDetailField(
-            context,
-            label: 'notes'.tr,
-            value: entry.notes,
-            icon: Icons.notes_rounded,
-            maxLines: null,
-          ),
+          _buildInfoGroup(context, [
+            _buildDetailRow(
+              context,
+              label: 'notes'.tr,
+              value: entry.notes,
+              icon: Icons.notes_rounded,
+              maxLines: null,
+              isLast: true,
+            ),
+          ]),
           SizedBox(height: 24.h),
         ],
         _buildSectionHeader(context, 'history'.tr),
@@ -137,64 +140,74 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
 
   Widget _buildHeaderCard(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20.w),
+      width: double.infinity,
+      padding: EdgeInsets.all(24.w),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.tertiary,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 64.w,
-            height: 64.w,
+            padding: EdgeInsets.all(16.w),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(16),
+              color: Colors.white.withValues(alpha: 0.2),
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1.5),
             ),
             child: Icon(
               _getEntryIcon(),
-              size: 32.w,
-              color: Theme.of(context).colorScheme.primary,
+              size: 40.w,
+              color: Colors.white,
             ),
           ),
-          SizedBox(width: 20.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  entry.label,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+          SizedBox(height: 16.h),
+          Text(
+            entry.label,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 0.5,
                 ),
-                if (entry.website?.isNotEmpty == true) ...[
-                  SizedBox(height: 4.h),
-                  Text(
-                    entry.website!,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ],
-            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
+          if (entry.website?.isNotEmpty == true) ...[
+            SizedBox(height: 4.h),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                entry.website!,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      fontWeight: FontWeight.w500,
+                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+          SizedBox(height: 16.h),
           IconButton(
             onPressed: () {
               _passwordController.toggleFavorite(entry);
@@ -203,19 +216,195 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
               });
             },
             style: IconButton.styleFrom(
-              backgroundColor: entry.isFavorite 
-                  ? AppColors.errorColor.withValues(alpha: 0.1) 
-                  : Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+              backgroundColor: Colors.white.withValues(alpha: 0.2),
+              padding: EdgeInsets.all(12.w),
+              side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
             ),
             icon: Icon(
               entry.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-              color: entry.isFavorite ? AppColors.errorColor : Theme.of(context).colorScheme.onSurfaceVariant,
+              color: entry.isFavorite ? AppColors.errorColor : Colors.white,
+              size: 24.w,
             ),
+            tooltip: entry.isFavorite ? 'remove_favorite'.tr : 'add_favorite'.tr,
           ),
         ],
       ),
     );
   }
+
+  Widget _buildInfoGroup(BuildContext context, List<Widget> children) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.05),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: children.asMap().entries.map((e) {
+          final index = e.key;
+          final widget = e.value;
+          final isLast = index == children.length - 1;
+          return Column(
+            children: [
+              widget,
+              if (!isLast && widget is! SizedBox) // Check widget type roughly or just use Divider logic inside children
+                 Divider(
+                  height: 1,
+                  thickness: 1,
+                  indent: 56.w,
+                  color: Theme.of(context).dividerTheme.color?.withValues(alpha: 0.05),
+                ),
+            ],
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(
+    BuildContext context, {
+    required String label,
+    required String value,
+    required IconData icon,
+    bool canCopy = false,
+    VoidCallback? onCopy,
+    int? maxLines = 1,
+    bool isLast = false,
+  }) {
+    return InkWell(
+      onTap: canCopy ? onCopy : null,
+      borderRadius: BorderRadius.vertical(
+        top: isLast && false ? Radius.zero : const Radius.circular(20), // Simplify: just let inkwell clip
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+        child: Row(
+          crossAxisAlignment: maxLines == null ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(8.w),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, size: 20.w, color: Theme.of(context).colorScheme.primary),
+            ),
+            SizedBox(width: 16.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 2.h),
+                  Text(
+                    value,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                    maxLines: maxLines,
+                    overflow: maxLines != null ? TextOverflow.ellipsis : null,
+                  ),
+                ],
+              ),
+            ),
+            if (canCopy)
+              Icon(Icons.copy_rounded, size: 18.w, color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordRow(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(8.w),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(Icons.lock_rounded, size: 20.w, color: Theme.of(context).colorScheme.primary),
+          ),
+          SizedBox(width: 16.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'password'.tr,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: 2.h),
+                Text(
+                  isPasswordRevealed
+                      ? _passwordController.getDecryptedPassword(entry)
+                      : '••••••••••••',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontFamily: isPasswordRevealed ? 'Inter' : 'monospace',
+                    letterSpacing: isPasswordRevealed ? 0 : 3,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                onPressed: _revealPassword,
+                icon: Icon(
+                  isPasswordRevealed ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                  size: 20.w,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                style: IconButton.styleFrom(
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  padding: EdgeInsets.all(8.w),
+                ),
+              ),
+              IconButton(
+                onPressed: () => _passwordController.copyPassword(entry),
+                icon: Icon(
+                  Icons.copy_rounded, 
+                  size: 20.w,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                style: IconButton.styleFrom(
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                   padding: EdgeInsets.all(8.w),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+
 
   Widget _buildSectionHeader(BuildContext context, String title) {
     return Padding(
@@ -333,130 +522,7 @@ class _PasswordDetailViewState extends State<PasswordDetailView> {
     );
   }
 
-  Widget _buildDetailField(
-    BuildContext context, {
-    required String label,
-    required String value,
-    required IconData icon,
-    bool canCopy = false,
-    VoidCallback? onCopy,
-    int? maxLines = 1,
-  }) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-           color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: maxLines == null ? CrossAxisAlignment.start : CrossAxisAlignment.center,
-        children: [
-          Icon(icon, size: 22.w, color: Theme.of(context).colorScheme.onSurfaceVariant),
-          SizedBox(width: 16.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (maxLines == null) ...[
-                   Text(
-                    label,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-                ],
-                Text(
-                  value,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: maxLines,
-                  overflow: maxLines != null ? TextOverflow.ellipsis : null,
-                ),
-              ],
-            ),
-          ),
-          if (canCopy)
-            IconButton(
-              onPressed: onCopy,
-              icon: Icon(Icons.copy_rounded, size: 20.w),
-              style: IconButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                padding: EdgeInsets.all(8.w),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-            ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildPasswordField(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.lock_rounded, size: 22.w, color: Theme.of(context).colorScheme.onSurfaceVariant),
-              SizedBox(width: 16.w),
-               Expanded(
-                child: Text(
-                  isPasswordRevealed
-                      ? _passwordController.getDecryptedPassword(entry)
-                      : '••••••••••••',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontFamily: isPasswordRevealed ? 'Inter' : 'monospace',
-                    letterSpacing: isPasswordRevealed ? 0 : 4,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-          Row(
-             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-               TextButton.icon(
-                onPressed: _revealPassword, 
-                icon: Icon(isPasswordRevealed ? Icons.visibility_off_rounded : Icons.visibility_rounded, size: 18),
-                label: Text(isPasswordRevealed ? 'hide'.tr : 'reveal'.tr),
-                style: TextButton.styleFrom(
-                   padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                   backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                   foregroundColor: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              TextButton.icon(
-                onPressed: () => _passwordController.copyPassword(entry),
-                icon: const Icon(Icons.copy_rounded, size: 18),
-                label: Text('copy'.tr),
-                 style: TextButton.styleFrom(
-                   padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                   backgroundColor: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildTagsField(BuildContext context) {
     return Wrap(
