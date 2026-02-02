@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/core/theme/app_colors.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 import 'package:lockbloom/app/modules/saved_passwords/controllers/saved_passwords_controller.dart';
+import 'package:lockbloom/app/controllers/password_controller.dart';
 
 class AddPasswordSheet extends GetView<PasswordController> {
   const AddPasswordSheet({super.key});
@@ -12,10 +12,10 @@ class AddPasswordSheet extends GetView<PasswordController> {
   Widget build(BuildContext context) {
     return Container(
       height: Get.height * 0.85,
-      padding: EdgeInsets.all(AppTheme.spacingMd.w),
+      padding: const EdgeInsets.all(AppTheme.spacingMd),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppTheme.radiusLg)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppTheme.radiusLg)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,7 +39,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
             ],
           ),
 
-          SizedBox(height: AppTheme.spacingLg.h),
+          const SizedBox(height: AppTheme.spacingLg),
 
           Expanded(
             child: SingleChildScrollView(
@@ -53,7 +53,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
                     icon: Icons.label_outline_rounded,
                   ),
 
-                  SizedBox(height: AppTheme.spacingMd.h),
+                  const SizedBox(height: AppTheme.spacingMd),
 
                   _buildTextField(
                     controller: controller.usernameController,
@@ -61,7 +61,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
                     icon: Icons.person_outline_rounded,
                   ),
 
-                  SizedBox(height: AppTheme.spacingMd.h),
+                  const SizedBox(height: AppTheme.spacingMd),
 
                   Obx(
                     () => _buildTextField(
@@ -92,7 +92,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
                     ),
                   ),
 
-                  SizedBox(height: AppTheme.spacingMd.h),
+                  const SizedBox(height: AppTheme.spacingMd),
 
                   _buildTextField(
                     controller: controller.websiteController,
@@ -102,7 +102,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
                     keyboardType: TextInputType.url,
                   ),
 
-                  SizedBox(height: AppTheme.spacingMd.h),
+                  const SizedBox(height: AppTheme.spacingMd),
 
                   _buildTextField(
                     controller: controller.tagsController,
@@ -111,7 +111,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
                     icon: Icons.tag_rounded,
                   ),
 
-                  SizedBox(height: AppTheme.spacingMd.h),
+                  const SizedBox(height: AppTheme.spacingMd),
 
                   _buildTextField(
                     controller: controller.notesController,
@@ -120,7 +120,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
                     maxLines: 3,
                   ),
                   
-                  SizedBox(height: AppTheme.spacingXxl.h),
+                  const SizedBox(height: AppTheme.spacingXxl),
                 ],
               ),
             ),
@@ -130,14 +130,14 @@ class AddPasswordSheet extends GetView<PasswordController> {
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom > 0 
                   ? 0 
-                  : (AppTheme.spacingSm.h + MediaQuery.of(context).padding.bottom),
+                  : (AppTheme.spacingSm + MediaQuery.of(context).padding.bottom),
             ),
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _handleSave,
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 18.h),
+                  padding: const EdgeInsets.symmetric(vertical: 18),
                 ),
                 child: Text('save'.tr),
               ),
@@ -185,7 +185,7 @@ class AddPasswordSheet extends GetView<PasswordController> {
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.errorColor,
         colorText: Colors.white,
-        margin: EdgeInsets.all(AppTheme.spacingMd.w),
+        margin: const EdgeInsets.all(AppTheme.spacingMd),
       );
       return;
     }

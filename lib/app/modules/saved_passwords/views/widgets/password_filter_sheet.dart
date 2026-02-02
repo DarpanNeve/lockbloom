@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
-import 'package:lockbloom/app/modules/saved_passwords/controllers/saved_passwords_controller.dart';
+import 'package:lockbloom/app/controllers/password_controller.dart';
 
 class PasswordFilterSheet extends GetView<PasswordController> {
   const PasswordFilterSheet({super.key});
@@ -13,10 +12,10 @@ class PasswordFilterSheet extends GetView<PasswordController> {
 
     return Container(
       height: Get.height * 0.6,
-      padding: EdgeInsets.all(AppTheme.spacingMd.w),
+      padding: const EdgeInsets.all(AppTheme.spacingMd),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppTheme.radiusLg)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppTheme.radiusLg)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,7 +40,7 @@ class PasswordFilterSheet extends GetView<PasswordController> {
             ],
           ),
 
-          SizedBox(height: AppTheme.spacingMd.h),
+          const SizedBox(height: AppTheme.spacingMd),
 
           if (allTags.isEmpty)
             Expanded(
@@ -51,10 +50,10 @@ class PasswordFilterSheet extends GetView<PasswordController> {
                   children: [
                     Icon(
                       Icons.label_off_rounded,
-                      size: 48.w,
+                      size: 48,
                       color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                     ),
-                    SizedBox(height: AppTheme.spacingSm.h),
+                    const SizedBox(height: AppTheme.spacingSm),
                     Text(
                       'no_tags_available'.tr,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -69,8 +68,8 @@ class PasswordFilterSheet extends GetView<PasswordController> {
             Expanded(
               child: SingleChildScrollView(
                 child: Wrap(
-                  spacing: AppTheme.spacingSm.w,
-                  runSpacing: AppTheme.spacingSm.h,
+                  spacing: AppTheme.spacingSm,
+                  runSpacing: AppTheme.spacingSm,
                   children: allTags.map((tag) {
                     return Obx(() {
                       final isSelected = controller.selectedTags.contains(tag);
@@ -102,13 +101,13 @@ class PasswordFilterSheet extends GetView<PasswordController> {
             ),
 
           // Apply Button
-          SizedBox(height: AppTheme.spacingMd.h),
+          const SizedBox(height: AppTheme.spacingMd),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () => Get.back(),
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 16.h),
+                padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               child: Text('apply_filters'.tr),
             ),

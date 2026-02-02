@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/password_controller.dart';
 import 'package:lockbloom/app/modules/home/controllers/home_controller.dart';
@@ -87,42 +86,42 @@ class _HomeTab extends StatelessWidget {
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: Text(
             'app_name'.tr, 
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.w800,
-              fontSize: 20.sp,
+              fontSize: 20,
               fontFamily: 'Inter',
             ),
           ),
           actions: [
             Padding(
-             padding: EdgeInsets.only(right: 16.w),
+             padding: const EdgeInsets.only(right: 16),
              child: CircleAvatar(
                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-               radius: 16.w,
-               child: Image.asset('assets/images/icon.png', width: 20.w),
+               radius: 16,
+               child: Image.asset('assets/images/icon.png', width: 20),
              ),
             ),
           ],
         ),
         
         SliverPadding(
-          padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
+          padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMd),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
                _buildWelcomeBanner(context),
-               SizedBox(height: 32.h),
+               const SizedBox(height: 32),
                _buildSectionHeader(context, 'quick_actions'.tr),
-               SizedBox(height: 16.h),
+               const SizedBox(height: 16),
                _buildQuickActionsGrid(context),
-               SizedBox(height: 32.h),
+               const SizedBox(height: 32),
                const PasswordGeneratorCard(),
-               SizedBox(height: 32.h),
+               const SizedBox(height: 32),
                _buildStatisticsSection(context),
-               SizedBox(height: 32.h),
+               const SizedBox(height: 32),
                _buildSectionHeader(context, 'recent_passwords'.tr),
-               SizedBox(height: 16.h),
+               const SizedBox(height: 16),
                const RecentPasswordsList(),
-               SizedBox(height: 100.h),
+               const SizedBox(height: 100),
             ]),
           ),
         ),
@@ -132,7 +131,7 @@ class _HomeTab extends StatelessWidget {
 
   Widget _buildWelcomeBanner(BuildContext context) {
      return Container(
-      padding: EdgeInsets.all(24.w),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(24),
@@ -149,24 +148,24 @@ class _HomeTab extends StatelessWidget {
         children: [
           Row(
             children: [
-               Icon(Icons.waving_hand_rounded, color: Colors.white, size: 24.sp),
-               SizedBox(width: 8.w),
+               const Icon(Icons.waving_hand_rounded, color: Colors.white, size: 24),
+               const SizedBox(width: 8),
                Text(
                 'welcome_back'.tr,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 18.sp,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 8.h),
+          const SizedBox(height: 8),
           Text(
             'welcome_message'.tr,
             style: TextStyle(
               color: Colors.white.withOpacity(0.9),
-              fontSize: 14.sp,
+              fontSize: 14,
               height: 1.4,
             ),
           ),
@@ -199,7 +198,7 @@ class _HomeTab extends StatelessWidget {
               ),
           ),
         ),
-        SizedBox(width: 16.w),
+        const SizedBox(width: 16),
         Expanded(
           child: _buildActionCard(
             context,
@@ -228,19 +227,19 @@ class _HomeTab extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Padding(
-          padding: EdgeInsets.all(20.w),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: EdgeInsets.all(12.w),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: color, size: 24.w),
+                child: Icon(icon, color: color, size: 24),
               ),
-              SizedBox(height: 16.h),
+              const SizedBox(height: 16),
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -264,9 +263,9 @@ class _HomeTab extends StatelessWidget {
          crossAxisAlignment: CrossAxisAlignment.start,
          children: [
            _buildSectionHeader(context, 'statistics'.tr),
-           SizedBox(height: 16.h),
+           const SizedBox(height: 16),
            Container(
-             padding: EdgeInsets.all(20.w),
+             padding: const EdgeInsets.all(20),
              decoration: BoxDecoration(
                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                borderRadius: BorderRadius.circular(24),
@@ -275,7 +274,7 @@ class _HomeTab extends StatelessWidget {
                mainAxisAlignment: MainAxisAlignment.spaceAround,
                children: [
                  _buildStatItem(context, (stats['total'] ?? 0).toString(), 'total_passwords'.tr),
-                 Container(width: 1, height: 40.h, color: Theme.of(context).dividerColor),
+                 Container(width: 1, height: 40, color: Theme.of(context).dividerColor),
                  _buildStatItem(context, (stats['favorites'] ?? 0).toString(), 'favorites'.tr),
                ],
              ),
@@ -295,7 +294,7 @@ class _HomeTab extends StatelessWidget {
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
-        SizedBox(height: 4.h),
+        const SizedBox(height: 4),
         Text(
           label,
           style: Theme.of(context).textTheme.labelMedium,

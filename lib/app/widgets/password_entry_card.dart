@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
 import 'package:lockbloom/app/core/theme/app_colors.dart';
-import 'package:lockbloom/app/themes/app_theme.dart';
 
 class PasswordEntryCard extends StatelessWidget {
   final PasswordEntry entry;
@@ -44,13 +41,13 @@ class PasswordEntryCard extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(20),
           child: Padding(
-            padding: EdgeInsets.all(16.w),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 // Icon Section
                 Container(
-                  width: 48.w,
-                  height: 48.w,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -68,11 +65,11 @@ class PasswordEntryCard extends StatelessWidget {
                   child: Icon(
                     _getEntryIcon(),
                     color: Theme.of(context).colorScheme.primary,
-                    size: 24.w,
+                    size: 24,
                   ),
                 ),
                 
-                SizedBox(width: 16.w),
+                const SizedBox(width: 16),
                 
                 // Content Section
                 Expanded(
@@ -86,48 +83,48 @@ class PasswordEntryCard extends StatelessWidget {
                               entry.label,
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16.sp,
+                                fontSize: 16,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           if (entry.isFavorite) ...[
-                            SizedBox(width: 6.w),
-                            Icon(Icons.favorite_rounded, size: 14.w, color: AppColors.errorColor),
+                            const SizedBox(width: 6),
+                            const Icon(Icons.favorite_rounded, size: 14, color: AppColors.errorColor),
                           ],
                         ],
                       ),
-                      SizedBox(height: 4.h),
+                      const SizedBox(height: 4),
                       if (entry.username.isNotEmpty)
                         Text(
                           entry.username,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            fontSize: 13.sp,
+                            fontSize: 13,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       if (entry.website?.isNotEmpty == true) ...[
-                        SizedBox(height: 2.h),
+                        const SizedBox(height: 2),
                         Text(
                           entry.website!,
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Theme.of(context).colorScheme.primary,
-                            fontSize: 12.sp,
+                            fontSize: 12,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
                       if (entry.tags.isNotEmpty) ...[
-                        SizedBox(height: 8.h),
+                        const SizedBox(height: 8),
                         Row(
                           children: entry.tags.take(2).map((tag) {
                             return Container(
-                              margin: EdgeInsets.only(right: 6.w),
-                              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+                              margin: const EdgeInsets.only(right: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                                 borderRadius: BorderRadius.circular(6),
@@ -135,7 +132,7 @@ class PasswordEntryCard extends StatelessWidget {
                               child: Text(
                                 tag,
                                 style: TextStyle(
-                                  fontSize: 10.sp,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.w500,
                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
@@ -157,7 +154,7 @@ class PasswordEntryCard extends StatelessWidget {
                       icon: Icons.person_rounded,
                       onTap: onCopyUsername,
                     ),
-                    SizedBox(width: 8.w),
+                    const SizedBox(width: 8),
                     _buildActionButton(
                       context,
                       icon: Icons.copy_rounded,
@@ -180,7 +177,7 @@ class PasswordEntryCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(8),
         child: Container(
-          padding: EdgeInsets.all(8.w),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(8),
@@ -190,7 +187,7 @@ class PasswordEntryCard extends StatelessWidget {
           ),
           child: Icon(
             icon,
-            size: 18.w,
+            size: 18,
             color: Theme.of(context).colorScheme.primary,
           ),
         ),

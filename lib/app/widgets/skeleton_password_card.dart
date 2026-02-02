@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 
 class SkeletonPasswordCard extends StatefulWidget {
@@ -44,8 +43,8 @@ class _SkeletonPasswordCardState extends State<SkeletonPasswordCard>
         return Opacity(
           opacity: _animation.value,
           child: Container(
-            margin: EdgeInsets.only(bottom: AppTheme.spacingMd.h),
-            padding: EdgeInsets.all(AppTheme.spacingMd.w),
+            margin: const EdgeInsets.only(bottom: AppTheme.spacingMd),
+            padding: const EdgeInsets.all(AppTheme.spacingMd),
             decoration: BoxDecoration(
               color: Theme.of(context).cardTheme.color,
               borderRadius: BorderRadius.circular(AppTheme.radiusMd),
@@ -57,31 +56,31 @@ class _SkeletonPasswordCardState extends State<SkeletonPasswordCard>
               children: [
                 // Icon skeleton
                 Container(
-                  width: 48.w,
-                  height: 48.w,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
                     color: baseColor.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                 ),
-                SizedBox(width: AppTheme.spacingMd.w),
+                const SizedBox(width: AppTheme.spacingMd),
                 // Text skeletons
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        width: 120.w,
-                        height: 16.h,
+                        width: 120,
+                        height: 16,
                         decoration: BoxDecoration(
                           color: baseColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
-                      SizedBox(height: 8.h),
+                      const SizedBox(height: 8),
                       Container(
-                        width: 180.w,
-                        height: 12.h,
+                        width: 180,
+                        height: 12,
                         decoration: BoxDecoration(
                           color: baseColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),

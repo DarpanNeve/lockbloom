@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/bindings/initial_binding.dart';
 import 'package:lockbloom/app/core/localization/app_translations.dart';
@@ -63,25 +63,27 @@ class LockBloomApp extends StatelessWidget {
     final themeService = Get.find<ThemeService>();
     final localeService = Get.find<LocaleService>();
     
-    return ScreenUtilInit(
-      designSize: const Size(375, 812),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (context, child) {
-        return Obx(() => GetMaterialApp(
-          title: 'LockBloom',
-          debugShowCheckedModeBanner: false,
-          initialBinding: InitialBinding(),
-          initialRoute: AppPages.INITIAL,
-          getPages: AppPages.routes,
-          theme: themeService.lightTheme,
-          darkTheme: themeService.darkTheme,
-          themeMode: themeService.theme,
-          translations: AppTranslations(),
-          locale: localeService.currentLocale,
-          fallbackLocale: const Locale('en', 'US'),
-        ));
-      },
-    );
+    return Obx(() => GetMaterialApp(
+      title: 'LockBloom',
+      debugShowCheckedModeBanner: false,
+      initialBinding: InitialBinding(),
+      initialRoute: AppPages.INITIAL,
+      getPages: AppPages.routes,
+      theme: themeService.lightTheme,
+      darkTheme: themeService.darkTheme,
+      themeMode: themeService.theme,
+      translations: AppTranslations(),
+      locale: localeService.currentLocale,
+      fallbackLocale: const Locale('en', 'US'),
+      builder: (context, child) => ResponsiveBreakpoints.builder(
+        child: child!,
+        breakpoints: [
+          const Breakpoint(start: 0, end: 450, name: MOBILE),
+          const Breakpoint(start: 451, end: 800, name: TABLET),
+          const Breakpoint(start: 801, end: 1920, name: DESKTOP),
+          const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
+        ],
+      ),
+    ));
   }
 }

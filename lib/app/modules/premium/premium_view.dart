@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/modules/premium/premium_controller.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -29,18 +28,18 @@ class PremiumView extends GetView<PremiumController> {
         if (controller.offerings.value == null || controller.offerings.value!.current == null) {
           return Center(
             child: Padding(
-              padding: EdgeInsets.all(AppTheme.spacingLg.w),
+              padding: const EdgeInsets.all(AppTheme.spacingLg),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.wifi_off_rounded, size: 64.w, color: Theme.of(context).colorScheme.outline),
-                  SizedBox(height: 16.h),
+                  Icon(Icons.wifi_off_rounded, size: 64, color: Theme.of(context).colorScheme.outline),
+                  const SizedBox(height: 16),
                   Text(
                     "premium_unavailable_offline".tr,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  SizedBox(height: 24.h),
+                  const SizedBox(height: 24),
                   FilledButton.icon(
                     onPressed: controller.fetchOfferings,
                     icon: const Icon(Icons.refresh_rounded),
@@ -60,14 +59,14 @@ class PremiumView extends GetView<PremiumController> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingLg.w),
+                padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingLg),
                 child: Column(
                   children: [
-                    SizedBox(height: 16.h),
+                    const SizedBox(height: 16),
                     // Header Icon
                     Container(
-                      width: 100.w,
-                      height: 100.w,
+                      width: 100,
+                      height: 100,
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
                         shape: BoxShape.circle,
@@ -81,11 +80,11 @@ class PremiumView extends GetView<PremiumController> {
                       ),
                       child: Icon(
                         Icons.diamond_rounded,
-                        size: 48.w,
+                        size: 48,
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    SizedBox(height: 24.h),
+                    const SizedBox(height: 24),
                     
                     // Value Proposition
                     Text(
@@ -95,7 +94,7 @@ class PremiumView extends GetView<PremiumController> {
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    SizedBox(height: 8.h),
+                    const SizedBox(height: 8),
                     Text(
                       "access_premium_forever".tr,
                       textAlign: TextAlign.center,
@@ -104,7 +103,7 @@ class PremiumView extends GetView<PremiumController> {
                       ),
                     ),
                     
-                    SizedBox(height: 40.h),
+                    const SizedBox(height: 40),
 
                     // Benefits List
                     _buildBenefitItem(context, Icons.cloud_sync_rounded, "offline_backup_sync".tr),
@@ -112,7 +111,7 @@ class PremiumView extends GetView<PremiumController> {
                     _buildBenefitItem(context, Icons.palette_rounded, "premium_themes".tr),
                     _buildBenefitItem(context, Icons.fingerprint_rounded, "biometric_security".tr),
                     
-                    SizedBox(height: 40.h),
+                    const SizedBox(height: 40),
 
                     // Plans
                     if (annual != null)
@@ -122,7 +121,7 @@ class PremiumView extends GetView<PremiumController> {
                         isYearly: true,
                         savings: "save_20_percent".tr,
                       ),
-                    if (annual != null && monthly != null) SizedBox(height: 16.h),
+                    if (annual != null && monthly != null) const SizedBox(height: 16),
                     if (monthly != null)
                       _buildPlanCard(
                         context,
@@ -130,17 +129,17 @@ class PremiumView extends GetView<PremiumController> {
                         isYearly: false,
                       ),
 
-                    SizedBox(height: 32.h),
+                    const SizedBox(height: 32),
                     
                      Text(
                       "subscription_disclaimer".tr,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-                        fontSize: 11.sp,
+                        fontSize: 11,
                       ),
                     ),
-                    SizedBox(height: 100.h), // Bottom padding for scroll
+                    const SizedBox(height: 100), // Bottom padding for scroll
                   ],
                 ),
               ),
@@ -148,7 +147,7 @@ class PremiumView extends GetView<PremiumController> {
             
             // Sticky Bottom Button
             Container(
-              padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 32.h),
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 border: Border(
@@ -162,7 +161,7 @@ class PremiumView extends GetView<PremiumController> {
                 child: Obx(() {
                   if (controller.isPremium.value) {
                     return Container(
-                      padding: EdgeInsets.symmetric(vertical: 16.h),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
                         color: Colors.green.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(16),
@@ -171,8 +170,8 @@ class PremiumView extends GetView<PremiumController> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.check_circle_rounded, color: Colors.green, size: 24.w),
-                          SizedBox(width: 12.w),
+                          Icon(Icons.check_circle_rounded, color: Colors.green, size: 24),
+                          const SizedBox(width: 12),
                           Text(
                             "premium_active".tr,
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -187,7 +186,7 @@ class PremiumView extends GetView<PremiumController> {
                   
                   return SizedBox(
                     width: double.infinity,
-                    height: 56.h,
+                    height: 56,
                     child: ElevatedButton(
                       onPressed: controller.selectedPackage.value != null 
                           ? controller.makePurchase 
@@ -202,8 +201,8 @@ class PremiumView extends GetView<PremiumController> {
                       ),
                       child: Text(
                         "start_premium".tr,
-                        style: TextStyle(
-                          fontSize: 16.sp,
+                        style: const TextStyle(
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -220,18 +219,18 @@ class PremiumView extends GetView<PremiumController> {
 
   Widget _buildBenefitItem(BuildContext context, IconData icon, String text) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 16.h),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(10.w),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 24.w),
+            child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 24),
           ),
-          SizedBox(width: 16.w),
+          const SizedBox(width: 16),
           Expanded(
             child: Text(
               text,
@@ -240,7 +239,7 @@ class PremiumView extends GetView<PremiumController> {
               ),
             ),
           ),
-          Icon(Icons.check_rounded, color: Colors.green, size: 24.w),
+          Icon(Icons.check_rounded, color: Colors.green, size: 24),
         ],
       ),
     );
@@ -263,12 +262,12 @@ class PremiumView extends GetView<PremiumController> {
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
               ),
-              padding: EdgeInsets.all(20.w),
+              padding: const EdgeInsets.all(20),
               child: Row(
                 children: [
                    Container(
-                    width: 24.w, 
-                    height: 24.w,
+                    width: 24, 
+                    height: 24,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
@@ -278,10 +277,10 @@ class PremiumView extends GetView<PremiumController> {
                       color: isSelected ? Theme.of(context).colorScheme.primary : null,
                     ),
                     child: isSelected 
-                        ? Icon(Icons.check, size: 16.w, color: Theme.of(context).colorScheme.onPrimary)
+                        ? Icon(Icons.check, size: 16, color: Theme.of(context).colorScheme.onPrimary)
                         : null,
                   ),
-                  SizedBox(width: 16.w),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -289,12 +288,12 @@ class PremiumView extends GetView<PremiumController> {
                         Text(
                           isYearly ? "annual_plan".tr : "monthly_plan".tr,
                           style: TextStyle(
-                            fontSize: 16.sp,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: textColor,
                           ),
                         ),
-                        SizedBox(height: 4.h),
+                        const SizedBox(height: 4),
                         Text(
                           package.storeProduct.description, // Often just the duration
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -312,19 +311,19 @@ class PremiumView extends GetView<PremiumController> {
                       Text(
                         package.storeProduct.priceString,
                         style: TextStyle(
-                          fontSize: 18.sp,
+                          fontSize: 18,
                           fontWeight: FontWeight.w800,
                           color: textColor,
                         ),
                       ),
                       if (isYearly) ...[
-                        SizedBox(height: 4.h),
+                        const SizedBox(height: 4),
                         Text(
                           '/ ${'year'.tr}',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ] else ...[
-                         SizedBox(height: 4.h),
+                         const SizedBox(height: 4),
                         Text(
                            '/ ${'month'.tr}',
                           style: Theme.of(context).textTheme.bodySmall,
@@ -340,7 +339,7 @@ class PremiumView extends GetView<PremiumController> {
                 top: 0,
                 right: 0,
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary,
                     borderRadius: const BorderRadius.only(
@@ -351,7 +350,7 @@ class PremiumView extends GetView<PremiumController> {
                   child: Text(
                     savings,
                     style: TextStyle(
-                      fontSize: 10.sp,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.onPrimary,
                     ),

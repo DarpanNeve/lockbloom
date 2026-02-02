@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/modules/splash/controllers/splash_controller.dart';
-import 'package:lockbloom/app/services/theme_service.dart';
 import 'package:lockbloom/app/themes/app_theme.dart';
 
 class SplashView extends GetView<SplashController> {
@@ -33,9 +31,9 @@ class SplashView extends GetView<SplashController> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 140.w,
-                  height: 140.w,
-                  padding: EdgeInsets.all(AppTheme.spacingMd.w),
+                  width: 140,
+                  height: 140,
+                  padding: const EdgeInsets.all(AppTheme.spacingMd),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
                     shape: BoxShape.circle,
@@ -54,7 +52,7 @@ class SplashView extends GetView<SplashController> {
                     ),
                   ),
                 ),
-                SizedBox(height: 32.h),
+                const SizedBox(height: 32),
                 Text(
                   'app_name'.tr,
                   style: Theme.of(context).textTheme.displaySmall?.copyWith(
@@ -63,7 +61,7 @@ class SplashView extends GetView<SplashController> {
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                 ),
-                SizedBox(height: 8.h),
+                const SizedBox(height: 8),
                 Text(
                   'secure_vault'.tr, 
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -76,7 +74,7 @@ class SplashView extends GetView<SplashController> {
           ),
           
           Positioned(
-            bottom: 60.h,
+            bottom: 60,
             left: 0,
             right: 0,
             child: Obx(() {
@@ -84,8 +82,8 @@ class SplashView extends GetView<SplashController> {
                return Column(
                  children: [
                    SizedBox(
-                     width: 24.w,
-                     height: 24.w,
+                     width: 24,
+                     height: 24,
                      child: CircularProgressIndicator(
                        strokeWidth: 2.5,
                        color: Theme.of(context).colorScheme.primary,

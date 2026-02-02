@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/auth_controller.dart';
 import 'package:lockbloom/app/controllers/password_controller.dart';
@@ -166,10 +165,10 @@ class SettingsController extends GetxController {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Handle Bar
-              SizedBox(height: 12.h),
+              const SizedBox(height: 12),
               Container(
-                width: 40.w,
-                height: 4.h,
+                width: 40,
+                height: 4,
                 decoration: BoxDecoration(
                   color: Get.theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(2),
@@ -178,7 +177,7 @@ class SettingsController extends GetxController {
               
               // Title Row
               Padding(
-                padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 8.h),
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
                 child: Row(
                   children: [
                     Text(
@@ -202,19 +201,19 @@ class SettingsController extends GetxController {
               TabBar(
                 isScrollable: true,
                 tabAlignment: TabAlignment.start,
-                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 dividerColor: Colors.transparent,
                 labelColor: Get.theme.colorScheme.primary,
                 unselectedLabelColor: Get.theme.colorScheme.onSurfaceVariant,
                 indicatorSize: TabBarIndicatorSize.label,
                 indicatorWeight: 3,
-                labelStyle: TextStyle(
+                labelStyle: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 14.sp,
+                  fontSize: 14,
                 ),
-                unselectedLabelStyle: TextStyle(
+                unselectedLabelStyle: const TextStyle(
                   fontWeight: FontWeight.w500,
-                  fontSize: 14.sp,
+                  fontSize: 14,
                 ),
                 tabs: categoryKeys.map((key) => Tab(text: key)).toList(),
               ),
@@ -223,12 +222,12 @@ class SettingsController extends GetxController {
 
               // Content
               SizedBox(
-                height: 350.h,
+                height: 350,
                 child: TabBarView(
                   children: categoryKeys.map((key) {
                     final colors = categories[key]!;
                     return GridView.builder(
-                      padding: EdgeInsets.all(24.w),
+                      padding: const EdgeInsets.all(24),
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 5,
                         crossAxisSpacing: 16,
@@ -271,10 +270,10 @@ class SettingsController extends GetxController {
                                     : null,
                               ),
                               child: isSelected
-                                  ? Icon(
+                                  ? const Icon(
                                       Icons.check_rounded,
                                       color: Colors.white,
-                                      size: 20.w,
+                                      size: 20,
                                     )
                                   : null,
                             ),
@@ -285,7 +284,7 @@ class SettingsController extends GetxController {
                   }).toList(),
                 ),
               ),
-              SizedBox(height: 16.h),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -306,8 +305,8 @@ class SettingsController extends GetxController {
             return RadioListTile<String>(
               title: Row(
                 children: [
-                  Text(option.flag, style: TextStyle(fontSize: 20.sp)),
-                  SizedBox(width: 12.w),
+                  Text(option.flag, style: const TextStyle(fontSize: 20)),
+                  const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -431,7 +430,7 @@ class SettingsController extends GetxController {
                 obscureText: true,
                 maxLength: 8,
               ),
-              SizedBox(height: 16.h),
+              const SizedBox(height: 16),
               TextField(
                 controller: newPinController,
                 decoration: InputDecoration(
@@ -442,7 +441,7 @@ class SettingsController extends GetxController {
                 obscureText: true,
                 maxLength: 8,
               ),
-              SizedBox(height: 16.h),
+              const SizedBox(height: 16),
               TextField(
                 controller: confirmPinController,
                 decoration: InputDecoration(
@@ -500,7 +499,7 @@ class SettingsController extends GetxController {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('export_password_prompt'.tr),
-              SizedBox(height: 16.h),
+              const SizedBox(height: 16),
               TextField(
                 controller: passwordController,
                 decoration: InputDecoration(
@@ -509,7 +508,7 @@ class SettingsController extends GetxController {
                 ),
                 obscureText: true,
               ),
-              SizedBox(height: 16.h),
+              const SizedBox(height: 16),
               TextField(
                 controller: confirmPasswordController,
                 decoration: InputDecoration(
@@ -592,7 +591,7 @@ class SettingsController extends GetxController {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('import_password_prompt'.tr),
-              SizedBox(height: 16.h),
+              const SizedBox(height: 16),
               TextField(
                 controller: passwordController,
                 decoration: InputDecoration(

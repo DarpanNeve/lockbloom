@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/auth_controller.dart';
 import 'package:lockbloom/app/controllers/settings_controller.dart';
@@ -20,9 +19,9 @@ class SettingsView extends GetView<SettingsController> {
           SliverAppBar(
             title: Text(
               'settings'.tr, 
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.w800,
-                fontSize: 20.sp,
+                fontSize: 20,
                 fontFamily: 'Inter',
               ),
             ),
@@ -34,30 +33,30 @@ class SettingsView extends GetView<SettingsController> {
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           ),
           SliverPadding(
-            padding: EdgeInsets.symmetric(horizontal: AppTheme.spacingMd.w),
+            padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMd),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                  _buildSupportSection(context),
-                 SizedBox(height: 24.h),
+                 const SizedBox(height: 24),
                  _buildPremiumSection(context),
-                 SizedBox(height: 24.h),
+                 const SizedBox(height: 24),
                  _buildSectionHeader(context, 'security'.tr),
                  _buildSecuritySection(context),
-                 SizedBox(height: 24.h),
+                 const SizedBox(height: 24),
                  _buildSectionHeader(context, 'privacy'.tr),
                  _buildPrivacySection(context),
-                 SizedBox(height: 24.h),
+                 const SizedBox(height: 24),
                  _buildSectionHeader(context, 'appearance'.tr),
                  _buildAppearanceSection(context),
-                 SizedBox(height: 24.h),
+                 const SizedBox(height: 24),
                  _buildSectionHeader(context, 'data'.tr),
                  _buildDataSection(context),
-                 SizedBox(height: 24.h),
+                 const SizedBox(height: 24),
                  _buildSectionHeader(context, 'about'.tr),
                  _buildAboutSection(context),
-                 SizedBox(height: 48.h),
+                 const SizedBox(height: 48),
                  _buildDangerSection(context),
-                 SizedBox(height: 24.h),
+                 const SizedBox(height: 24),
                  OutlinedButton.icon(
                     onPressed: () => Get.find<AuthController>().logout(),
                     icon: const Icon(Icons.logout_rounded),
@@ -67,7 +66,7 @@ class SettingsView extends GetView<SettingsController> {
                       side: BorderSide(color: Theme.of(context).colorScheme.error.withValues(alpha: 0.5)),
                     ),
                  ),
-                 SizedBox(height: 100.h),
+                 const SizedBox(height: 100),
               ]),
             ),
           ),
@@ -78,7 +77,7 @@ class SettingsView extends GetView<SettingsController> {
 
   Widget _buildSectionHeader(BuildContext context, String title) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 12.h, left: 4.w),
+      padding: const EdgeInsets.only(bottom: 12, left: 4),
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -207,8 +206,8 @@ class SettingsView extends GetView<SettingsController> {
           subtitle: controller.currentAccentColorName,
           onTap: controller.showAccentColorDialog,
           trailing: Container(
-            width: 24.w,
-            height: 24.w,
+            width: 24,
+            height: 24,
             decoration: BoxDecoration(
               color: themeService.accentColor.primary,
               shape: BoxShape.circle,
@@ -225,7 +224,7 @@ class SettingsView extends GetView<SettingsController> {
           title: 'language'.tr,
           subtitle: controller.currentLanguageName,
           onTap: controller.showLanguageDialog,
-          trailing: Text(localeService.currentLocaleFlag, style: TextStyle(fontSize: 20.sp)),
+          trailing: Text(localeService.currentLocaleFlag, style: const TextStyle(fontSize: 20)),
         );
       }),
     ]);
@@ -296,7 +295,7 @@ class SettingsView extends GetView<SettingsController> {
   Widget _buildDivider(BuildContext context) {
     return Divider(
       height: 1,
-      indent: 56.w, 
+      indent: 56, 
       color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
     );
   }
@@ -321,32 +320,32 @@ class SettingsView extends GetView<SettingsController> {
       onTap: isSwitch ? () => onSwitchChanged?.call(!switchValue) : onTap,
       borderRadius: BorderRadius.circular(20),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(10.w),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: effectiveIconBg,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: effectiveIconColor, size: 22.w),
+              child: Icon(icon, color: effectiveIconColor, size: 22),
             ),
-            SizedBox(width: 16.w),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.sp),
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
-                  SizedBox(height: 2.h),
+                  const SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontSize: 12.sp,
+                      fontSize: 12,
                     ),
                   ),
                 ],
@@ -360,7 +359,7 @@ class SettingsView extends GetView<SettingsController> {
             else if (trailing != null)
               trailing
             else if (onTap != null)
-              Icon(Icons.chevron_right_rounded, color: Theme.of(context).colorScheme.outline, size: 20.sp),
+              Icon(Icons.chevron_right_rounded, color: Theme.of(context).colorScheme.outline, size: 20),
           ],
         ),
       ),

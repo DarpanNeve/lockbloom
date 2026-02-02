@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/core/theme/app_colors.dart';
 import 'package:lockbloom/app/data/models/password_entry.dart';
@@ -24,7 +23,7 @@ class PasswordStrengthIndicator extends StatelessWidget {
             Expanded(
               child: _buildStrengthBar(context),
             ),
-            SizedBox(width: AppTheme.spacingMd.w),
+            const SizedBox(width: AppTheme.spacingMd),
             Text(
               _getStrengthText(),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -35,7 +34,7 @@ class PasswordStrengthIndicator extends StatelessWidget {
           ],
         ),
         if (strength.entropy > 0) ...[
-          SizedBox(height: AppTheme.spacingXs.h),
+          const SizedBox(height: AppTheme.spacingXs),
           Text(
             'Entropy: ${strength.entropy.toStringAsFixed(1)} bits',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -65,7 +64,7 @@ class PasswordStrengthIndicator extends StatelessWidget {
 
   Widget _buildStrengthBar(BuildContext context) {
     return Container(
-      height: 6.h,
+      height: 6,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppTheme.radiusXs),
         color: Theme.of(context).colorScheme.surfaceContainerHighest,

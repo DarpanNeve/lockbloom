@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/password_controller.dart';
@@ -17,14 +16,14 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
       elevation: 0,
       // Use default CardTheme shape
       child: Padding(
-        padding: EdgeInsets.all(AppTheme.spacingLg.w),
+        padding: const EdgeInsets.all(AppTheme.spacingLg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(AppTheme.spacingSm.w),
+                  padding: const EdgeInsets.all(AppTheme.spacingSm),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(AppTheme.radiusSm),
@@ -32,10 +31,10 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                   child: Icon(
                     Icons.auto_awesome_rounded,
                     color: Theme.of(context).colorScheme.primary,
-                    size: 20.w,
+                    size: 20,
                   ),
                 ),
-                SizedBox(width: AppTheme.spacingMd.w),
+                const SizedBox(width: AppTheme.spacingMd),
                 Text(
                   'password_generator'.tr,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -45,11 +44,11 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
               ],
             ),
             
-            SizedBox(height: AppTheme.spacingLg.h),
+            const SizedBox(height: AppTheme.spacingLg),
             
             Container(
               width: double.infinity,
-              padding: EdgeInsets.all(AppTheme.spacingMd.w),
+              padding: const EdgeInsets.all(AppTheme.spacingMd),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(AppTheme.radiusMd),
@@ -66,12 +65,12 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                       fontFamily: 'monospace',
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onSurface,
-                      fontSize: 18.sp,
+                      fontSize: 18,
                       letterSpacing: 1.0,
                     ),
                   )),
                   
-                  SizedBox(height: AppTheme.spacingMd.h),
+                  const SizedBox(height: AppTheme.spacingMd),
                   
                   Obx(() => PasswordStrengthIndicator(
                     strength: controller.passwordStrength.value,
@@ -80,7 +79,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
               ),
             ),
             
-            SizedBox(height: AppTheme.spacingMd.h),
+            const SizedBox(height: AppTheme.spacingMd),
             
             Row(
               children: [
@@ -90,11 +89,11 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                     icon: const Icon(Icons.refresh_rounded, size: 18),
                     label: Text('generate_password'.tr.split(' ')[0]),
                     style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
-                SizedBox(width: AppTheme.spacingMd.w),
+                const SizedBox(width: AppTheme.spacingMd),
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () async {
@@ -110,14 +109,14 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                     icon: const Icon(Icons.copy_rounded, size: 18),
                     label: Text('copy'.tr),
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
               ],
             ),
             
-            SizedBox(height: AppTheme.spacingLg.h),
+            const SizedBox(height: AppTheme.spacingLg),
             
             _buildGeneratorOptions(context),
           ],
@@ -142,7 +141,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
         ),
         initiallyExpanded: false,
         tilePadding: EdgeInsets.zero,
-        childrenPadding: EdgeInsets.symmetric(vertical: AppTheme.spacingSm.h),
+        childrenPadding: const EdgeInsets.symmetric(vertical: AppTheme.spacingSm),
         children: [
           Column(
             children: [
@@ -157,9 +156,9 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: AppTheme.spacingSm.w,
-                          vertical: AppTheme.spacingXs.h,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppTheme.spacingSm,
+                          vertical: AppTheme.spacingXs,
                         ),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.primaryContainer,
@@ -200,7 +199,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                 ],
               )),
               
-              SizedBox(height: AppTheme.spacingMd.h),
+              const SizedBox(height: AppTheme.spacingMd),
               
               Obx(() => Column(
                 children: [
@@ -247,7 +246,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
                 ],
               )),
               
-              SizedBox(height: AppTheme.spacingMd.h),
+              const SizedBox(height: AppTheme.spacingMd),
               
               Obx(() => Column(
                 children: [
@@ -297,7 +296,7 @@ class PasswordGeneratorCard extends GetView<PasswordController> {
     ValueChanged<bool> onChanged,
   ) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: AppTheme.spacingXs.h),
+      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingXs),
       child: Row(
         children: [
           Expanded(

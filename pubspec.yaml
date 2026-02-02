@@ -1,6 +1,6 @@
 name: lockbloom
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.22+23
 
 environment:
@@ -11,7 +11,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   get: ^4.7.2
-  flutter_screenutil: ^5.9.3
+  responsive_framework: ^1.5.1
   flutter_secure_storage: ^9.2.4
   encrypt: ^5.0.3
   pointycastle: ^3.9.1
@@ -53,7 +53,6 @@ flutter_native_splash:
   image: assets/images/icon.png # splash image (centered)
   android_12:
     image: assets/images/icon.png # splash image for Android 12 (centered)
-
 
 dev_dependencies:
   flutter_test:

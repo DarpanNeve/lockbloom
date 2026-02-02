@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:lockbloom/app/controllers/password_controller.dart';
 import 'package:lockbloom/app/routes/app_pages.dart';
@@ -26,7 +25,7 @@ class RecentPasswordsList extends GetView<PasswordController> {
 
       if (recentPasswords.isEmpty) {
         return Container(
-          height: 120.h,
+          height: 120,
           width: double.infinity,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
@@ -41,10 +40,10 @@ class RecentPasswordsList extends GetView<PasswordController> {
             children: [
               Icon(
                 Icons.lock_outline_rounded,
-                size: 40.w,
+                size: 40,
                 color: Theme.of(context).colorScheme.outline,
               ),
-              SizedBox(height: AppTheme.spacingSm.h),
+              const SizedBox(height: AppTheme.spacingSm),
               Text(
                 'no_passwords_yet'.tr,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -60,7 +59,7 @@ class RecentPasswordsList extends GetView<PasswordController> {
         children:
             recentPasswords.map((password) {
               return Padding(
-                padding: EdgeInsets.only(bottom: AppTheme.spacingMd.h),
+                padding: const EdgeInsets.only(bottom: AppTheme.spacingMd),
                 child: PasswordEntryCard(
                   entry: password,
                   onTap:
