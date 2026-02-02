@@ -136,11 +136,10 @@ class AuthView extends GetView<AuthController> {
     final localeService = Get.find<LocaleService>();
     Get.bottomSheet(
       Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppTheme.spacingLg,
-          vertical: AppTheme.spacingLg,
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.8,
         ),
+        width: double.infinity,
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
@@ -149,24 +148,38 @@ class AuthView extends GetView<AuthController> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'choose_language'.tr,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppTheme.spacingLg,
+                AppTheme.spacingLg,
+                AppTheme.spacingLg,
+                AppTheme.spacingSm,
+              ),
+              child: Text(
+                'choose_language'.tr,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
             ),
-            const SizedBox(height: AppTheme.spacingLg),
-            ...LocaleService.supportedLocales.map((option) {
-              return Obx(() {
-                final isSelected = localeService.currentLocale.languageCode ==
-                    option.locale.languageCode;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: AppTheme.spacingMd),
-                  child: _buildLanguageOption(context, option, isSelected),
-                );
-              });
-            }),
-            const SizedBox(height: AppTheme.spacingMd),
+            const SizedBox(height: AppTheme.spacingSm),
+            Flexible(
+              child: ListView.separated(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(AppTheme.spacingLg),
+                itemCount: LocaleService.supportedLocales.length,
+                separatorBuilder: (_, __) =>
+                    const SizedBox(height: AppTheme.spacingMd),
+                itemBuilder: (context, index) {
+                  final option = LocaleService.supportedLocales[index];
+                  return Obx(() {
+                    final isSelected = localeService.currentLocale.languageCode ==
+                        option.locale.languageCode;
+                    return _buildLanguageOption(context, option, isSelected);
+                  });
+                },
+              ),
+            ),
           ],
         ),
       ),
